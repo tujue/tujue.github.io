@@ -215,3 +215,88 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 });
 
+
+// ========== GLOBAL NOTIFICATION SYSTEM ==========
+window.showNotification = function (message, type = 'success') {
+    // Icons
+    const icons = {
+        success: '✅',
+        error: '❌',
+        info: 'ℹ️',
+        warning: '⚠️'
+    };
+
+    // Create container if not exists
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(container);
+    }
+
+    // Create Notification
+    const toast = document.createElement('div');
+    const bgColors = {
+        success: '#10B981',
+        error: '#EF4444',
+        info: '#3B82F6',
+        warning: '#F59E0B'
+    };
+
+    toast.style.cssText = `
+        background: ${bgColors[type] || bgColors.info};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 300px;
+        transform: translateX(120%);
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        pointer-events: auto;
+        font-weight: 500;
+        cursor: pointer;
+    `;
+
+    toast.innerHTML = `
+        <span style="font-size: 1.2rem;">${icons[type] || icons.info}</span>
+        <span>${message}</span>
+    `;
+
+    // Add to container
+    container.appendChild(toast);
+
+    // Animate In
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+    }, 10);
+
+    // Remove function
+    const removeToast = () => {
+        toast.style.transform = 'translateX(120%)';
+        setTimeout(() => {
+            if (toast.parentElement) toast.parentElement.removeChild(toast);
+        }, 400);
+    };
+
+    // Auto remove after 3s
+    setTimeout(removeToast, 3000);
+
+    // Click to remove
+    toast.onclick = removeToast;
+};
+
