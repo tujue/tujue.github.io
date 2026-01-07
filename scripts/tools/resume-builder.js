@@ -279,12 +279,29 @@ class ResumeBuilderTool extends BaseTool {
                             <input type="text" class="form-input" id="in-addr" value="${d.address || ''}">
                         </div>
                     </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <label class="form-label">Yetenekler (Skills)</label>
+                        <textarea class="form-input" id="in-skills" rows="2" placeholder="Java, Python, Leadership...">${d.skills || ''}</textarea>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Virgül ile ayırarak yazınız.</p>
+                    </div>
+
+                    <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 1rem;">
+                        <div>
+                            <label class="form-label">Diller</label>
+                            <textarea class="form-input" id="in-languages" rows="2" placeholder="Türkçe (Anadil), İngilizce (C1)...">${d.languages || ''}</textarea>
+                        </div>
+                        <div>
+                            <label class="form-label">İlgi Alanları</label>
+                            <textarea class="form-input" id="in-interests" rows="2" placeholder="Fotoğrafçılık, Satranç...">${d.interests || ''}</textarea>
+                        </div>
+                    </div>
                 </div>
             `;
             c.appendChild(div);
 
             // Bindings
-            const ids = ['name', 'title', 'email', 'web', 'phone', 'addr'];
+            const ids = ['name', 'title', 'email', 'web', 'phone', 'addr', 'skills', 'languages', 'interests'];
             ids.forEach(id => {
                 const el = document.getElementById(`in-${id}`);
                 el.oninput = () => {
@@ -558,7 +575,9 @@ class ResumeBuilderTool extends BaseTool {
                     deg: isTr ? 'Bilgisayar Mühendisliği, B.S.' : 'B.S. Computer Science',
                     date: '2014 - 2018'
                 }
-            ]
+            ],
+            languages: isTr ? 'Türkçe (Anadil), İngilizce (C1), Almanca (B1)' : 'English (Native), Spanish (C1), German (B1)',
+            interests: isTr ? 'Fotoğrafçılık, Açık Kaynak, Seyahat, Gitar' : 'Photography, Open Source, Travel, Guitar'
         };
     }
 }
