@@ -46,7 +46,7 @@ const LEGAL_CONTENT = {
                 <p>This data stays on your device and is never synchronized with any external database.</p>
 
                 <h4>3. Third-Party Infrastructure</h4>
-                <p>While the app runs locally, the static files are hosted on secure global CDNs (like Vercel). These providers may log basic access info (IP address, User Agent) purely for security and DDoS protection purposes.</p>
+                <p>While the app runs locally, the static files are hosted on secure GitHub Pages. GitHub may log basic access info (IP address, User Agent) purely for security purposes.</p>
             `
         },
         terms: {
