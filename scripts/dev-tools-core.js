@@ -1226,8 +1226,26 @@
                         <div class="res-skills">
                             ${d.skills.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
                         </div>
+
+                        ${d.languages ? `
+                        <div class="res-sec-title" style="margin-top:20px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+                        <div class="res-skills" style="flex-direction:column; align-items:flex-start;">
+                             ${d.languages.split(',').map(s => s.trim() ? `<span style="font-size:0.85rem; margin-bottom:5px;">• ${s.trim()}</span>` : '').join('')}
+                        </div>` : ''}
+
+                        ${d.interests ? `
+                        <div class="res-sec-title" style="margin-top:20px;">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                        <div class="res-skills" style="flex-direction:column; align-items:flex-start;">
+                             ${d.interests.split(',').map(s => s.trim() ? `<span style="font-size:0.85rem; margin-bottom:5px;">• ${s.trim()}</span>` : '').join('')}
+                        </div>` : ''}
                     </div >
         <div class="res-right">
+            ${d.summary ? `
+            <div class="res-section">
+                <div class="res-sec-title">${isTr ? 'ÖZET' : 'SUMMARY'}</div>
+                <div class="res-desc">${d.summary}</div>
+            </div>` : ''}
+
             <div class="res-section">
                 <div class="res-sec-title">${lbl.exp}</div>
                 ${d.experience.map(e => `
@@ -1271,6 +1289,12 @@
                         </div>
                     </div >
                     
+                    ${d.summary ? `
+                    <div class="res-section">
+                        <div class="res-sec-title">${isTr ? 'ÖZET' : 'SUMMARY'}</div>
+                        <div class="res-desc" style="margin-bottom:20px;">${d.summary}</div>
+                    </div>` : ''}
+                    
                     <div class="res-section">
                         <div class="res-sec-title">${lbl.exp}</div>
                         ${d.experience.map(e => `
@@ -1304,6 +1328,20 @@
                             ${d.skills.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
                         </div>
                     </div>
+
+                    ${d.languages ? `
+                    <div class="res-section">
+                        <div class="res-sec-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+                        <div class="res-skills">
+                             ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag" style="background:${d.color}15; color:${d.color}; border:1px solid ${d.color}40;">${s.trim()}</span>` : '').join('')}
+                        </div>
+                    </div>` : ''}
+
+                    ${d.interests ? `
+                    <div class="res-section">
+                        <div class="res-sec-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                        <div class="res-desc">${d.interests}</div>
+                    </div>` : ''}
     `;
 
                     if (theme === 'executive') {
