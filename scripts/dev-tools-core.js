@@ -1059,7 +1059,7 @@
                             ${d.skills.split(',').slice(0, 3).map(s => `
                                 <div class="k-skill-row">
                                     <div class="k-skill-label">${s.trim()}</div>
-                                    <div class="k-skill-bar-bg"><div class="k-skill-bar-fill" style="width: ${Math.floor(Math.random() * 30 + 70)}%"></div></div>
+                                    <div class="k-skill-bar-bg"><div class="k-skill-bar-fill" style="width: 85%"></div></div>
                                 </div>
                             `).join('')}
                         </div>
@@ -1071,26 +1071,19 @@
                                     <div class="k-sec-line"></div>
                                 </div>
                             </div>
-                            <div class="k-interest-bullet">Minimalist Art</div>
-                            <div class="k-interest-bullet">Urban Photography</div>
-                            <div class="k-interest-bullet">Art Installations</div>
+                            <div class="k-interest-container" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${(d.interests || '').split(',').map(i => `<div class="k-interest-bullet" style="margin:0;">${i.trim()}</div>`).join('')}
+                            </div>
                         </div>
                     </div>
         <div class="k-right">
-            <div class="k-r-section">
-                <div class="k-r-head">
-                    <div class="k-r-icon">👤</div>
-                    <div class="k-r-title">Profile</div>
-                </div>
-                <div class="k-profile-text">${isTr ? 'Marka kimliği ve dijital görseller konusunda 5+ yıllık deneyime sahip yaratıcı grafik tasarımcı. Adobe Creative Suite ve Figma uzmanlığı. Taze, estetik çözümler sunmaya odaklanmış.' : 'Creative graphic designer with 5+ years experience in impactful print and digital visuals. Skilled in brand identity, social media, and packaging design, with Adobe Creative Suite and Figma expertise. Focused on delivering fresh, aesthetic solutions.'}</div>
-            </div>
             <div class="k-r-section">
                 <div class="k-r-head">
                     <div class="k-r-icon">💼</div>
                     <div class="k-r-title">Experience</div>
                 </div>
                 <div class="k-timeline">
-                    ${d.experience.slice(0, 2).map(e => `
+                    ${d.experience.map(e => `
                                     <div class="k-exp-item">
                                         <div class="k-exp-dot"></div>
                                         <div class="k-exp-title">${e.role}</div>
@@ -1112,20 +1105,18 @@
                                 </div>
                             `).join('')}
             </div>
+            
+            ${d.languages ? `
             <div class="k-r-section">
                 <div class="k-r-head">
-                    <div class="k-r-icon">📁</div>
-                    <div class="k-r-title">Portfolio</div>
+                    <div class="k-r-icon">🗣️</div>
+                    <div class="k-r-title">Languages</div>
                 </div>
-                <div class="k-portfolio-item">
-                    <div class="k-port-title">Social Media Campaign</div>
-                    <div class="k-port-desc">Eco Wave Brand: ${isTr ? 'Markanın sosyal medya varlığını uyumlu görseller ve ilgi çekici grafiklerle dönüştürdü.' : 'Transformed brand social media presence with cohesive visuals and engaging graphics.'}</div>
-                </div>
-                <div class="k-portfolio-item">
-                    <div class="k-port-title">Event Branding</div>
-                    <div class="k-port-desc">NYC Art Expo: ${isTr ? 'Logolardan afişlere kadar etkinlik markalaşmasını geliştirdi, katılımcı deneyimini artırdı.' : 'Developed event branding from logo to banners, enhancing attendee experience.'}</div>
+                <div style="font-size: 0.9rem; color: #4b5563;">
+                    ${d.languages}
                 </div>
             </div>
+            ` : ''}
         </div>
     `;
                 }
@@ -1137,7 +1128,7 @@
                 <div class="o-title-badge">${d.title.toUpperCase()}</div>
                 <div class="o-company">
                     <div class="o-company-icon"></div>
-                    <span>${isTr ? 'Yeşil Varlık Yönetimi' : 'Green Wealth Management'}</span>
+                    <span>${d.address || (isTr ? 'Konum Girilmedi' : 'Location Not Set')}</span>
                 </div>
             </div>
             <div class="o-circle-yellow">
