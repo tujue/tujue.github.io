@@ -325,6 +325,13 @@ class PhotoEditorTool extends BaseTool {
         this.ctx.rotate((this.currentRotation * Math.PI) / 180);
         this.ctx.scale(this.flipH, this.flipV);
 
+        // Fix blur edge bleeding: Scale up slightly based on blur amount
+        const blurAmount = parseInt(b('blur'));
+        if (blurAmount > 0) {
+            const scaleFactor = 1 + (blurAmount * 0.02); // 10px blur -> 1.2x scale
+            this.ctx.scale(scaleFactor, scaleFactor);
+        }
+
         // Draw image centered (Always use original dimensions for offset)
         this.ctx.drawImage(this.originalImage, -this.originalImage.width / 2, -this.originalImage.height / 2);
 
