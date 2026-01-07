@@ -426,10 +426,10 @@
                     if (!d.font || d.font === 'sans') f = fonts.condensed;
 
                     css += `
-                        .a4-page { display: grid; grid-template-columns: 180px 1fr; padding: 0; min-height: 1123px; font-family: ${f}; background: #3d4f60; color: white; overflow: hidden; }
+                        .a4-page { display: grid; grid-template-columns: 180px 1fr; padding: 0; min-height: 1123px; font-family: ${f}; background: white; color: #333; overflow: hidden; }
                         
-                        /* Sidebar */
-                        .e-sidebar { background: #2e3e4f; padding: 35px 18px; display: flex; flex-direction: column; }
+                        /* Sidebar (Dark) */
+                        .e-sidebar { background: #2e3e4f; padding: 35px 18px; display: flex; flex-direction: column; color: white; }
                         .e-photo-frame { padding: 3px; border: 3px solid ${color}; border-radius: 8px; margin-bottom: 30px; }
                         .e-photo { width: 100%; height: auto; border-radius: 5px; display:block; object-fit: cover; }
                         
@@ -445,23 +445,23 @@
                         .e-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; }
                         .e-bar-fill { height: 100%; background: ${color}; border-radius: 3px; }
 
-                        /* Main Content */
-                        .e-main { padding: 40px 30px; }
+                        /* Main Content (Light) */
+                        .e-main { padding: 40px 30px; background: white; }
                         .e-header { margin-bottom: 35px; }
-                        .e-name { font-size: 2.8rem; font-weight: 700; line-height: 1.1; margin-bottom: 8px; color: white; }
+                        .e-name { font-size: 2.8rem; font-weight: 700; line-height: 1.1; margin-bottom: 8px; color: #2c3e50; }
                         .e-title { font-size: 1.2rem; color: ${color}; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
                         
                         .e-section { margin-bottom: 30px; }
-                        .e-sec-title { color: ${color}; font-size: 0.95rem; text-transform: uppercase; border-bottom: 2px solid ${color}; padding-bottom: 6px; margin-bottom: 15px; font-weight: 700; letter-spacing: 0.5px; }
+                        .e-sec-title { color: #2c3e50; font-size: 0.95rem; text-transform: uppercase; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-bottom: 15px; font-weight: 700; letter-spacing: 0.5px; }
                         
-                        .e-summary { font-size: 0.8rem; color: #ecf0f1; line-height: 1.5; }
+                        .e-summary { font-size: 0.8rem; color: #444; line-height: 1.5; }
                         
                         .e-item { margin-bottom: 18px; }
                         .e-item-head { margin-bottom: 4px; }
-                        .e-comp { font-size: 0.9rem; font-weight: 700; color: #fff; }
+                        .e-comp { font-size: 0.9rem; font-weight: 700; color: #2c3e50; }
                         .e-role-hl { color: ${color}; font-weight: 600; font-size: 0.8rem; }
-                        .e-date { font-size: 0.7rem; color: #bdc3c7; font-weight: 500; display: block; margin-top: 2px; }
-                        .e-desc { font-size: 0.75rem; color: #ecf0f1; line-height: 1.4; margin-top: 4px; font-weight: 300; }
+                        .e-date { font-size: 0.7rem; color: #7f8c8d; font-weight: 500; display: block; margin-top: 2px; }
+                        .e-desc { font-size: 0.75rem; color: #444; line-height: 1.4; margin-top: 4px; font-weight: 400; }
                         
                         .e-cert-item { margin-bottom: 12px; font-size: 0.75rem; color: #ecf0f1; }
                         .e-cert-name { font-weight: 600; color: white; }
