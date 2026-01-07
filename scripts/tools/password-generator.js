@@ -208,7 +208,25 @@ class PasswordGeneratorTool extends BaseTool {
         } else {
             const res = window.DevTools.passwordGenerator.generateBatch(batch, this.currentMode, getOpts());
             if (res.success) {
-                output.innerHTML = res.passwords.map(p => `<div>${p}</div>`).join('');
+                // Better UI for batch generation
+                output.innerHTML = res.passwords.map(p => `
+                    <div class="pwd-batch-item" style="
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center; 
+                        padding: 0.75rem 1rem; 
+                        background: rgba(255,255,255,0.05); 
+                        margin-bottom: 0.5rem; 
+                        border-radius: 6px;
+                        border: 1px solid var(--border-color);
+                        font-family: var(--font-mono);
+                        font-size: 1rem;
+                    ">
+                        <span>${p}</span>
+                        <button onclick="window.activeToolInstance.copyToClipboard('${p}')" class="btn btn-sm btn-secondary" style="padding: 2px 8px; font-size: 0.75rem;">📋</button>
+                    </div>
+                `).join('');
+
                 const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
                 const pwdTxt = isTr ? 'parola' : 'passwords';
                 badge.textContent = `${batch} ${pwdTxt}`;
