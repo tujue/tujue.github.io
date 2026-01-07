@@ -752,30 +752,37 @@
                             <div class="e-contact-item"><span class="e-icon">📱</span> <span class="e-val">${d.phone}</span></div>
                             <div class="e-contact-item"><span class="e-icon">✉️</span> <span class="e-val">${d.email}</span></div>
                             <div class="e-contact-item"><span class="e-icon">📍</span> <span class="e-val">${d.address}</span></div>
-                            <div class="e-contact-item"><span class="e-icon">📅</span> <span class="e-val">01.01.1993</span></div>
                         </div>
                         
                         <div class="e-side-sec">
                             <div class="e-side-title">${isTr ? 'YETENEKLER' : 'SKILLS'}</div>
-                            ${d.skills.split(',').slice(0, 4).map(s => `
+                            ${d.skills.split(',').slice(0, 6).map(s => `
                                 <div class="e-skill-item">
                                     <span class="e-skill-name">${s.trim()}</span>
-                                    <div class="e-bar-bg"><div class="e-bar-fill" style="width: ${Math.floor(Math.random() * 30 + 70)}%"></div></div>
+                                    <div class="e-bar-bg"><div class="e-bar-fill" style="width: 85%"></div></div>
                                 </div>
                             `).join('')}
                         </div>
                         
+                        ${d.languages ? `
                         <div class="e-side-sec">
                             <div class="e-side-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                            <div class="e-skill-item">
-                                <span class="e-skill-name">${isTr ? 'İngilizce' : 'English'}</span>
-                                <div class="e-bar-bg"><div class="e-bar-fill" style="width: 85%"></div></div>
-                            </div>
-                            <div class="e-skill-item">
-                                <span class="e-skill-name">${isTr ? 'Almanca' : 'German'}</span>
-                                <div class="e-bar-bg"><div class="e-bar-fill" style="width: 60%"></div></div>
+                             ${d.languages.split(',').map(s => `
+                                <div class="e-skill-item">
+                                    <span class="e-skill-name" style="margin-bottom:0;">• ${s.trim()}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ` : ''}
+
+                        ${d.interests ? `
+                        <div class="e-side-sec">
+                            <div class="e-side-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                             <div class="e-interests" style="flex-direction:column; gap:5px;">
+                                ${d.interests.split(',').map(i => `<div class="e-interest-item"><span>•</span> ${i.trim()}</div>`).join('')}
                             </div>
                         </div>
+                        ` : ''}
                     </div>
 
         <div class="e-main">
@@ -784,14 +791,15 @@
                 <div class="e-title">${d.title}</div>
             </div>
 
+            ${d.summary ? `
             <div class="e-section">
                 <div class="e-sec-title">${isTr ? 'ÖZET' : 'SUMMARY'}</div>
-                <div class="e-summary">${isTr ? 'Yaratıcı problem çözme ve ekip çalışmasına yatkın, deneyimli profesyonel. Müşteri ihtiyaçlarına odaklı, yüksek kaliteli çözümler sunma konusunda uzman.' : 'Experienced professional with creative problem-solving skills and strong teamwork abilities. Expert in delivering high-quality solutions focused on client needs.'}</div>
-            </div>
+                <div class="e-summary">${d.summary}</div>
+            </div>` : ''}
 
             <div class="e-section">
                 <div class="e-sec-title">${isTr ? 'İŞ DENEYİMLERİ' : 'WORK EXPERIENCE'}</div>
-                ${d.experience.slice(0, 2).map(e => `
+                ${d.experience.map(e => `
                                 <div class="e-item">
                                     <div class="e-item-head">
                                         <div><span class="e-comp">${e.comp}</span></div>
@@ -802,27 +810,6 @@
                                 </div>
                             `).join('')}
             </div>
-
-            <div class="e-section">
-                <div class="e-sec-title">${isTr ? 'İZ DENEYİMLERİ' : 'INTERNSHIP EXPERIENCE'}</div>
-                ${d.experience.slice(2, 3).map(e => `
-                                <div class="e-item">
-                                    <div class="e-item-head">
-                                        <div><span class="e-comp">${e.comp}</span></div>
-                                        <div class="e-date">${e.date}</div>
-                                    </div>
-                                    <div class="e-role-hl">${e.role}</div>
-                                    <div class="e-desc">${e.desc}</div>
-                                </div>
-                            `).join('')}
-            </div>
-            
-            <div class="e-section">
-                <div class="e-sec-title">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
-                 <!-- Certificates Removed (Not in Form) -->
-                 <div style="font-size: 0.8rem; color: #666; font-style: italic;">${isTr ? '(Sertifikalar alanı formda bulunmamaktadır)' : '(Certificates data not available in form)'}</div>
-            </div>
-            -->
             
             <div class="e-section">
                <div class="e-sec-title">${isTr ? 'EĞİTİMLER VE KURSLAR' : 'EDUCATION & COURSES'}</div>
@@ -834,24 +821,6 @@
                                 </div>
                             `).join('')}
             </div>
-            
-            ${d.interests ? `
-            <div class="e-section">
-                <div class="e-sec-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-                <div class="e-interests">
-                    ${d.interests.split(',').map(i => `<div class="e-interest-item"><span class="e-interest-icon">🔹</span> ${i.trim()}</div>`).join('')}
-                </div>
-            </div>
-            ` : ''}
-            
-            ${d.languages ? `
-            <div class="e-section">
-                <div class="e-sec-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                <div class="e-interests">
-                     ${d.languages.split(',').map(i => `<div class="e-interest-item"><span class="e-interest-icon">🗣️</span> ${i.trim()}</div>`).join('')}
-                </div>
-            </div>
-            ` : ''}
         </div>
     `;
                 }
