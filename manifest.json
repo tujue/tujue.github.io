@@ -1,0 +1,66 @@
+{
+    "name": "TULPAR - 50+ Professional Developer Tools",
+    "short_name": "TULPAR",
+    "description": "50+ Free Professional Developer Tools: TULPAR JSON Studio, OCR, PDF tools, background remover, and more. Privacy-first, works offline.",
+    "start_url": "./",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#3b82f6",
+    "orientation": "any",
+    "categories": [
+        "productivity",
+        "development",
+        "utilities"
+    ],
+    "lang": "en",
+    "dir": "ltr",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🦄</text></svg>",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🦄</text></svg>",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshot-1.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "Dev Tools Hub - Main Interface"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "JSON Formatter",
+            "short_name": "JSON",
+            "description": "Format and validate JSON",
+            "url": "/#json-formatter",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>{ }</text></svg>",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "OCR Tool",
+            "short_name": "OCR",
+            "description": "Extract text from images",
+            "url": "/#ocr-tool",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔍</text></svg>",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ]
+}

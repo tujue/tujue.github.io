@@ -1,0 +1,26 @@
+# Dev Tools Hub - Backup files
+*.backup
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Documentation drafts
+*_DRAFT.md
+NOTES.md
+TODO.md
+
+# Test files
+test/
+*.test.js

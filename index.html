@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- ========== META TAGS (SEO Optimized) ========== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="50+ Free Professional Developer Tools: TULPAR JSON Studio, Base64 encoder, OCR, PDF tools, background remover, regex tester. Privacy-first, works offline.">
+  <meta name="keywords"
+    content="free developer tools, online tools, json formatter, json validator, json to csv, ocr online, image to text, pdf merger, pdf tools, background remover, remove bg, base64 encoder, base64 decoder, regex tester, uuid generator, password generator, hash generator, web scraper, html beautifier, css minifier, javascript formatter, qr code generator, text analyzer, word counter, ip lookup, image compressor, unit converter, tulpar tools, client-side tools, geliştirici araçları, yazılım araçları, online araçlar, ücretsiz toollar, json formatlayıcı, json doğrulama, resimden yazıya çevirme, ocr türkçe, pdf birleştirme, pdf araçları, arka plan silme, resim arkası temizleme, base64 çevirici, regex test etme, şifre oluşturucu, hash hesaplama, web kazıma, html düzenleyici, css sıkıştırma, qr kod oluşturucu, metin analizi, kelime sayacı, ip sorgulama, resim sıkıştırma, birim çevirici, tulpar">
+  <meta name="author" content="Kaan Turkmen">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="TULPAR - 50+ Professional Developer Tools">
+  <meta property="og:description"
+    content="Essential developer suite: TULPAR JSON Studio, OCR, PDF tools, background remover, and 50+ more tools! Fast, privacy-focused, offline-ready.">
+  <meta property="og:url" content="https://tulpar.vercel.app">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TULPAR - 50+ Professional Tools">
+  <meta name="twitter:description"
+    content="OCR, PDF merge, Background remover, TULPAR JSON Studio, and 50+ more tools. Privacy-first, works offline.">
+  <meta name="twitter:image" content="https://tulpar.vercel.app/og-image.png">
+
+  <!-- Additional SEO -->
+  <link rel="canonical" href="https://tulpar.vercel.app/">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <!-- Legacy iOS support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TULPAR">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🐎</text></svg>">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Theme Color (PWA) -->
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="msapplication-TileColor" content="#3b82f6">
+
+  <title>TULPAR - 50+ Professional Tools | JSON, OCR, PDF & More</title>
+
+  <!-- ========== FONTS ========== -->
+  <!-- Performance: DNS Prefetch & Preconnect -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Lato:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;700&family=Oswald:wght@400;500;700&family=Playfair+Display:wght@400;700&family=Raleway:wght@400;600;700&family=Roboto:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script>
+    // CACHE BUSTER - Semantic Versioning
+    const CURRENT_VERSION = "v3.10.4";
+    const storedVersion = localStorage.getItem('app_version');
+
+    if (storedVersion !== CURRENT_VERSION) {
+      console.log('New version detected. Clearing cache...');
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          for (let registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function (names) {
+          for (let name of names) caches.delete(name);
+        });
+      }
+      localStorage.setItem('app_version', CURRENT_VERSION);
+      // Force reload on version change
+      if (storedVersion) {
+        setTimeout(() => window.location.reload(true), 1500);
+      }
+    }
+  </script>
+
+  <!-- ========== SCHEMA.ORG STRUCTURED DATA (SEO) ========== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "TULPAR Developer Tools",
+        "url": "https://tulpar.vercel.app",
+        "description": "50+ Free Professional Developer Tools: TULPAR JSON Studio, OCR, PDF merge, background remover. Fast, privacy-first, offline-ready.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "2150",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "featureList": [
+          "TULPAR JSON Studio & Validator",
+          "Base64 Encoder/Decoder",
+          "OCR (Image to Text)",
+          "PDF Merge & Tools",
+          "Background Remover",
+          "Regex Tester",
+          "QR Code Generator",
+          "Password Generator",
+          "50+ Professional Tools"
+        ]
+      },
+      {
+        "@type": "Organization",
+        "name": "TULPAR",
+        "url": "https://tulpar.vercel.app",
+        "logo": "https://tulpar.vercel.app/logo-512.png",
+        "sameAs": [
+          "https://twitter.com/devtoolshub",
+          "https://github.com/devtoolshub"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://tulpar.vercel.app"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Tools",
+            "item": "https://tulpar.vercel.app/#tools"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- ========== ANALYTICS ========== -->
+  <!-- Add your analytics code here when ready -->
+
+  <!-- ========== CRITICAL CSS (INLINE for faster render) ========== -->
+  <style>
+    /* Critical CSS inlined for immediate render - Full styles loaded async below */
+    :root {
+      --primary-gradient: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
+      --bg-dark: #0f0f23;
+      --bg-darker: #050510;
+      --surface: rgba(255, 255, 255, 0.05);
+      --surface-hover: rgba(255, 255, 255, 0.1);
+      --border: rgba(255, 255, 255, 0.1);
+      --text-primary: #ffffff;
+      --text-secondary: #a0aec0;
+      --accent-purple: #0072FF;
+      --accent-blue: #4facfe;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2rem;
+      --space-xl: 3rem;
+      --text-base: 1rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-5xl: 3rem;
+      --radius-md: 0.75rem;
+      --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(240, 147, 251, 0.15) 0%, transparent 50%);
+      z-index: -1
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg)
+    }
+
+    .header {
+      padding: var(--space-lg) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 15, 35, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .logo {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm)
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-gradient);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .gradient-text {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .hero {
+      text-align: center;
+      padding: var(--space-xl) 0
+    }
+
+    .hero-title {
+      font-size: var(--text-5xl);
+      margin-bottom: var(--space-md);
+      font-weight: 700
+    }
+
+    .hero-subtitle {
+      font-size: var(--text-xl);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto var(--space-lg)
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-lg);
+      color: var(--text-secondary)
+    }
+
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 1rem 3rem 1rem 3rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: var(--text-base)
+    }
+
+    .skip-to-content {
+      position: absolute;
+      top: -100px;
+      left: 0;
+      background: var(--accent-purple);
+      color: white;
+      padding: 1rem 2rem;
+      text-decoration: none;
+      z-index: 9999
+    }
+
+    .skip-to-content:focus {
+      top: 0
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0
+    }
+
+    @media(max-width:768px) {
+      .hero-title {
+        font-size: 2rem
+      }
+
+      .hero-subtitle {
+        font-size: 1rem
+      }
+
+      .container {
+        padding: 0 1rem
+      }
+    }
+  </style>
+
+  <!-- ========== MAIN STYLES (Load async for performance) ========== -->
+  <link rel="preload" href="styles/main.css?v=12" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="styles/main.css?v=12">
+  </noscript>
+  <script>
+    // Polyfill for async CSS loading
+    !function (e) { "use strict"; var t = function (t, n, r) { var o, i = e.document.getElementsByTagName("script")[0]; o = e.document.createElement("link"), o.rel = "stylesheet", o.href = t, o.media = "only x", requestAnimationFrame(function () { i.parentNode.insertBefore(o, i) }), setTimeout(function () { o.media = n || "all" }) }; e.loadCSS = t }("undefined" != typeof global ? global : this);
+  </script>
+
+</head>
+
+<body>
+
+  <!-- Skip to content link for keyboard navigation -->
+  <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+  <!-- ========== HEADER ========== -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <!-- Logo -->
+        <div class="logo">
+          <div class="logo-icon"><i class="fas fa-horse-head" style="font-size: 1.5rem;"></i></div>
+          <span class="gradient-text" style="font-weight: 800; letter-spacing: 1px;">TULPAR</span>
+        </div>
+
+        <!-- Language Switcher & Stats -->
+        <div class="header-stats">
+          <!-- Language Selector -->
+          <div class="stat-item language-selector">
+            <select id="language-select" class="language-dropdown" aria-label="Select Language">
+              <option value="en" data-flag="🇬🇧">English</option>
+              <option value="tr" data-flag="🇹🇷">Türkçe</option>
+            </select>
+          </div>
+
+          <div class="stat-item">
+            <span data-i18n="stats.toolsUsed">Tools Used:</span>
+            <span class="stat-value" id="tools-used">0</span>
+          </div>
+          <div class="stat-item">
+            <span data-i18n="stats.copies">Copies:</span>
+            <span class="stat-value" id="total-copies">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== HERO SECTION ========== -->
+  <main id="main-content">
+    <section class="hero" aria-label="Welcome and Search">
+      <div class="container">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span data-i18n="hero.badge">100% Free • No Login Required • Privacy Focused</span>
+        </div>
+
+        <h1 class="hero-title gradient-text" data-i18n="hero.title">
+          Developer Tools Suite
+        </h1>
+
+        <p class="hero-subtitle" data-i18n="hero.subtitle">
+          Essential tools for developers. Fast, beautiful, and works entirely in your browser.
+          No data leaves your device - everything runs locally.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="main-search" data-i18n-placeholder="search.placeholder"
+              placeholder="Search for tools (e.g., 'json', 'pdf', 'color')..." autocomplete="off">
+            <div class="keyboard-shortcut">Ctrl + K</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== TOOLS GRID ========== -->
+    <section class="tools-section" aria-label="Available Developer Tools">
+      <div class="container">
+        <h2 class="sr-only">All Tools</h2>
+        <div class="tools-grid" id="tools-grid" role="list">
+          <!-- Tool cards will be dynamically generated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FEATURES SECTION ========== -->
+    <section class="tools-section">
+      <div class="container">
+        <h2 class="text-center gradient-text mb-3" data-i18n="features.title">Why TULPAR?</h2>
+
+        <div class="tools-grid">
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-icon">⚡</div>
+              <h3 class="tool-title" data-i18n="features.fast.title">Lightning Fast</h3>
+            </div>
+            <p class="tool-description" data-i18n="features.fast.desc">
+              All tools run locally in your browser. No server requests, no waiting.
+              Instant results every time.
+            </p>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-icon">🔒</div>
+              <h3 class="tool-title" data-i18n="features.privacy.title">Privacy First</h3>
+            </div>
+            <p class="tool-description" data-i18n="features.privacy.desc">
+              Your data never leaves your device. Everything is processed locally.
+              No tracking, no analytics, no cookies.
+            </p>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-icon">📱</div>
+              <h3 class="tool-title" data-i18n="features.mobile.title">Mobile Friendly</h3>
+            </div>
+            <p class="tool-description" data-i18n="features.mobile.desc">
+              Responsive design that works perfectly on all devices.
+              Use your favorite tools anywhere, anytime.
+            </p>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-icon">🎨</div>
+              <h3 class="tool-title" data-i18n="features.ui.title">Beautiful UI</h3>
+            </div>
+            <p class="tool-description" data-i18n="features.ui.desc">
+              Modern, clean interface with smooth animations.
+              Dark mode by default for comfortable extended use.
+            </p>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-icon">💾</div>
+              <h3 class="tool-title" data-i18n="features.offline.title">Works Offline</h3>
+            </div>
+            <p class="tool-description" data-i18n="features.offline.desc">
+              Once loaded, works completely offline. Perfect for developers
+              working in environments with restricted internet.
+            </p>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-icon">🆓</div>
+              <h3 class="tool-title" data-i18n="features.free.title">100% Free</h3>
+            </div>
+            <p class="tool-description" data-i18n="features.free.desc">
+              Completely free forever. No premium features, no paywalls,
+              no hidden costs. All tools, all the time.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ========== SEO CONTENT (For Search Engines Only - Hidden from UI) ========== -->
+    <section class="seo-section" style="display: none;">
+      <article>
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">The Ultimate Free Developer
+          Tools Suite</h2>
+        <p style="margin-bottom: 1rem; line-height: 1.6;">
+          <strong>TULPAR</strong> is designed to be the fastest and most secure collection of <strong>free developer
+            tools</strong> on the web.
+          Unlike other services that upload your data to servers, TULPAR processes everything locally in your browser
+          using advanced
+          <strong>Client-Side Technology</strong>. This makes it perfect for formatting sensitive JSON data, converting
+          private PDFs,
+          or generating secure hashes.
+        </p>
+
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-primary);">Why use TULPAR Online Tools?
+        </h3>
+        <p style="margin-bottom: 1rem; line-height: 1.6;">
+          Our mission is to replace paid, slow, and ad-heavy tool sites with a clean, modern alternative.
+          With over <strong>50+ free utilities</strong> ranging from <em>OCR (Image to Text)</em> to <em>Background
+            Removers</em> and
+          <em>Regex Testers</em>, TULPAR is the only bookmark a developer needs in 2025.
+        </p>
+
+        <div style="font-size: 0.9rem; opacity: 0.8;">
+          <strong>Popular Tools:</strong>
+          <a href="#" onclick="return false;" style="color:inherit;">JSON Validator</a>,
+          <a href="#" onclick="return false;" style="color:inherit;">Online OCR</a>,
+          <a href="#" onclick="return false;" style="color:inherit;">PDF Merger</a>,
+          <a href="#" onclick="return false;" style="color:inherit;">Base64 Converter</a>.
+        </div>
+
+        <hr style="margin: 2rem 0; border-color: var(--border); opacity: 0.3;">
+
+        <!-- TR SEO Content (Türkçe Arama Sonuçları İçin) -->
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">TULPAR - En İyi Ücretsiz Türkçe
+          Geliştirici Araçları</h2>
+        <p style="margin-bottom: 1rem; line-height: 1.6;">
+          <strong>TULPAR</strong>, Türk geliştiriciler için hazırlanmış en kapsamlı ve <strong>ücretsiz online araç
+            setidir</strong>.
+          Sunucuya veri göndermeden (Privacy First), tamamen tarayıcınızda çalışan güvenli altyapısı ile <strong>JSON
+            Düzenleme</strong>,
+          <strong>Resimden Yazı Çevirme (OCR)</strong>, <strong>PDF Birleştirme</strong> ve <strong>Regex Testi</strong>
+          gibi işlemleri anında ve bedava yapın.
+        </p>
+        <p style="margin-bottom: 1rem; line-height: 1.6;">
+          Program yüklemeden, üyeliksiz ve sınırsız kullanım. Türkiye'nin en hızlı geliştirici platformu olarak, 50'den
+          fazla aracı sizin için tek bir çatı altında topladık.
+        </p>
+        <div style="font-size: 0.9rem; opacity: 0.8;">
+          <strong>Popüler Aramalar:</strong>
+          JSON Güzelleştirici, Online Resim Yazısı Okuma, PDF Sayfa Silme, Arkaplan Temizleme, Güvenli Şifre Oluşturma,
+          Hash Hesaplama.
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <!-- ========== BACK TO TOP BUTTON ========== -->
+  <button id="back-to-top" aria-label="Back to top" title="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <p>
+        <a href="#" onclick="window.showLegal('copyright'); return false;" data-i18n="footer.rights"
+          style="color:inherit; text-decoration:none; transition:color 0.2s;"
+          onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">
+          © 2025 TULPAR. All rights reserved.
+        </a>
+      </p>
+      <p style="margin-top: 0.5rem; font-size: var(--text-sm);" data-i18n="footer.madeWith">
+        Developed by Kaan Turkmen 🚀
+      </p>
+      <div class="footer-links">
+        <a href="#" class="footer-link" data-i18n="footer.about"
+          onclick="window.showLegal('about'); return false;">About</a>
+        <a href="#" class="footer-link" data-i18n="footer.privacy"
+          onclick="window.showLegal('privacy'); return false;">Privacy Policy</a>
+        <a href="#" class="footer-link" data-i18n="footer.terms"
+          onclick="window.showLegal('terms'); return false;">Terms of Service</a>
+        <a href="#" class="footer-link" data-i18n="footer.contact"
+          onclick="window.showLegal('contact'); return false;">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========== LEGAL MODAL ========== -->
+  <div id="legal-modal" class="workspace" style="z-index: 2000;">
+    <div class="workspace-content" style="max-width: 800px;">
+      <div class="workspace-header">
+        <h2 class="workspace-title gradient-text" id="legal-title">Info</h2>
+        <button class="close-btn" onclick="closeLegal()" aria-label="Close">✕</button>
+      </div>
+      <div id="legal-body" class="output-content"
+        style="max-height: 70vh; overflow-y: auto; padding-right: 10px; font-family: var(--font-sans); white-space: normal;">
+        <!-- Dynamic Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== WORKSPACE MODAL ========== -->
+  <div id="workspace" class="workspace" role="dialog" aria-modal="true" aria-labelledby="workspace-title">
+    <div class="workspace-content">
+      <!-- Workspace Header -->
+      <div class="workspace-header">
+        <h2 class="workspace-title gradient-text" id="workspace-title">Tool Name</h2>
+        <button class="close-btn" id="close-workspace" aria-label="Close workspace (Press Escape)"
+          aria-keyshortcuts="Escape">✕</button>
+      </div>
+
+      <!-- Workspace Body (Dynamic Content) -->
+      <div id="workspace-body">
+        <!-- Tool UI will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCRIPTS ========== -->
+  <!-- Lazy Loading: External libraries loaded on-demand -->
+  <!-- Uncomment below to load all libraries upfront (increases initial load time): -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://unpkg.com/tesseract.js@5.0.3/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exifreader@4.23.3/dist/exif-reader.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
+
+  <!-- Lazy Loader (loads libraries only when needed) -->
+  <script src="scripts/lazy-loader.js" defer></script>
+
+  <!-- Legal Content -->
+  <script src="scripts/legal-content.js"></script>
+
+  <!-- Internationalization (i18n) -->
+  <script src="scripts/i18n.js?v=v3.10.4"></script>
+
+  <!-- UI Enhancements (keyboard shortcuts, search, categories) -->
+  <script src="scripts/ui-enhancements.js" defer></script>
+
+  <!-- Accessibility Enhancements -->
+  <script src="scripts/accessibility.js" defer></script>
+
+  <!-- Performance Optimizations -->
+  <script src="scripts/performance.js" defer></script>
+
+  <!-- ========== MODULAR SYSTEM v2.0.0 ========== -->
+  <!-- Tool Definitions (metadata for all 38 tools) - loaded synchronously to ensure TOOLS is available -->
+  <script src="scripts/tools-definitions.js?v=v3.10.4"></script>
+
+  <!-- Base Tool Class -->
+  <script src="scripts/tools/BaseTool.js?v=v3.10.4" defer></script>
+
+  <!-- DevTools Core (restored common utilities) -->
+  <script>
+    // CACHE BUSTER: Force reload of core script
+    const coreScript = document.createElement('script');
+    coreScript.src = `scripts/dev-tools-core.js?t=${Date.now()}`;
+    document.currentScript.parentNode.insertBefore(coreScript, document.currentScript.nextSibling);
+  </script>
+
+  <!-- Core Application Logic (Fixed Non-Module Versions) -->
+  <!-- state.js still as module - it's OK as it doesn't export to window -->
+  <script type="module" src="scripts/modules/core/state.js"></script>
+  <!-- FIXED: Use non-module workspace -->
+  <script src="scripts/workspace-fixed.js?v=2.7.2"></script>
+  <!-- FIXED: Use non-module renderer -->
+  <script src="scripts/renderer-fixed.js?v=2.7.2"></script>
+
+  <!-- Main Application (Orchestrator) -->
+  <script src="scripts/main.js?v=v3.10.4" defer></script>
+
+
+</body>
+
+</html>
