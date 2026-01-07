@@ -642,7 +642,7 @@
                 // Special layout for 'executive' to wrap photo correctly
                 if (theme === 'executive') {
                     html = `
-        < div class="res-header" >
+        <div class="res-header">
             <div class="res-info">
                 <div class="res-name">${d.name}</div>
                 <div class="res-title">${d.title}</div>
@@ -1252,7 +1252,7 @@
                 else {
                     // Standard Layout (Elegant, Titan, Modern, etc)
                     html = `
-        < div class="res-header" >
+        <div class="res-header">
             ${photoHtml}
                         <div class="res-name">${d.name}</div>
                         <div class="res-title">${d.title}</div>
@@ -1312,7 +1312,7 @@
                 // --- FIX FOR EXECUTIVE LAYOUT MERGE ---
                 if (theme === 'executive') {
                     html = `
-        < div class="res-header" >
+        <div class="res-header">
             <div class="res-info">
                 <div class="res-name">${d.name}</div>
                 <div class="res-title">${d.title}</div>
