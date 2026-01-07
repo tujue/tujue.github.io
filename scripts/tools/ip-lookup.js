@@ -57,9 +57,9 @@ class IPLookupTool extends BaseTool {
                         <h4 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">${txt.info}</h4>
                         <div style="display: grid; gap: 12px;">
                             ${Object.entries(txt.labels).map(([id, label]) => `
-                                <div style="display: flex; justify-content: space-between; gap: 1rem; font-size: 0.95rem;">
-                                    <span style="color: var(--text-secondary); white-space: nowrap;">${label}:</span>
-                                    <strong id="ip-${id}" style="text-align: right; word-break: break-all;">-</strong>
+                                <div style="display: grid; grid-template-columns: 120px 1fr; gap: 1rem; font-size: 0.95rem; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                                    <span style="color: var(--text-secondary); font-weight: 500;">${label}</span>
+                                    <strong id="ip-${id}" style="text-align: left; word-break: break-word; color: var(--text-primary);">-</strong>
                                 </div>
                             `).join('')}
                         </div>
