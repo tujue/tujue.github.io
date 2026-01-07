@@ -1113,6 +1113,16 @@
                         </div>
                     </div>
         <div class="k-right">
+            ${d.summary ? `
+            <div class="k-r-section">
+                <div class="k-r-head">
+                    <div class="k-r-icon">👤</div>
+                    <div class="k-r-title">Profile</div>
+                </div>
+                <div class="k-profile-text">${d.summary}</div>
+            </div>
+            ` : ''}
+
             <div class="k-r-section">
                 <div class="k-r-head">
                     <div class="k-r-icon">💼</div>
@@ -1173,52 +1183,53 @@
         </div>
         
         <div class="o-grid">
-            <div class="o-box">
+            ${d.summary ? `
+            <div class="o-box" style="grid-column: span 2;">
                 <div class="o-box-head">
-                    <div class="o-icon-box">🎓</div>
-                    <div class="o-box-title">${isTr ? 'Eğitim & Deneyim' : 'Education & Experience'}</div>
+                    <div class="o-icon-box">👤</div>
+                    <div class="o-box-title">${isTr ? 'Profil' : 'Profile'}</div>
                 </div>
-                <div class="o-box-content">
-                    <ul class="o-list">
-                        ${d.education.map((e, i) => `<li><strong>${e.sch}:</strong> ${e.deg}, ${e.date}</li>`).join('')}
-                        ${d.experience.slice(0, 2).map((e, i) => `<li><strong>${e.role}</strong> at ${e.comp} (${e.date})</li>`).join('')}
-                    </ul>
-                </div>
-            </div>
-            
+                <div class="o-box-content">${d.summary}</div>
+            </div>` : ''}
+
             <div class="o-box">
                 <div class="o-box-head">
                     <div class="o-icon-box">💼</div>
-                    <div class="o-box-title">${isTr ? 'Çalışma Yaklaşımı' : 'Working Approach'}</div>
-                </div>
-                <div class="o-box-content">
-                    ${isTr ? 'Dürüstlük ve özen değerlerine öncelik vererek, müşterileriyle zaman geçirerek finansal zayıflıklarını belirlemeye ve hedeflerine ulaşmalarına yardımcı olmaya yardımcı olan kapsamlı bir finansal yaklaşımla onlara yardımcı olmaya odaklanıyor. Kuruluşların finansal geleceği konusunda hassas endişeleri olduğunu anlıyor ve onlarla çalışarak mali durumlarını rahatlatmak için stratejik bir tasarruf yaklaşımı ve sürdürülebilir, vergi açısından verimli bir program tasarlıyor.' : 'Placing values on integrity and diligence, he spends time with his clients to help them identify their financial weaknesses and achieve their goals through a comprehensive financial approach. He understands that organizations have sensitive concerns about their financial futures, and he works with them to ease their worries by designing a strategic savings approach and a sustainable, tax-efficient program.'}
-                </div>
-            </div>
-            
-            <div class="o-box">
-                <div class="o-box-head">
-                    <div class="o-icon-box">🏆</div>
-                    <div class="o-box-title">${isTr ? 'Başarılar' : 'Achievements'}</div>
+                    <div class="o-box-title">${isTr ? 'Deneyim' : 'Experience'}</div>
                 </div>
                 <div class="o-box-content">
                     <ul class="o-list">
-                        <li>${isTr ? 'Ülke genelinde büyük şirketlerde ve üniversitelerde yüzlerce finansal eğitim semineri düzenledi ve sundu.' : 'Has organized and presented hundreds of financial education seminars across the country at major corporations and universities.'}</li>
-                        <li>${isTr ? 'Tutkularından biri, kar amacı gütmeyen kuruluşlar aracılığıyla para yönetimi ve emeklilik planlaması atölyeleri vermektir.' : 'One of his passions is teaching workshops on money management and retirement planning through non-profit organizations.'}</li>
+                        ${d.experience.map(e => `<li><strong>${e.role}</strong> - ${e.comp} (${e.date})<br><span style="opacity:0.8; font-size:0.75rem;">${e.desc}</span></li>`).join('')}
                     </ul>
                 </div>
             </div>
             
             <div class="o-box">
                 <div class="o-box-head">
-                    <div class="o-icon-box">👤</div>
-                    <div class="o-box-title">${isTr ? 'Ofis Dışında' : 'Outside the Office'}</div>
+                    <div class="o-icon-box">🎓</div>
+                    <div class="o-box-title">${isTr ? 'Eğitim & Beceriler' : 'Education & Skills'}</div>
                 </div>
                 <div class="o-box-content">
-                    ${isTr ? 'Ofiste olmadığında, eşi Rachel ile birlikte üç kızı ve yedi torununa seyahat etmeyi seviyor. Keman çalmayı seviyor ve lise orkestrasındaydı.' : 'When he is not in the office, he and his wife, Rachel, love to travel to their three daughters and seven grandchildren. He loves playing the violin and was in his high school orchestra.'}
-                    <div class="o-quote">"${isTr ? 'Parasız genç olabilirsiniz ama onun olmazsın' : 'You can be young without money, but you cannot be old without it'}"</div>
+                    <ul class="o-list">
+                        ${d.education.map(e => `<li><strong>${e.sch}</strong> - ${e.deg} (${e.date})</li>`).join('')}
+                    </ul>
+                    <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
+                    <div style="font-weight:700; color:#555; margin-bottom:5px;">Skills:</div>
+                    <div>${(d.skills || '').split(',').map(s => `<span style="background:#f0f0f0; padding:2px 6px; border-radius:4px; margin-right:4px; font-size:0.7rem; display:inline-block; margin-bottom:4px;">${s.trim()}</span>`).join('')}</div>
                 </div>
             </div>
+            
+            ${(d.languages || d.interests) ? `
+            <div class="o-box" style="grid-column: span 2;">
+                <div class="o-box-head">
+                    <div class="o-icon-box">🌟</div>
+                    <div class="o-box-title">${isTr ? 'Diğer' : 'Other'}</div>
+                </div>
+                <div class="o-box-content" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    ${d.languages ? `<div><strong>${isTr ? 'Diller' : 'Languages'}:</strong> ${d.languages}</div>` : ''}
+                    ${d.interests ? `<div><strong>${isTr ? 'İlgi Alanları' : 'Interests'}:</strong> ${d.interests}</div>` : ''}
+                </div>
+            </div>` : ''}
         </div>
         
         <div class="o-footer">

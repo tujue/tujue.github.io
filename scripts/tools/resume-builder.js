@@ -262,6 +262,14 @@ class ResumeBuilderTool extends BaseTool {
                             <label class="form-label">Ünvan (Örn. Yazılım Uzmanı)</label>
                             <input type="text" class="form-input" id="in-title" value="${d.title}">
                         </div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <label class="form-label">Özet / Hakkımda</label>
+                        <textarea class="form-input" id="in-summary" rows="3" placeholder="Kendinizi kısaca tanıtın...">${d.summary || ''}</textarea>
+                    </div>
+                    
+                    <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 1rem;">
                         <div>
                             <label class="form-label">E-Posta</label>
                             <input type="email" class="form-input" id="in-email" value="${d.email}">
@@ -301,7 +309,7 @@ class ResumeBuilderTool extends BaseTool {
             c.appendChild(div);
 
             // Bindings
-            const ids = ['name', 'title', 'email', 'web', 'phone', 'addr', 'skills', 'languages', 'interests'];
+            const ids = ['name', 'title', 'summary', 'email', 'web', 'phone', 'addr', 'skills', 'languages', 'interests'];
             ids.forEach(id => {
                 const el = document.getElementById(`in-${id}`);
                 el.oninput = () => {
@@ -548,6 +556,7 @@ class ResumeBuilderTool extends BaseTool {
             website: 'linkedin.com/in/demo',
             phone: '+90 555 012 34 56',
             address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
+            summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
             photo: 'https://randomuser.me/api/portraits/men/32.jpg', // Placeholder image
             skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
             theme: 'modern',
