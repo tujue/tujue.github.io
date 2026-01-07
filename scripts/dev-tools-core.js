@@ -354,10 +354,10 @@
                         .res-name { color: ${color}; font-size: 2.5rem; text-shadow: 0 0 15px ${color}60; font-weight: 700; letter-spacing: -1px; }
                         .res-title { color: #e5e7eb; background: ${color}20; padding: 5px 10px; display: inline-block; border: 1px solid ${color}40; margin-top: 10px; }
                         .res-contact { color: #d1d5db; }
-                        .res-sec-title { color: #f3f4f6; border-left: 4px solid ${color}; padding-left: 15px; background: linear-gradient(90deg, ${color}20, transparent); padding-top:5px; padding-bottom:5px; margin-bottom: 20px; }
-                        .res-role { color: ${color}; font-weight: bold; }
-                        .res-comp { color: #e5e7eb; }
-                        .res-date { color: #6b7280; font-family: 'JetBrains Mono', monospace; }
+                        .res-sec-title { color: #ffffff; border-left: 4px solid ${color}; padding-left: 15px; background: linear-gradient(90deg, ${color}40, transparent); padding-top:6px; padding-bottom:6px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.5); font-weight: 700; letter-spacing: 1px; }
+                        .res-role { color: #ffffff; font-weight: 700; font-size: 1.1rem; text-shadow: 0 0 8px ${color}; margin-bottom: 2px; }
+                        .res-comp { color: #e5e7eb; font-weight: 500; font-size: 0.9rem; }
+                        .res-date { color: #9ca3af; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
                         .res-tag { background: #1f2937; color: ${color}; border: 1px solid ${color}40; border-radius: 4px; }
                         .res-photo { border: 2px solid ${color}; border-radius: 10px; box-shadow: 0 0 20px ${color}30; width: 120px; height: 120px; object-fit: cover; }
                     `;
