@@ -819,9 +819,10 @@
             
             <div class="e-section">
                 <div class="e-sec-title">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
-                <div class="e-cert-item"><span class="e-cert-name">Özel Güvenlik | </span> 9/13/2020-09</div>
-                <div class="e-cert-item"><span class="e-cert-name">Takım Fayansı Kurslar</span></div>
+                 <!-- Certificates Removed (Not in Form) -->
+                 <div style="font-size: 0.8rem; color: #666; font-style: italic;">${isTr ? '(Sertifikalar alanı formda bulunmamaktadır)' : '(Certificates data not available in form)'}</div>
             </div>
+            -->
             
             <div class="e-section">
                <div class="e-sec-title">${isTr ? 'EĞİTİMLER VE KURSLAR' : 'EDUCATION & COURSES'}</div>
@@ -834,15 +835,23 @@
                             `).join('')}
             </div>
             
+            ${d.interests ? `
             <div class="e-section">
                 <div class="e-sec-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
                 <div class="e-interests">
-                    <div class="e-interest-item"><span class="e-interest-icon">⚽</span> ${isTr ? 'Futbol' : 'Football'}</div>
-                    <div class="e-interest-item"><span class="e-interest-icon">🎸</span> ${isTr ? 'Gitar' : 'Guitar'}</div>
-                    <div class="e-interest-item"><span class="e-interest-icon">🎬</span> ${isTr ? 'Sinema' : 'Cinema'}</div>
-                    <div class="e-interest-item"><span class="e-interest-icon">🎵</span> ${isTr ? 'Müzik' : 'Music'}</div>
+                    ${d.interests.split(',').map(i => `<div class="e-interest-item"><span class="e-interest-icon">🔹</span> ${i.trim()}</div>`).join('')}
                 </div>
             </div>
+            ` : ''}
+            
+            ${d.languages ? `
+            <div class="e-section">
+                <div class="e-sec-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+                <div class="e-interests">
+                     ${d.languages.split(',').map(i => `<div class="e-interest-item"><span class="e-interest-icon">🗣️</span> ${i.trim()}</div>`).join('')}
+                </div>
+            </div>
+            ` : ''}
         </div>
     `;
                 }
@@ -856,20 +865,31 @@
                             
                             <div class="a-sec-title">${lbl.about.toUpperCase()}</div>
                             <div class="a-text">
-                                Yaratıcı düşünce yapısına sahip, detaylara önem veren ve estetik algısı yüksek bir profesyonelim.
+                                ${d.experience[0] ? d.experience[0].desc.substring(0, 150) + '...' : (isTr ? 'Hedef odaklı, gelişime açık bir profesyonelim.' : 'Goal-oriented professional open to development.')}
                             </div>
                             
                             <div class="a-sec-title">${lbl.skills.toUpperCase()}</div>
-                            <div style="margin-bottom: 40px;">
+                            <div style="margin-bottom: 30px;">
                                 ${d.skills.split(',').map(s => `
                                     <div class="a-skill-row">
                                         <span>${s.trim()}</span>
                                         <div class="a-dots">
-                                            ${[1, 2, 3, 4, 5].map(i => `<span class="a-dot ${i <= (Math.floor(Math.random() * 2) + 4) ? 'active' : ''}"></span>`).join('')}
+                                            ${[1, 2, 3, 4, 5].map(i => `<span class="a-dot ${i <= 4 ? 'active' : ''}"></span>`).join('')}
                                         </div>
                                     </div>
                                 `).join('')}
                             </div>
+
+                            ${d.languages ? `
+                            <div class="a-sec-title">${isTr ? 'DILLER' : 'LANGUAGES'}</div>
+                             <div style="margin-bottom: 30px;">
+                                ${d.languages.split(',').map(s => `
+                                    <div class="a-skill-row">
+                                        <span>${s.trim()}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ` : ''}
                             
                             <div class="a-sec-title">${lbl.contact.toUpperCase()}</div>
                             <div class="a-contact-row"><span class="a-label">${lbl.phone}</span> ${d.phone}</div>
@@ -927,10 +947,12 @@
                         </div>
                     </div>
         <div class="s-right">
+            ${d.experience[0] && d.experience[0].desc ? `
             <div class="s-section">
                 <div class="s-head">${lbl.profile.toUpperCase()}</div>
-                <div class="s-desc">${isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects.'}</div>
-            </div>
+                <div class="s-desc">${d.experience[0].desc.substring(0, 200)}...</div>
+            </div>` : ''}
+
             <div class="s-section">
                 <div class="s-head">${lbl.exp || 'DENEYİM'}</div>
                 ${d.experience.map(e => `
@@ -954,6 +976,20 @@
                 <div class="s-head">${lbl.skills || 'YETENEKLER'}</div>
                 <div class="s-skill-cloud">${d.skills.split(',').map(s => s.trim() ? `<span class="s-tag">${s.trim()}</span>` : '').join('')}</div>
             </div>
+
+            ${d.languages ? `
+            <div class="s-section">
+                <div class="s-head">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+                <div class="s-skill-cloud">${d.languages.split(',').map(s => s.trim() ? `<span class="s-tag" style="background:var(--primary-light); color:var(--primary);">${s.trim()}</span>` : '').join('')}</div>
+            </div>
+            ` : ''}
+
+            ${d.interests ? `
+            <div class="s-section">
+                <div class="s-head">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                <div class="s-desc" style="font-size:0.9rem;">${d.interests}</div>
+            </div>
+            ` : ''}
         </div>
     `;
                 }
