@@ -4,7 +4,7 @@ class VirtualPianoTool extends BaseTool {
         super(config);
         this.audioCtx = null;
         this.oscMap = new Map();
-        this.notes = window.DevTools.pianoTools.getNotes();
+        this.notes = this._getNotes(); // Local notes generation
         this.analyser = null;
         this.active = false;
         this.recording = [];
@@ -284,6 +284,30 @@ class VirtualPianoTool extends BaseTool {
         this._drawViz();
     }
 
+    // INTERNAL LOGIC (Formerly in DevTools.pianoTools)
+
+    _getNotes() {
+        return [
+            { note: 'C4', freq: 261.63, key: 'A', black: false },
+            { note: 'C#4', freq: 277.18, key: 'W', black: true },
+            { note: 'D4', freq: 293.66, key: 'S', black: false },
+            { note: 'D#4', freq: 311.13, key: 'E', black: true },
+            { note: 'E4', freq: 329.63, key: 'D', black: false },
+            { note: 'F4', freq: 349.23, key: 'F', black: false },
+            { note: 'F#4', freq: 369.99, key: 'T', black: true },
+            { note: 'G4', freq: 392.00, key: 'G', black: false },
+            { note: 'G#4', freq: 415.30, key: 'Y', black: true },
+            { note: 'A4', freq: 440.00, key: 'H', black: false },
+            { note: 'A#4', freq: 466.16, key: 'U', black: true },
+            { note: 'B4', freq: 493.88, key: 'J', black: false },
+            { note: 'C5', freq: 523.25, key: 'K', black: false },
+            { note: 'C#5', freq: 554.37, key: 'O', black: true },
+            { note: 'D5', freq: 587.33, key: 'L', black: false },
+            { note: 'D#5', freq: 622.25, key: 'P', black: true },
+            { note: 'E5', freq: 659.25, key: ';', black: false }
+        ];
+    }
+
     _initAudio() {
         if (this.audioCtx) return;
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -470,61 +494,61 @@ class VirtualPianoTool extends BaseTool {
         const melodies = [
             // Twinkle Twinkle Little Star
             [
-                { note: 'C', delay: 0, duration: 400 },
-                { note: 'C', delay: 500, duration: 400 },
-                { note: 'G', delay: 1000, duration: 400 },
-                { note: 'G', delay: 1500, duration: 400 },
-                { note: 'A', delay: 2000, duration: 400 },
-                { note: 'A', delay: 2500, duration: 400 },
-                { note: 'G', delay: 3000, duration: 800 },
-                { note: 'F', delay: 4000, duration: 400 },
-                { note: 'F', delay: 4500, duration: 400 },
-                { note: 'E', delay: 5000, duration: 400 },
-                { note: 'E', delay: 5500, duration: 400 },
-                { note: 'D', delay: 6000, duration: 400 },
-                { note: 'D', delay: 6500, duration: 400 },
-                { note: 'C', delay: 7000, duration: 800 }
+                { note: 'C4', delay: 0, duration: 400 },
+                { note: 'C4', delay: 500, duration: 400 },
+                { note: 'G4', delay: 1000, duration: 400 },
+                { note: 'G4', delay: 1500, duration: 400 },
+                { note: 'A4', delay: 2000, duration: 400 },
+                { note: 'A4', delay: 2500, duration: 400 },
+                { note: 'G4', delay: 3000, duration: 800 },
+                { note: 'F4', delay: 4000, duration: 400 },
+                { note: 'F4', delay: 4500, duration: 400 },
+                { note: 'E4', delay: 5000, duration: 400 },
+                { note: 'E4', delay: 5500, duration: 400 },
+                { note: 'D4', delay: 6000, duration: 400 },
+                { note: 'D4', delay: 6500, duration: 400 },
+                { note: 'C4', delay: 7000, duration: 800 }
             ],
             // Happy Birthday
             [
-                { note: 'C', delay: 0, duration: 300 },
-                { note: 'C', delay: 400, duration: 200 },
-                { note: 'D', delay: 700, duration: 500 },
-                { note: 'C', delay: 1300, duration: 500 },
-                { note: 'F', delay: 1900, duration: 500 },
-                { note: 'E', delay: 2500, duration: 900 },
-                { note: 'C', delay: 3500, duration: 300 },
-                { note: 'C', delay: 3900, duration: 200 },
-                { note: 'D', delay: 4200, duration: 500 },
-                { note: 'C', delay: 4800, duration: 500 },
-                { note: 'G', delay: 5400, duration: 500 },
-                { note: 'F', delay: 6000, duration: 900 }
+                { note: 'C4', delay: 0, duration: 300 },
+                { note: 'C4', delay: 400, duration: 200 },
+                { note: 'D4', delay: 700, duration: 500 },
+                { note: 'C4', delay: 1300, duration: 500 },
+                { note: 'F4', delay: 1900, duration: 500 },
+                { note: 'E4', delay: 2500, duration: 900 },
+                { note: 'C4', delay: 3500, duration: 300 },
+                { note: 'C4', delay: 3900, duration: 200 },
+                { note: 'D4', delay: 4200, duration: 500 },
+                { note: 'C4', delay: 4800, duration: 500 },
+                { note: 'G4', delay: 5400, duration: 500 },
+                { note: 'F4', delay: 6000, duration: 900 }
             ],
             // Für Elise (intro)
             [
-                { note: 'E', delay: 0, duration: 250 },
-                { note: 'D#', delay: 300, duration: 250 },
-                { note: 'E', delay: 600, duration: 250 },
-                { note: 'D#', delay: 900, duration: 250 },
-                { note: 'E', delay: 1200, duration: 250 },
-                { note: 'B', delay: 1500, duration: 250 },
-                { note: 'D', delay: 1800, duration: 250 },
-                { note: 'C', delay: 2100, duration: 250 },
-                { note: 'A', delay: 2400, duration: 500 }
+                { note: 'E5', delay: 0, duration: 250 },
+                { note: 'D#5', delay: 300, duration: 250 },
+                { note: 'E5', delay: 600, duration: 250 },
+                { note: 'D#5', delay: 900, duration: 250 },
+                { note: 'E5', delay: 1200, duration: 250 },
+                { note: 'B4', delay: 1500, duration: 250 },
+                { note: 'D5', delay: 1800, duration: 250 },
+                { note: 'C5', delay: 2100, duration: 250 },
+                { note: 'A4', delay: 2400, duration: 500 }
             ],
             // Jingle Bells (intro)
             [
-                { note: 'E', delay: 0, duration: 300 },
-                { note: 'E', delay: 400, duration: 300 },
-                { note: 'E', delay: 800, duration: 600 },
-                { note: 'E', delay: 1500, duration: 300 },
-                { note: 'E', delay: 1900, duration: 300 },
-                { note: 'E', delay: 2300, duration: 600 },
-                { note: 'E', delay: 3000, duration: 300 },
-                { note: 'G', delay: 3400, duration: 300 },
-                { note: 'C', delay: 3800, duration: 300 },
-                { note: 'D', delay: 4200, duration: 300 },
-                { note: 'E', delay: 4600, duration: 900 }
+                { note: 'E4', delay: 0, duration: 300 },
+                { note: 'E4', delay: 400, duration: 300 },
+                { note: 'E4', delay: 800, duration: 600 },
+                { note: 'E4', delay: 1500, duration: 300 },
+                { note: 'E4', delay: 1900, duration: 300 },
+                { note: 'E4', delay: 2300, duration: 600 },
+                { note: 'E4', delay: 3000, duration: 300 },
+                { note: 'G4', delay: 3400, duration: 300 },
+                { note: 'C4', delay: 3800, duration: 300 },
+                { note: 'D4', delay: 4200, duration: 300 },
+                { note: 'E4', delay: 4600, duration: 900 }
             ]
         ];
 
