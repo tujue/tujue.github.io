@@ -107,7 +107,8 @@ class ResumeBuilderTool extends BaseTool {
                 .step-icon { font-size: 1.2rem; }
                 
                 .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; }
-                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; }
+                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; transition: 0.2s; }
+                .res-wizard-footer.transparent { background: transparent !important; border-top: none !important; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
@@ -264,6 +265,16 @@ class ResumeBuilderTool extends BaseTool {
         }
 
         prevBtn.style.visibility = this.currentTab === 'personal' ? 'hidden' : 'visible';
+
+        // Toggle footer panel background
+        const footer = document.querySelector('.res-wizard-footer');
+        if (footer) {
+            if (this.currentTab === 'preview') {
+                footer.classList.remove('transparent');
+            } else {
+                footer.classList.add('transparent');
+            }
+        }
     }
 
     renderTabContent() {
@@ -467,8 +478,10 @@ class ResumeBuilderTool extends BaseTool {
         }
         else if (this.currentTab === 'preview') {
             div.innerHTML = `
-                <div id="res-preview-container">
-                    <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; transform-origin: top center;"></div>
+                <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative;">
+                    <div id="res-page-wrapper" style="padding: 40px; display: flex; justify-content: center; min-height: 100%; transition: 0.2s;">
+                        <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; transform-origin: top center; flex-shrink: 0;"></div>
+                    </div>
                     
                     <!-- Zoom Controls -->
                      <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 12px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); z-index: 100;">
@@ -596,19 +609,16 @@ class ResumeBuilderTool extends BaseTool {
         }
 
         page.style.transform = `scale(${this.scaleValue})`;
-        // Adjust layout space for scaled element
-        page.style.marginBottom = `-${(1 - this.scaleValue) * pageH}px`;
-        page.style.marginTop = '0px'; // Add some breathing room at top
+
+        // Ensure wrapper height accounts for the scaled content to allow proper scrolling
+        const wrapper = document.getElementById('res-page-wrapper');
+        if (wrapper) {
+            const scaledH = pageH * this.scaleValue;
+            wrapper.style.height = `${scaledH + 80}px`; // page height + padding
+        }
 
         const lbl = document.getElementById('z-val');
         if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
-
-        // Enable scroll behavior
-        const effectiveH = pageH * this.scaleValue;
-        const contH = container.clientHeight;
-
-        container.style.overflowY = 'auto';
-        container.style.alignItems = (effectiveH > contH) ? 'flex-start' : 'center';
     }
 
     _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
