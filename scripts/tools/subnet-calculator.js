@@ -87,7 +87,7 @@ class SubnetCalculatorTool extends BaseTool {
             if (!val) return;
 
             try {
-                const res = window.DevTools.networkTools.calculateSubnet(val);
+                const res = this._calculateSubnet(val);
                 if (!res.success) throw new Error(res.message);
 
                 document.getElementById('sub-out-net').textContent = res.network;
@@ -100,11 +100,54 @@ class SubnetCalculatorTool extends BaseTool {
                 resDiv.style.display = 'block';
                 this.showNotification('Calculation complete!', 'success');
             } catch (err) {
-                this.showNotification('Invalid CIDR format!', 'error');
+                this.showNotification(err.message || 'Invalid CIDR format!', 'error');
             }
         };
 
         input.onkeypress = (e) => { if (e.key === 'Enter') btn.click(); };
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.networkTools)
+
+    _calculateSubnet(cidr) {
+        try {
+            const parts = cidr.split('/');
+            const ipArr = parts[0];
+            const maskStr = parts[1];
+
+            if (!ipArr || !maskStr) throw new Error("Invalid CIDR format");
+
+            const mask = parseInt(maskStr);
+            if (isNaN(mask) || mask < 0 || mask > 32) throw new Error("Invalid Mask (0-32)");
+
+            const ipParts = ipArr.split('.').map(Number);
+            if (ipParts.length !== 4 || ipParts.some(n => isNaN(n) || n < 0 || n > 255)) throw new Error("Invalid IP Address");
+
+            // Convert IP to 32-bit number
+            const ipNum = (ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3];
+
+            // Create mask as 32-bit number
+            // Fix for mask === 0: (~0 << 32) is undefined in JS usually, it should be 0.
+            const maskNum = mask === 0 ? 0 : (~0 << (32 - mask));
+
+            const netNum = ipNum & maskNum;
+            const broadNum = netNum | (~maskNum);
+
+            const toIP = (n) => [(n >>> 24) & 0xFF, (n >>> 16) & 0xFF, (n >>> 8) & 0xFF, n & 0xFF].join('.');
+
+            return {
+                success: true,
+                network: toIP(netNum),
+                broadcast: toIP(broadNum),
+                netmask: toIP(maskNum),
+                firstIP: toIP(netNum + 1),
+                lastIP: toIP(broadNum - 1),
+                total: Math.max(0, Math.pow(2, 32 - mask) - 2),
+                mask: mask
+            };
+        } catch (e) {
+            return { success: false, message: e.message };
+        }
     }
 }
 

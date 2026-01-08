@@ -562,7 +562,7 @@ class PromptWizardTool extends BaseTool {
       enhanceBtn.textContent = '🔄 ' + (isTr ? 'İyileştiriliyor...' : 'Enhancing...');
 
       try {
-        const enhanced = await window.DevTools.promptTools.enhance(subject.value, this.state.platform);
+        const enhanced = await this._enhancePrompt(subject.value, this.state.platform);
         subject.value = enhanced;
         updatePrompt();
         this.showNotification(isTr ? 'Başarılı!' : 'Enhanced!', 'success');
@@ -585,6 +585,25 @@ class PromptWizardTool extends BaseTool {
     };
 
     updatePrompt();
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.promptTools)
+
+  async _enhancePrompt(subject, platform) {
+    // Basic rule-based enhancement
+    const enhancers = [
+      "hyper-realistic", "ultra-detailed", "cinematic lighting",
+      "8k resolution", "concept art", "intricate details",
+      "masterpiece", "dramatic atmosphere"
+    ];
+
+    // Choose 2 random enhancers
+    const picked = [];
+    for (let i = 0; i < 2; i++) {
+      picked.push(enhancers[Math.floor(Math.random() * enhancers.length)]);
+    }
+
+    return `${subject}, ${picked.join(', ')}`;
   }
 }
 
