@@ -51,13 +51,13 @@ class ResumeBuilderTool extends BaseTool {
     renderUI() {
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const txt = isTr ? {
-            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', s: 'Yetenekler', d: 'Tasarım', v: 'Önizleme' },
+            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', l: 'Diller', s: 'Yetenekler', d: 'Görünüm', v: 'Önizleme' },
             lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle' },
             btn: { next: 'Sonraki Adım >', prev: '< Geri', print: 'Yazdır / PDF', reset: 'Sıfırla' },
             fonts: { sans: 'Standart', modern: 'Modern', display: 'Zarif', strong: 'Güçlü', serif: 'Serif', condensed: 'Sıkışık', mono: 'Kod' },
             themes: { modern: 'Modern', nova: 'Nova (Modern)', orbit: 'Orbit (Koyu)', bloom: 'Bloom (Pastel)', wave: 'Wave (Dalga)', bold: 'Bold (Güçlü)', prime: 'Prime (Kurumsal)', elegant: 'Elegant (Yeni)', titan: 'Titan (Yeni)', cyber: 'Cyber (Yeni)', brutal: 'Brutal (Yeni)', executive: 'Yönetici', minimal: 'Minimal', leftside: 'Sol Sütun', skyline: 'Skyline', tech: 'Teknoloji' }
         } : {
-            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', s: 'Skills', d: 'Design', v: 'Preview' },
+            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', l: 'Languages', s: 'Skills', d: 'Design', v: 'Preview' },
             lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo' },
             btn: { next: 'Next Step >', prev: '< Back', print: 'Print / PDF', reset: 'Reset' },
             fonts: { sans: 'Standard', modern: 'Modern', display: 'Elegant', strong: 'Strong', serif: 'Serif', condensed: 'Condensed', mono: 'Code' },
@@ -84,7 +84,9 @@ class ResumeBuilderTool extends BaseTool {
                     <div class="res-step ${this.currentTab === 'exp' ? 'active' : ''}" onclick="window._resTab('exp')"><span class="step-icon">💼</span> <span class="step-label">${txt.tabs.x}</span></div>
                     <div class="res-step ${this.currentTab === 'edu' ? 'active' : ''}" onclick="window._resTab('edu')"><span class="step-icon">🎓</span> <span class="step-label">${txt.tabs.e}</span></div>
                     <div class="res-step ${this.currentTab === 'certs' ? 'active' : ''}" onclick="window._resTab('certs')"><span class="step-icon">🏅</span> <span class="step-label">${txt.tabs.c}</span></div>
+                    <div class="res-step ${this.currentTab === 'languages' ? 'active' : ''}" onclick="window._resTab('languages')"><span class="step-icon">🗣️</span> <span class="step-label">${txt.tabs.l}</span></div>
                     <div class="res-step ${this.currentTab === 'skills' ? 'active' : ''}" onclick="window._resTab('skills')"><span class="step-icon">⚡</span> <span class="step-label">${txt.tabs.s}</span></div>
+                    <div class="res-step ${this.currentTab === 'design' ? 'active' : ''}" onclick="window._resTab('design')"><span class="step-icon">🎨</span> <span class="step-label">${txt.tabs.d}</span></div>
                     <div class="res-step ${this.currentTab === 'preview' ? 'active' : ''}" onclick="window._resTab('preview')"><span class="step-icon">👁️</span> <span class="step-label">${txt.tabs.v}</span></div>
                 </div>
                 
@@ -208,6 +210,9 @@ class ResumeBuilderTool extends BaseTool {
         };
         window._addItem = (type) => {
             if (!this.data.experience) this.data.experience = [];
+            if (!this.data.font) this.data.font = 'sans';
+            // Sanitize Certificates
+            if (this.data.certificates) this.data.certificates = this.data.certificates.map(c => ({ name: c.name || '', issuer: c.issuer || '', date: c.date || '' }));
             if (!this.data.education) this.data.education = [];
             if (!this.data.certificates) this.data.certificates = [];
 
@@ -350,9 +355,14 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     renderTabContent() {
+        // Data Sanitization to prevent undefined/broken UI
+        if (this.data.certificates && Array.isArray(this.data.certificates)) {
+            this.data.certificates = this.data.certificates.map(c => (typeof c === 'object' && c) ? { name: c.name || '', issuer: c.issuer || '', date: c.date || '' } : { name: '', issuer: '', date: '' });
+        }
+
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const txt = isTr ? {
-            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', s: 'Yetenekler', d: 'Tasarım', v: 'Önizleme' },
+            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', l: 'Diller', s: 'Yetenekler', d: 'Görünüm', v: 'Önizleme' },
             btn: { next: 'Sonraki Adım >', prev: '< Geri', reset: 'Sıfırla', print: 'Yazdır / PDF' },
             lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle', summary: 'Özet / Hakkımda', languages: 'Diller', interests: 'İlgi Alanları', skills: 'Yetenekler' },
             exp: { title: 'İş Deneyimi', add: 'Deneyim Ekle', company: 'Şirket Adı', position: 'Pozisyon', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
@@ -360,7 +370,7 @@ class ResumeBuilderTool extends BaseTool {
             certs: { title: 'Sertifikalar', add: 'Sertifika Ekle', name: 'Sertifika Adı', issuer: 'Veren Kurum', date: 'Tarih' },
             design: { title: 'Görünüm Ayarları', color: 'Renk Teması', font: 'Yazı Tipi', template: 'Şablon Seçimi' }
         } : {
-            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', s: 'Skills', d: 'Design', v: 'Preview' },
+            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', l: 'Languages', s: 'Skills', d: 'Design', v: 'Preview' },
             btn: { next: 'Next Step >', prev: '< Back', reset: 'Reset', print: 'Print / PDF' },
             lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo', summary: 'Summary / About Me', languages: 'Languages', interests: 'Interests', skills: 'Skills' },
             exp: { title: 'Work Experience', add: 'Add Experience', company: 'Company Name', position: 'Position', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
@@ -757,33 +767,7 @@ class ResumeBuilderTool extends BaseTool {
                 if (!style) { style = document.createElement('style'); style.id = 'res-style-inj'; document.head.appendChild(style); }
                 style.textContent = res.css;
 
-                // Auto Fit Mechanism
-                const rawHtml = res.html;
-                page.innerHTML = `<div class="res-scaler" style="transform-origin: top left; width: 100%;">${rawHtml}</div>`;
-
-                setTimeout(() => {
-                    const scaler = page.querySelector('.res-scaler');
-                    if (scaler) {
-                        const pStyle = window.getComputedStyle(page);
-                        const pT = parseFloat(pStyle.paddingTop) || 0;
-                        const pB = parseFloat(pStyle.paddingBottom) || 0;
-                        // Conservative height limit (A4 - padding - buffer)
-                        const availH = 1122 - pT - pB - 5;
-
-                        // Reset to measure natural height
-                        scaler.style.transform = 'none';
-                        scaler.style.width = '100%';
-
-                        if (scaler.scrollHeight > availH) {
-                            // Calculate necessary scale
-                            const scale = availH / scaler.scrollHeight;
-                            // Apply scale and compensate width to reflow text
-                            scaler.style.transform = `scale(${scale})`;
-                            scaler.style.width = `calc(100% / ${scale})`;
-                        }
-                    }
-                }, 10);
-
+                page.innerHTML = res.html;
                 this.fitPreview();
             } else {
                 document.getElementById('res-a4-page').innerHTML = 'Core module update required.';
