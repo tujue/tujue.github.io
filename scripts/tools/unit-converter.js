@@ -3,24 +3,28 @@ class UnitConverterTool extends BaseTool {
     constructor(config) {
         super(config);
         this.isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+        this.setupData();
+    }
+
+    setupData() {
         this.units = {
             length: [
-                { value: 'mm', label: this.isTr ? 'Milimetre (mm)' : 'Millimeter (mm)' },
-                { value: 'cm', label: this.isTr ? 'Santimetre (cm)' : 'Centimeter (cm)' },
-                { value: 'm', label: this.isTr ? 'Metre (m)' : 'Meter (m)' },
-                { value: 'km', label: this.isTr ? 'Kilometre (km)' : 'Kilometer (km)' },
-                { value: 'inch', label: this.isTr ? 'İnç' : 'Inch' },
-                { value: 'foot', label: this.isTr ? 'Fit' : 'Foot' },
-                { value: 'yard', label: this.isTr ? 'Yarda' : 'Yard' },
-                { value: 'mile', label: this.isTr ? 'Mil' : 'Mile' }
+                { value: 'mm', label: this.isTr ? 'Milimetre (mm)' : 'Millimeter (mm)', factor: 0.001 },
+                { value: 'cm', label: this.isTr ? 'Santimetre (cm)' : 'Centimeter (cm)', factor: 0.01 },
+                { value: 'm', label: this.isTr ? 'Metre (m)' : 'Meter (m)', factor: 1 },
+                { value: 'km', label: this.isTr ? 'Kilometre (km)' : 'Kilometer (km)', factor: 1000 },
+                { value: 'inch', label: this.isTr ? 'İnç' : 'Inch', factor: 0.0254 },
+                { value: 'foot', label: this.isTr ? 'Fit' : 'Foot', factor: 0.3048 },
+                { value: 'yard', label: this.isTr ? 'Yarda' : 'Yard', factor: 0.9144 },
+                { value: 'mile', label: this.isTr ? 'Mil' : 'Mile', factor: 1609.34 }
             ],
             weight: [
-                { value: 'mg', label: this.isTr ? 'Miligram (mg)' : 'Milligram (mg)' },
-                { value: 'g', label: this.isTr ? 'Gram (g)' : 'Gram (g)' },
-                { value: 'kg', label: this.isTr ? 'Kilogram (kg)' : 'Kilogram (kg)' },
-                { value: 'ton', label: 'Ton' },
-                { value: 'oz', label: this.isTr ? 'Ons (oz)' : 'Ounce (oz)' },
-                { value: 'lb', label: this.isTr ? 'Libre (lb)' : 'Pound (lb)' }
+                { value: 'mg', label: this.isTr ? 'Miligram (mg)' : 'Milligram (mg)', factor: 0.001 },
+                { value: 'g', label: this.isTr ? 'Gram (g)' : 'Gram (g)', factor: 1 },
+                { value: 'kg', label: this.isTr ? 'Kilogram (kg)' : 'Kilogram (kg)', factor: 1000 },
+                { value: 'ton', label: 'Ton', factor: 1000000 },
+                { value: 'oz', label: this.isTr ? 'Ons (oz)' : 'Ounce (oz)', factor: 28.3495 },
+                { value: 'lb', label: this.isTr ? 'Libre (lb)' : 'Pound (lb)', factor: 453.592 }
             ],
             temperature: [
                 { value: 'C', label: this.isTr ? 'Santigrat (°C)' : 'Celsius (°C)' },
@@ -28,42 +32,42 @@ class UnitConverterTool extends BaseTool {
                 { value: 'K', label: 'Kelvin (K)' }
             ],
             data: [
-                { value: 'B', label: this.isTr ? 'Bayt (B)' : 'Byte (B)' },
-                { value: 'KB', label: this.isTr ? 'Kilobayt (KB)' : 'Kilobyte (KB)' },
-                { value: 'MB', label: this.isTr ? 'Megabayt (MB)' : 'Megabyte (MB)' },
-                { value: 'GB', label: this.isTr ? 'Gigabayt (GB)' : 'Gigabyte (GB)' },
-                { value: 'TB', label: this.isTr ? 'Terabayt (TB)' : 'Terabyte (TB)' }
+                { value: 'B', label: this.isTr ? 'Bayt (B)' : 'Byte (B)', factor: 1 },
+                { value: 'KB', label: this.isTr ? 'Kilobayt (KB)' : 'Kilobyte (KB)', factor: 1024 },
+                { value: 'MB', label: this.isTr ? 'Megabayt (MB)' : 'Megabyte (MB)', factor: 1048576 },
+                { value: 'GB', label: this.isTr ? 'Gigabayt (GB)' : 'Gigabyte (GB)', factor: 1073741824 },
+                { value: 'TB', label: this.isTr ? 'Terabayt (TB)' : 'Terabyte (TB)', factor: 1099511627776 }
             ],
             area: [
-                { value: 'sqm', label: this.isTr ? 'Metrekare (m²)' : 'Square Meter (m²)' },
-                { value: 'sqkm', label: this.isTr ? 'Kilometrekare (km²)' : 'Square Kilometer (km²)' },
-                { value: 'sqfoot', label: this.isTr ? 'Fitkare (ft²)' : 'Square Foot (ft²)' },
-                { value: 'acre', label: this.isTr ? 'Akre' : 'Acre' },
-                { value: 'hectare', label: 'Hektar' }
+                { value: 'sqm', label: this.isTr ? 'Metrekare (m²)' : 'Square Meter (m²)', factor: 1 },
+                { value: 'sqkm', label: this.isTr ? 'Kilometrekare (km²)' : 'Square Kilometer (km²)', factor: 1000000 },
+                { value: 'sqfoot', label: this.isTr ? 'Fitkare (ft²)' : 'Square Foot (ft²)', factor: 0.092903 },
+                { value: 'acre', label: this.isTr ? 'Akre' : 'Acre', factor: 4046.86 },
+                { value: 'hectare', label: 'Hektar', factor: 10000 }
             ],
             volume: [
-                { value: 'ml', label: this.isTr ? 'Mililitre (ml)' : 'Milliliter (ml)' },
-                { value: 'l', label: this.isTr ? 'Litre (L)' : 'Liter (L)' },
-                { value: 'gallon', label: 'Galon' },
-                { value: 'cup', label: this.isTr ? 'Kupa' : 'Cup' },
-                { value: 'pint', label: 'Pint' },
-                { value: 'quart', label: this.isTr ? 'Çeyrek (Quart)' : 'Quart' }
+                { value: 'ml', label: this.isTr ? 'Mililitre (ml)' : 'Milliliter (ml)', factor: 0.001 },
+                { value: 'l', label: this.isTr ? 'Litre (L)' : 'Liter (L)', factor: 1 },
+                { value: 'gallon', label: 'Galon', factor: 3.78541 },
+                { value: 'cup', label: this.isTr ? 'Kupa' : 'Cup', factor: 0.236588 },
+                { value: 'pint', label: 'Pint', factor: 0.473176 },
+                { value: 'quart', label: this.isTr ? 'Çeyrek (Quart)' : 'Quart', factor: 0.946353 }
             ],
             speed: [
-                { value: 'mps', label: this.isTr ? 'Metre/saniye (m/s)' : 'Meters/sec (m/s)' },
-                { value: 'kph', label: this.isTr ? 'Kilometre/saat (km/h)' : 'Kilometers/hour (km/h)' },
-                { value: 'mph', label: this.isTr ? 'Mil/saat (mph)' : 'Miles/hour (mph)' },
-                { value: 'knot', label: 'Knot' }
+                { value: 'mps', label: this.isTr ? 'Metre/saniye (m/s)' : 'Meters/sec (m/s)', factor: 1 },
+                { value: 'kph', label: this.isTr ? 'Kilometre/saat (km/h)' : 'Kilometers/hour (km/h)', factor: 0.277778 },
+                { value: 'mph', label: this.isTr ? 'Mil/saat (mph)' : 'Miles/hour (mph)', factor: 0.44704 },
+                { value: 'knot', label: 'Knot', factor: 0.514444 }
             ],
             currency: [
                 { value: 'USD', label: 'US Dollar ($)' }, { value: 'EUR', label: 'Euro (€)' }, { value: 'TRY', label: 'Turkish Lira (₺)' },
                 { value: 'GBP', label: 'British Pound (£)' }, { value: 'JPY', label: 'Japanese Yen (¥)' }, { value: 'CNY', label: 'Chinese Yuan (¥)' }
             ],
             kitchen: [
-                { value: 'tsp', label: this.isTr ? 'Çay Kaşığı' : 'Teaspoon' },
-                { value: 'tbsp', label: this.isTr ? 'Yemek Kaşığı' : 'Tablespoon' },
-                { value: 'cup', label: this.isTr ? 'Su Bardağı' : 'Cup' },
-                { value: 'ml', label: 'Milliliter' }
+                { value: 'tsp', label: this.isTr ? 'Çay Kaşığı' : 'Teaspoon', factor: 4.92892 },
+                { value: 'tbsp', label: this.isTr ? 'Yemek Kaşığı' : 'Tablespoon', factor: 14.7868 },
+                { value: 'cup', label: this.isTr ? 'Su Bardağı' : 'Cup', factor: 236.588 },
+                { value: 'ml', label: 'Milliliter', factor: 1 } // Base unit
             ]
         };
     }
@@ -152,36 +156,98 @@ class UnitConverterTool extends BaseTool {
             const cat = catSelect.value;
 
             // Localization helpers
-            const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+            const isTr = this.isTr;
             const msgInvalid = isTr ? '✗ Geçersiz değer' : '✗ Invalid value';
             const msgCalculating = isTr ? '⏳ Hesaplanıyor...' : '⏳ Calculating...';
             const msgEstimates = isTr ? 'Tahmini kurlara göre' : 'Based on estimated rates';
 
-            if (isNaN(val)) return updateStatus(msgInvalid, 'error');
+            if (isNaN(val)) {
+                status.textContent = msgInvalid;
+                status.style.color = 'var(--danger)';
+                return;
+            }
 
             if (cat === 'currency') {
                 status.textContent = msgCalculating;
-                const res = await window.DevTools.unitConverter.convertCurrency(val, from, to);
+                const res = await this.convertCurrency(val, from, to);
                 if (res.success) {
                     output.textContent = `${val} ${from} = ${res.result} ${to}`;
                     status.textContent = msgEstimates;
+                    status.style.color = 'var(--text-secondary)';
+                } else {
+                    status.textContent = isTr ? 'Hata oluştu' : 'Error occurred';
                 }
             } else {
-                const res = window.DevTools.unitConverter.convert(val, from, to, cat);
+                const res = this.convert(val, from, to, cat);
                 if (res.success) {
                     output.textContent = `${val} ${from} = ${res.result} ${to}`;
                     status.textContent = isTr ? 'Dönüştürme başarılı' : 'Conversion successful';
+                    status.style.color = 'var(--text-secondary)';
                 }
             }
         };
 
-        const updateStatus = (msg, type) => {
-            status.textContent = msg;
-            status.style.color = type === 'error' ? 'var(--danger)' : 'var(--text-secondary)';
-        };
-
         copyBtn.onclick = () => this.copyToClipboard(output.textContent);
         convertBtn.click();
+    }
+
+    // INTERNAL LOGIC (Previously in dev-tools-core.js)
+
+    convert(value, fromUnit, toUnit, category) {
+        // Temperature is special
+        if (category === 'temperature') {
+            return this.convertTemperature(value, fromUnit, toUnit);
+        }
+
+        // Standard conversions using factors
+        const units = this.units[category];
+        const fromData = units.find(u => u.value === fromUnit);
+        const toData = units.find(u => u.value === toUnit);
+
+        if (!fromData || !toData) return { success: false };
+
+        // Convert to base unit then to target unit
+        // value * fromFactor / toFactor
+        const baseValue = value * fromData.factor;
+        const result = baseValue / toData.factor;
+
+        // Format result (max 6 decimals, remove trailing zeros)
+        const formatted = parseFloat(result.toFixed(6));
+        return { success: true, result: formatted };
+    }
+
+    convertTemperature(value, from, to) {
+        let celsius;
+        // Convert to Celsius first
+        if (from === 'C') celsius = value;
+        else if (from === 'F') celsius = (value - 32) * 5 / 9;
+        else if (from === 'K') celsius = value - 273.15;
+
+        let result;
+        // Convert from Celsius to target
+        if (to === 'C') result = celsius;
+        else if (to === 'F') result = (celsius * 9 / 5) + 32;
+        else if (to === 'K') result = celsius + 273.15;
+
+        return { success: true, result: parseFloat(result.toFixed(2)) };
+    }
+
+    async convertCurrency(amount, from, to) {
+        // Use a free API fallback or hardcoded estimates
+        // For privacy/offline reasons, we will use hardcoded estimates for now
+        // Ideally this should fetch from an API if online
+
+        const rates = {
+            USD: 1,
+            EUR: 0.95,
+            GBP: 0.80,
+            TRY: 35.50, // Needs regular update
+            JPY: 154,
+            CNY: 7.25
+        };
+
+        const result = (amount / rates[from]) * rates[to];
+        return { success: true, result: result.toFixed(2) };
     }
 }
 
