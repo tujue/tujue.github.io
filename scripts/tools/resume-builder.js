@@ -4,8 +4,19 @@ class ResumeBuilderTool extends BaseTool {
         super(container);
 
         // Enhance workspace size for Resume Builder
-        const ws = document.querySelector('.workspace-content');
-        if (ws) ws.classList.add('full-width-workspace');
+        // Force compact styles via JS to ensure immediate effect
+        setTimeout(() => {
+            const ws = document.querySelector('.workspace-content');
+            if (ws) ws.classList.add('full-width-workspace');
+
+            const header = document.querySelector('.workspace-header');
+            if (header) {
+                header.style.cssText = 'margin-bottom: 0px !important; padding-top: 10px !important; padding-bottom: 10px !important; min-height: 50px;';
+
+                const title = header.querySelector('.workspace-title');
+                if (title) title.style.cssText = 'font-size: 1.5rem !important; margin: 0;';
+            }
+        }, 10);
 
         this.data = this._load() || this._getDefaults();
         this.currentTab = 'personal'; // personal, exp, edu, skills, design, preview
@@ -529,6 +540,13 @@ class ResumeBuilderTool extends BaseTool {
     onClose() {
         const ws = document.querySelector('.workspace-content');
         if (ws) ws.classList.remove('full-width-workspace');
+
+        // Restore header styles
+        const header = document.querySelector('.workspace-header');
+        if (header) header.style.cssText = '';
+
+        const title = document.querySelector('.workspace-header .workspace-title');
+        if (title) title.style.cssText = '';
     }
 
     fitPreview() {
