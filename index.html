@@ -310,10 +310,13 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.5rem;
-      min-height: 1200px;
-      /* Pre-allocate height to prevent layout shift when JS loads */
       content-visibility: auto;
       /* Performance boost */
+    }
+
+    #tools-grid {
+      min-height: 1200px;
+      /* Pre-allocate height only for the main tools grid to prevent CLS */
     }
 
     .header {
