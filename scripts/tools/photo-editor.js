@@ -58,7 +58,7 @@ class PhotoEditorTool extends BaseTool {
             { id: 'bright', name: isTr ? 'Parlaklık' : 'Brightness', min: 0, max: 200, def: 100, unit: '%' },
             { id: 'contrast', name: isTr ? 'Kontrast' : 'Contrast', min: 0, max: 200, def: 100, unit: '%' },
             { id: 'saturate', name: isTr ? 'Doygunluk' : 'Saturation', min: 0, max: 200, def: 100, unit: '%' },
-            { id: 'blur', name: isTr ? 'Bulanıklık' : 'Blur', min: 0, max: 15, def: 0, unit: 'px' },
+            { id: 'blur', name: isTr ? 'Bulanıklık' : 'Blur', min: 0, max: 50, def: 0, unit: 'px' },
             { id: 'sepia', name: isTr ? 'Sepya' : 'Sepia', min: 0, max: 100, def: 0, unit: '%' },
             { id: 'gray', name: isTr ? 'Siyah Beyaz' : 'Grayscale', min: 0, max: 100, def: 0, unit: '%' }
         ];
@@ -328,7 +328,9 @@ class PhotoEditorTool extends BaseTool {
         // Fix blur edge bleeding: Scale up slightly based on blur amount
         const blurAmount = parseInt(b('blur'));
         if (blurAmount > 0) {
-            const scaleFactor = 1 + (blurAmount * 0.02); // 10px blur -> 1.2x scale
+            // Increase scale factor to better hide fading edges.
+            // 0.03 coefficient means 10px blur -> 3% zoom.
+            const scaleFactor = 1 + (blurAmount * 0.04);
             this.ctx.scale(scaleFactor, scaleFactor);
         }
 
