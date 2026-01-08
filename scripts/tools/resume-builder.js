@@ -98,12 +98,12 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow: hidden; position: relative; width: 100%; display: flex; flex-direction: column; }
-                .res-scroll-container { flex: 1; overflow-y: auto !important; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; align-items: center; }
+                .res-wizard-content { flex: 1; overflow: hidden !important; position: relative; width: 100%; display: flex; flex-direction: column; height: 100%; }
+                .res-scroll-container { flex: 1; overflow-y: auto !important; height: auto; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; align-items: center; position: relative; }
                 /* Padding to ensure bottom elements are reachable */
-                .res-content-scroll-fix { padding-bottom: 120px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+                .res-content-scroll-fix { padding-bottom: 120px; width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
                 
-                .res-sticky-nav { position: sticky; top: 0; z-index: 150; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 6px 15px; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(8px); width: 100%; flex-shrink: 0; }
+                .res-sticky-nav { position: sticky; top: 0; z-index: 155; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 6px 15px; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(8px); width: 100%; flex-shrink: 0; }
                 .res-sticky-nav.compact { padding: 4px 15px; min-height: 38px; }
 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
@@ -311,6 +311,8 @@ class ResumeBuilderTool extends BaseTool {
         div.style.display = 'flex';
         div.style.flexDirection = 'column';
         div.style.overflow = 'hidden';
+        div.style.position = 'absolute';
+        div.style.inset = '0';
 
         if (this.currentTab === 'personal') {
             div.innerHTML = `
@@ -360,7 +362,8 @@ class ResumeBuilderTool extends BaseTool {
                             </div>
                         </div>
                     </div>
-                    <div style="height: 120px; flex-shrink: 0;"></div>
+                    <!-- Dedicated Spacer -->
+                    <div style="height: 150px; width: 100%; flex-shrink: 0;"></div>
                 </div>
             `;
             c.appendChild(div);
