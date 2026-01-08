@@ -331,8 +331,10 @@ class MockCardStudioTool extends BaseTool {
 
         const generateCard = (type = this.currentType, customName = null) => {
             const config = types[type];
-            const raw = window.DevTools.cardTools.generateLuhn(config.prefix, config.length);
-            const formatted = window.DevTools.cardTools.format(raw);
+            // Formerly window.DevTools.cardTools.generateLuhn
+            const raw = this._generateLuhn(config.prefix, config.length);
+            // Formerly window.DevTools.cardTools.format
+            const formatted = this._formatCardNumber(raw);
 
             const names = ["JOHN DOE", "JANE SMITH", "ALEX MERDEZ", "SARAH CONNOR", "TONY STARK", "BRUCE WAYNE", "DIANA PRINCE", "PETER PARKER"];
             const name = customName || names[Math.floor(Math.random() * names.length)];
@@ -497,6 +499,37 @@ class MockCardStudioTool extends BaseTool {
         }
 
         document.getElementById('mc-saved-count').textContent = this.savedCards.length;
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.cardTools)
+
+    _generateLuhn(prefix, length) {
+        let ccNum = prefix;
+        while (ccNum.length < (length - 1)) {
+            ccNum += Math.floor(Math.random() * 10);
+        }
+
+        // Calculate check digit
+        let sum = 0;
+        let pos = 0;
+        const reversedCC = ccNum.split('').reverse().join('');
+
+        for (let i = 0; i < reversedCC.length; i++) {
+            let digit = parseInt(reversedCC.charAt(i));
+            if ((pos % 2) === 0) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+            sum += digit;
+            pos++;
+        }
+
+        const checkDigit = (10 - (sum % 10)) % 10;
+        return ccNum + checkDigit;
+    }
+
+    _formatCardNumber(num) {
+        return num.replace(/(\d{4})(?=\d)/g, '$1 ');
     }
 }
 

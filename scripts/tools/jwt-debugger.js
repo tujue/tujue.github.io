@@ -84,7 +84,7 @@ class JWTDebuggerTool extends BaseTool {
       const token = input.value.trim();
       if (!token) return;
 
-      const result = window.DevTools.jwtTools.decode(token);
+      const result = this._decode(token); // Local usage
       if (!result.success) {
         outH.textContent = '// Invalid Token';
         outP.textContent = result.message;
@@ -105,9 +105,61 @@ class JWTDebuggerTool extends BaseTool {
 
     input.oninput = decode;
 
-    const samples = window.DevTools.jwtTools.getSampleTokens();
+    const samples = this._getSampleTokens(); // Local usage
     document.getElementById('jwt-btn-s1').onclick = () => { input.value = samples.valid.token; decode(); };
     document.getElementById('jwt-btn-s2').onclick = () => { input.value = samples.expired.token; decode(); };
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.jwtTools)
+
+  _decode(token) {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return { success: false, message: 'Invalid JWT structure (must have 3 parts)' };
+      }
+
+      const header = JSON.parse(this._base64UrlDecode(parts[0]));
+      const payload = JSON.parse(this._base64UrlDecode(parts[1]));
+
+      const isExpired = payload.exp ? (Date.now() >= payload.exp * 1000) : false;
+
+      return {
+        success: true,
+        header,
+        payload,
+        isExpired
+      };
+    } catch (e) {
+      return { success: false, message: 'Parse error: ' + e.message };
+    }
+  }
+
+  _base64UrlDecode(str) {
+    // Add padding if needed
+    let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    switch (output.length % 4) {
+      case 0: break;
+      case 2: output += '=='; break;
+      case 3: output += '='; break;
+      default: throw new Error('Illegal base64url string!');
+    }
+
+    // Decode (supporting unicode)
+    return decodeURIComponent(atob(output).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+  }
+
+  _getSampleTokens() {
+    return {
+      valid: {
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTl9.m3t5dG7vE_9j_Q5l_4' // Far future exp
+      },
+      expired: {
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.X' // Past exp
+      }
+    };
   }
 }
 

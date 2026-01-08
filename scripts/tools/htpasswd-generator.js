@@ -49,8 +49,7 @@ class HtpasswdGeneratorTool extends BaseTool {
                     <select id="ht-method" class="form-select">
                         <option value="bcrypt">Bcrypt (Modern, Secure)</option>
                         <option value="sha1">SHA-1 (Legacy Apache/Nginx)</option>
-                        <option value="md5">MD5 (Apache Specific)</option>
-                        <option value="crypt">Plaintext/Crypt (Not secure)</option>
+                        <option value="crypt">Plaintext (Development)</option>
                     </select>
                 </div>
 
@@ -93,7 +92,7 @@ class HtpasswdGeneratorTool extends BaseTool {
       btnRun.textContent = '⏳ Processing...';
 
       try {
-        const result = await window.DevTools.htpasswdTools.generate(user, pass, methodIn.value);
+        const result = await this._generate(user, pass, methodIn.value);
         out.textContent = result;
         this.showNotification('Hash generated successfully!', 'success');
       } catch (err) {
@@ -109,6 +108,42 @@ class HtpasswdGeneratorTool extends BaseTool {
       if (out.textContent.includes('...')) return;
       this.copyToClipboard(out.textContent);
     };
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.htpasswdTools)
+
+  async _generate(user, pass, method) {
+    if (method === 'sha1') {
+      const buffer = new TextEncoder().encode(pass);
+      const hashBuffer = await crypto.subtle.digest('SHA-1', buffer);
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+      return `${user}:{SHA}${base64}`;
+    }
+    else if (method === 'bcrypt') {
+      if (!window.dcodeIO || !window.dcodeIO.bcrypt) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js';
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Failed to load bcrypt library'));
+          document.head.appendChild(script);
+        });
+      }
+      // bcryptjs usually exposes window.dcodeIO.bcrypt or just window.bcrypt depending on build
+      // The CDN above likely exposes window.bcrypt or dcodeIO.bcrypt
+      const bcrypt = window.bcrypt || (window.dcodeIO && window.dcodeIO.bcrypt);
+      if (!bcrypt) throw new Error('Bcrypt library loaded but object not found');
+
+      return new Promise((resolve) => {
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(pass, salt);
+        resolve(`${user}:${hash}`);
+      });
+    }
+    else {
+      // Default Plaintext
+      return `${user}:${pass}`;
+    }
   }
 }
 

@@ -110,9 +110,6 @@ class SteganographyTool extends BaseTool {
         };
 
         btnEnc.onclick = async () => {
-            // Access txt again hack or store it? Since txt is local to renderUI, we can't access it here.
-            // We need to re-derive 'isTr' or make txt a class property.
-            // Simplest: Check language here again.
             const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
             const curTxt = isTr ? { weaving: 'İşleniyor...', go: 'Şifrele & İndir ✨', success: 'Başarılı! Şifreli görsel indirildi.' }
                 : { weaving: 'Weaving...', go: 'Encrypt & Export ✨', success: 'Success! Encrypted PNG downloaded.' };
@@ -121,7 +118,7 @@ class SteganographyTool extends BaseTool {
             btnEnc.disabled = true;
             btnEnc.textContent = curTxt.weaving;
             try {
-                const url = await window.DevTools.steganographyTools.encode(this.selectedFile, msgIn.value);
+                const url = await this._encode(this.selectedFile, msgIn.value);
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'vault_' + Date.now() + '.png';
@@ -148,7 +145,7 @@ class SteganographyTool extends BaseTool {
             if (!this.extractFile) return this.showNotification('Please select a vault file', 'error');
             btnDec.disabled = true;
             try {
-                const msg = await window.DevTools.steganographyTools.decode(this.extractFile);
+                const msg = await this._decode(this.extractFile);
                 outRes.textContent = msg || curTxt.noMsg;
             } catch (err) {
                 this.showNotification('Decryption failed', 'error');
@@ -156,6 +153,111 @@ class SteganographyTool extends BaseTool {
                 btnDec.disabled = false;
             }
         };
+    }
+
+    // INTERNAL LOGIC (Canvas LSB Steganography)
+
+    _encode(file, message) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Prepare message: Length + Delimiter + Text + NullTerminator
+                // Simple: Just text + null char (0)
+                // Better: 32-bit length prefix, but let's stick to null termination for simplicity and robustness with text.
+                // Binary conversion
+                let binaryMsg = "";
+                for (let i = 0; i < message.length; i++) {
+                    binaryMsg += message.charCodeAt(i).toString(2).padStart(8, '0');
+                }
+                binaryMsg += "00000000"; // Null terminator
+
+                if (binaryMsg.length > (data.length / 4) * 3) {
+                    reject(new Error("Message is too long for this image."));
+                    return;
+                }
+
+                let msgIdx = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    if (msgIdx >= binaryMsg.length) break;
+
+                    // Modifying R, G, B channels
+                    for (let j = 0; j < 3; j++) {
+                        if (msgIdx < binaryMsg.length) {
+                            // Clear LSB and set new bit
+                            data[i + j] = (data[i + j] & 254) | parseInt(binaryMsg[msgIdx]);
+                            msgIdx++;
+                        }
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.onerror = () => reject(new Error("Failed to load image"));
+            img.src = URL.createObjectURL(file);
+        });
+    }
+
+    _decode(file) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                let binaryMsg = "";
+                let currentByte = "";
+
+                for (let i = 0; i < data.length; i += 4) {
+                    for (let j = 0; j < 3; j++) {
+                        const bit = data[i + j] & 1;
+                        currentByte += bit;
+                        if (currentByte.length === 8) {
+                            if (currentByte === "00000000") {
+                                // Null terminator found
+                                resolve(this._binaryToString(binaryMsg));
+                                return;
+                            }
+                            binaryMsg += currentByte;
+                            currentByte = "";
+                        }
+                    }
+                }
+                // If no null terminator found, try to decode what we have (might be garbage or partial)
+                resolve(this._binaryToString(binaryMsg));
+            };
+            img.onerror = () => reject(new Error("Failed to load image"));
+            img.src = URL.createObjectURL(file);
+        });
+    }
+
+    _binaryToString(binary) {
+        let str = "";
+        for (let i = 0; i < binary.length; i += 8) {
+            const charCode = parseInt(binary.substr(i, 8), 2);
+            if (charCode === 0) break;
+            str += String.fromCharCode(charCode);
+        }
+        // Handle UTF-8 properly potentially, but for now simple ASCII/Unicode char codes work for basic text.
+        // A better approach would be decoding UTF-8 bytes.
+        try {
+            return decodeURIComponent(escape(str)); // Simple UTF-8 decoding attempt
+        } catch (e) {
+            return str;
+        }
     }
 }
 
