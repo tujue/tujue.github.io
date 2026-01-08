@@ -644,16 +644,37 @@
                     css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; }`;
                 }
                 else if (theme === 'leftside') {
-                    css += `.a4-page { display: grid; grid-template-columns: 260px 1fr; padding: 0; min-height: 1123px; } 
-                            .res-left { background: ${color}; color: white; padding: 50px 30px; height: 100 %; display: flex; flex-direction: column; } 
+                    css += `.a4-page { display: grid; grid-template-columns: 280px 1fr; padding: 0; min-height: 1123px; } 
+                            .res-left { background: ${color || '#2d3748'}; color: white; padding: 50px 30px; min-height: 100%; display: flex; flex-direction: column; } 
                             .res-right { padding: 50px 40px; background: white; } 
-                            .res-name { color: white; font-size: 2.2rem; margin-bottom: 5px; } 
-                            .res-title { color: rgba(255, 255, 255, 0.7); margin-bottom: 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 20px; display: block; } 
+                            .res-name { color: white; font-size: 2.2rem; margin-bottom: 5px; line-height:1.1; } 
+                            .res-title { color: rgba(255, 255, 255, 0.7); margin-bottom: 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 20px; display: block; font-size: 0.95rem; } 
                             .res-contact { flex-direction: column; color: rgba(255, 255, 255, 0.9); margin-top: 0; gap: 15px; align-items: flex-start; } 
-                            .res-sec-title { color: ${color}; border-color: ${color} 30; } 
-                            .res-photo { width: 160px; height: 160px; margin-bottom: 30px; border: 5px solid rgba(255, 255, 255, 0.2); box-shadow: none; } 
-                            .res-left.res-sec-title { color: white; border-color: rgba(255, 255, 255, 0.2); margin-top: 40px; } 
-                            .res-left.res-tag { background: rgba(255, 255, 255, 0.15); color: white; border: none; } `;
+                            .res-sec-title { color: ${color || '#2d3748'}; border-color: ${color || '#2d3748'}30; } 
+                            .res-photo { width: 150px; height: 150px; margin-bottom: 30px; border: 4px solid rgba(255, 255, 255, 0.2); box-shadow: none; align-self: center; object-fit: cover; border-radius: 50%; } 
+                            .res-left .res-sec-title { color: white; border-color: rgba(255, 255, 255, 0.2); margin-top: 40px; margin-bottom: 15px; font-size: 1rem; } 
+                            .res-left .res-tag { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 4px 8px; margin: 0; } 
+                            .res-left .res-skills { gap: 8px; } `;
+                }
+                else if (theme === 'classic') {
+                    css += `.a4-page { font-family: 'Georgia', 'Times New Roman', serif; color: #222; } 
+                            .res-header { text-align: center; border-bottom: 3px double #444; padding-bottom: 30px; margin-bottom: 30px; } 
+                            .res-name { font-family: 'Georgia', serif; font-size: 3rem; letter-spacing: 0; color: #000; } 
+                            .res-title { color: #555; font-style: italic; margin-top: 5px; } 
+                            .res-sec-title { border: none; text-align: center; text-transform: uppercase; font-size: 1.1rem; letter-spacing: 3px; margin-bottom: 20px; color: #444; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 5px 0; } 
+                            .res-role { font-weight: bold; font-family: 'Georgia', serif; }
+                            .res-desc { line-height: 1.6; }`;
+                }
+                else if (theme === 'tech') {
+                    const c = color || '#2563eb';
+                    css += `.a4-page { font-family: 'Segoe UI', 'Roboto', sans-serif; background: #f8fafc; color: #334155; }
+                            .res-header { border-left: 5px solid ${c}; padding-left: 20px; padding-bottom: 10px; margin-bottom: 30px;  } 
+                            .res-name { font-weight: 800; color: #1e293b; font-size: 2.8rem; letter-spacing: -1px; } 
+                            .res-title { color: ${c}; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; } 
+                            .res-sec-title { color: #0f172a; border-bottom: 2px solid ${c}; font-weight: 800; padding-bottom: 5px; }
+                            .res-item-head { margin-bottom: 4px; }
+                            .res-role { color: ${c}; font-weight: 700; }
+                            .res-tag { background: #eff6ff; color: ${c}; border: 1px solid ${c}40; border-radius: 6px; }`;
                 }
 
                 // --- HTML STRUCTURE ---
@@ -1204,7 +1225,7 @@
                 }
                 else if (theme === 'leftside') {
                     html = `
-        < div class="res-left" >
+        <div class="res-left">
             ${photoHtml}
                         <div class="res-name">${d.name}</div>
                         <div class="res-title">${d.title}</div>
@@ -1222,16 +1243,16 @@
 
                         ${d.languages ? `
                         <div class="res-sec-title" style="margin-top:20px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                        <div class="res-skills" style="flex-direction:column; align-items:flex-start;">
-                             ${d.languages.split(',').map(s => s.trim() ? `<span style="font-size:0.85rem; margin-bottom:5px;">• ${s.trim()}</span>` : '').join('')}
+                        <div class="res-skills">
+                             ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
                         </div>` : ''}
 
                         ${d.interests ? `
                         <div class="res-sec-title" style="margin-top:20px;">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-                        <div class="res-skills" style="flex-direction:column; align-items:flex-start;">
-                             ${d.interests.split(',').map(s => s.trim() ? `<span style="font-size:0.85rem; margin-bottom:5px;">• ${s.trim()}</span>` : '').join('')}
+                        <div class="res-skills">
+                             ${d.interests.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
                         </div>` : ''}
-                    </div >
+                    </div>
         <div class="res-right">
             ${d.summary ? `
             <div class="res-section">
