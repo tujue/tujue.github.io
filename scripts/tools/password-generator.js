@@ -34,9 +34,9 @@ class PasswordGeneratorTool extends BaseTool {
 
         return `
         <div class="tool-content" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
-            <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
                 <!-- Control Panel -->
-                <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px;">
+                <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; max-height: 80vh; overflow-y: auto; position: sticky; top: 20px;">
                     <h4 style="margin-bottom: 1.5rem; color: var(--primary);">${txt.config}</h4>
                     
                     <div class="btn-group mb-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -99,7 +99,7 @@ class PasswordGeneratorTool extends BaseTool {
 
                 <!-- Result Display -->
                 <div class="preview-region">
-                    <div class="card" style="padding: 1.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px; height: 100%; display: flex; flex-direction: column;">
+                    <div class="card" style="padding: 1.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px; min-height: 500px; max-height: 80vh; display: flex; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <h4 style="margin: 0; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">${txt.result}</h4>
                             <button id="copy-pwd-btn" class="btn btn-sm btn-primary">📋 ${txt.copy}</button>
@@ -110,7 +110,7 @@ class PasswordGeneratorTool extends BaseTool {
                         </div>
 
                         <!-- Strength Meter -->
-                        <div style="margin-top: 2rem;">
+                        <div style="margin-top: 2rem; flex-shrink: 0;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem;">
                                 <span id="pwd-strength-badge" style="padding: 2px 8px; border-radius: 4px; background: var(--surface);">${isTr ? 'Bekleyin...' : 'Wait...'}</span>
                                 <span id="pwd-strength-details"></span>
