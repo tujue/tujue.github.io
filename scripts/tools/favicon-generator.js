@@ -163,10 +163,10 @@ class FaviconGeneratorTool extends BaseTool {
             try {
                 if (this.currentMethod === 'image') {
                     if (!this.selectedFile) throw new Error(txtErrImg);
-                    this.results = await window.DevTools.faviconGenerator.generateFromImage(this.selectedFile, bgColor.value);
+                    this.results = await this.generateFromImage(this.selectedFile, bgColor.value);
                 } else {
                     const emo = inEmo.value || '🚀';
-                    this.results = window.DevTools.faviconGenerator.generateFromEmoji(emo, bgColor.value);
+                    this.results = await this.generateFromEmoji(emo, bgColor.value);
                 }
                 this._renderGrid();
                 btnZip.style.display = 'block';
@@ -202,13 +202,78 @@ class FaviconGeneratorTool extends BaseTool {
                     <img src="${url}" style="width: 48px; height: 48px; display: block; image-rendering: pixelated;">
                 </div>
                 <div style="font-size: 0.75rem; opacity: 0.6; margin-bottom: 8px;">${size}x${size}</div>
-                <button class="btn btn-sm btn-outline" onclick="window.downloadSingleFav('${size}', '${url}')" style="width: 100%; font-size: 0.7rem;">PNG</button>
+                <button class="btn btn-sm btn-outline" onclick="window.activeToolInstance.downloadSingleFav('${size}', '${url}')" style="width: 100%; font-size: 0.7rem;">PNG</button>
             </div>
         `).join('');
+    }
 
-        window.downloadSingleFav = (s, u) => {
-            const a = document.createElement('a'); a.download = `favicon-${s}.png`; a.href = u; a.click();
-        };
+    downloadSingleFav(s, u) {
+        const a = document.createElement('a'); a.download = `favicon-${s}.png`; a.href = u; a.click();
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.faviconGenerator)
+
+    generateFromImage(file, bgColor) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const sizes = [16, 32, 48, 64, 128, 192, 512];
+                    const results = {};
+
+                    sizes.forEach(size => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+
+                        // Fill background if needed (for transparency handling if desired, or forcing bg)
+                        // Assuming simple draw for now, bgColor logic can be complex for image respecting alpha
+                        // If user wants specific BG, we fill it.
+                        if (bgColor && bgColor !== '#FFFFFF' && bgColor !== '#ffffff') {
+                            ctx.fillStyle = bgColor;
+                            ctx.fillRect(0, 0, size, size);
+                        }
+
+                        ctx.drawImage(img, 0, 0, size, size);
+                        results[size] = canvas.toDataURL('image/png');
+                    });
+                    resolve(results);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    generateFromEmoji(emoji, bgColor) {
+        return new Promise((resolve) => {
+            const sizes = [16, 32, 48, 64, 128, 192, 512];
+            const results = {};
+
+            sizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // Background
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, size, size);
+
+                // Emoji
+                ctx.font = `${size * 0.8}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(emoji, size / 2, size / 2 + size * 0.05); // slight offset for vertical centering
+
+                results[size] = canvas.toDataURL('image/png');
+            });
+            resolve(results);
+        });
     }
 }
 

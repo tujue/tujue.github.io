@@ -250,7 +250,6 @@ class CSSStudioTool extends BaseTool {
   update() {
     const target = document.getElementById('css-target');
     const snippet = document.getElementById('css-snippet');
-    const gen = window.DevTools.cssGenerator;
     let css = '';
 
     // Reset basics
@@ -276,7 +275,7 @@ class CSSStudioTool extends BaseTool {
       document.getElementById('v-bs-s').textContent = s;
       document.getElementById('v-bs-o').textContent = o;
 
-      css = gen.boxShadow(x, y, b, s, c, o, i);
+      css = this.boxShadow(x, y, b, s, c, o, i);
       target.style.boxShadow = css.split(':')[1].replace(';', '');
     } else if (this.currentMode === 'grad') {
       const t = document.getElementById('css-gr-t').value;
@@ -300,7 +299,7 @@ class CSSStudioTool extends BaseTool {
       document.getElementById('css-gr-ang-grp').style.display = t === 'radial' ? 'none' : 'block';
       document.getElementById('v-gr-a').textContent = a;
 
-      css = gen.gradientComplex(t, a, colors);
+      css = this.gradientComplex(t, a, colors);
       target.style.cssText += css;
     } else if (this.currentMode === 'glass') {
       const o = document.getElementById('css-gl-o').value;
@@ -308,7 +307,7 @@ class CSSStudioTool extends BaseTool {
       document.getElementById('v-gl-o').textContent = o;
       document.getElementById('v-gl-b').textContent = b;
 
-      css = gen.glassmorphism(o, b);
+      css = this.glassmorphism(o, b);
       target.style.cssText = `width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; ${css}`;
       target.innerHTML = '<span style="color:white; font-weight:700;">Glass Effect</span>';
       target.parentElement.style.background = 'url(assets/images/placeholder.jpg) center/cover';
@@ -325,8 +324,8 @@ class CSSStudioTool extends BaseTool {
 
       document.getElementById('v-bd-w').textContent = bw;
 
-      const borderCSS = gen.border(bw, bs, bc);
-      const radiusCSS = gen.borderRadius(tl, tr, br, bl);
+      const borderCSS = this.border(bw, bs, bc);
+      const radiusCSS = this.borderRadius(tl, tr, br, bl);
 
       css = `${borderCSS}\n${radiusCSS}`;
 
@@ -341,7 +340,7 @@ class CSSStudioTool extends BaseTool {
       const int = document.getElementById('css-neu-i').value;
       const shape = document.getElementById('css-neu-sh').value;
 
-      css = gen.neumorphism(col, size, rad, dist, int, shape);
+      css = this.neumorphism(col, size, rad, dist, int, shape);
       target.style.cssText = `width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; ${css}`;
       target.parentElement.style.background = col;
       target.parentElement.style.backgroundImage = 'none';
@@ -351,7 +350,7 @@ class CSSStudioTool extends BaseTool {
       const b = document.getElementById('css-ts-b').value;
       const c = document.getElementById('css-ts-c').value;
 
-      css = gen.textShadow(x, y, b, c);
+      css = this.textShadow(x, y, b, c);
       target.style.textShadow = `${x}px ${y}px ${b}px ${c}`;
       target.style.background = 'transparent';
       target.style.color = '#333';
@@ -366,7 +365,7 @@ class CSSStudioTool extends BaseTool {
 
       document.getElementById('v-fx-gap').textContent = gap;
 
-      css = gen.flexbox(dir, just, align, wrap, gap);
+      css = this.flexbox(dir, just, align, wrap, gap);
 
       target.style.cssText = `width: 100%; height: 100%; padding: 20px; border-radius:20px; background:#f8fafc; overflow:hidden; ${css}`;
 
@@ -385,7 +384,7 @@ class CSSStudioTool extends BaseTool {
       const sp = document.getElementById('css-fl-sp').value;
       const hu = document.getElementById('css-fl-hu').value;
 
-      css = gen.filter(bl, br, cn, gr, sp, hu);
+      css = this.filter(bl, br, cn, gr, sp, hu);
 
       target.style.background = 'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)';
       target.style.filter = `blur(${bl}px) brightness(${br}%) contrast(${cn}%) grayscale(${gr}%) sepia(${sp}%) hue-rotate(${hu}deg)`;
@@ -400,7 +399,7 @@ class CSSStudioTool extends BaseTool {
 
       document.getElementById('v-tf-sc').textContent = sc;
 
-      css = gen.transform(rot, sc, sx, sy, tx, ty);
+      css = this.transform(rot, sc, sx, sy, tx, ty);
 
       target.style.background = '#6366f1';
       target.style.transform = `rotate(${rot}deg) scale(${sc}) skew(${sx}deg, ${sy}deg) translate(${tx}px, ${ty}px)`;
@@ -426,6 +425,79 @@ class CSSStudioTool extends BaseTool {
       'css-fl-bl', 'css-fl-br', 'css-fl-cn', 'css-fl-gr', 'css-fl-sp', 'css-fl-hu',
       'css-tf-rot', 'css-tf-sc', 'css-tf-sx', 'css-tf-sy', 'css-tf-tx', 'css-tf-ty'
     ];
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.cssGenerator)
+
+  boxShadow(x, y, blur, spread, color, opacity, inset) {
+    const hexToRgb = (h) => {
+      let r = 0, g = 0, b = 0;
+      if (h.length == 4) { r = "0x" + h[1] + h[1]; g = "0x" + h[2] + h[2]; b = "0x" + h[3] + h[3]; }
+      else if (h.length == 7) { r = "0x" + h[1] + h[2]; g = "0x" + h[3] + h[4]; b = "0x" + h[5] + h[6]; }
+      return [+r, +g, +b];
+    };
+    const [r, g, b] = hexToRgb(color);
+    return `box-shadow: ${inset ? 'inset ' : ''}${x}px ${y}px ${blur}px ${spread}px rgba(${r}, ${g}, ${b}, ${opacity});`;
+  }
+
+  gradientComplex(type, angle, colors) {
+    const stops = colors.map(c => `${c.col} ${c.stop}%`).join(', ');
+    return `background: ${type === 'radial' ? 'radial-gradient(circle' : `linear-gradient(${angle}deg`}, ${stops});`;
+  }
+
+  glassmorphism(opacity, blur) {
+    return `background: rgba(255, 255, 255, ${opacity});\nbackdrop-filter: blur(${blur}px);\n-webkit-backdrop-filter: blur(${blur}px);\nborder: 1px solid rgba(255, 255, 255, 0.3);`;
+  }
+
+  border(width, style, color) {
+    return `border: ${width}px ${style} ${color};`;
+  }
+
+  borderRadius(tl, tr, br, bl) {
+    return `border-radius: ${tl}px ${tr}px ${br}px ${bl}px;`;
+  }
+
+  neumorphism(color, size, radius, distance, intensity, shape) {
+    // Simple light/dark calculation
+    const hexToRgb = (h) => {
+      let r = 0, g = 0, b = 0;
+      if (h.length == 4) { r = "0x" + h[1] + h[1]; g = "0x" + h[2] + h[2]; b = "0x" + h[3] + h[3]; }
+      else if (h.length == 7) { r = "0x" + h[1] + h[2]; g = "0x" + h[3] + h[4]; b = "0x" + h[5] + h[6]; }
+      return [+r, +g, +b];
+    };
+    const [r, g, b] = hexToRgb(color);
+
+    // Lighten and Darken
+    const adjust = (val, amt) => Math.min(255, Math.max(0, val + amt));
+    const light = `rgb(${adjust(r, 30)}, ${adjust(g, 30)}, ${adjust(b, 30)})`;
+    const dark = `rgb(${adjust(r, -30)}, ${adjust(g, -30)}, ${adjust(b, -30)})`;
+
+    const d = parseInt(distance);
+    const bBlur = d * 2;
+
+    if (shape === 'flat') {
+      return `border-radius: ${radius}px;\nbackground: ${color};\nbox-shadow: ${d}px ${d}px ${bBlur}px ${dark},\n            -${d}px -${d}px ${bBlur}px ${light};`;
+    } else if (shape === 'pressed') {
+      return `border-radius: ${radius}px;\nbackground: ${color};\nbox-shadow: inset ${d}px ${d}px ${bBlur}px ${dark},\n            inset -${d}px -${d}px ${bBlur}px ${light};`;
+    }
+    // Concave/Convex require gradient changes, simplify for now
+    return `border-radius: ${radius}px;\nbackground: ${color};\nbox-shadow: ${d}px ${d}px ${bBlur}px ${dark},\n            -${d}px -${d}px ${bBlur}px ${light};`;
+  }
+
+  textShadow(x, y, blur, color) {
+    return `text-shadow: ${x}px ${y}px ${blur}px ${color};`;
+  }
+
+  flexbox(dir, just, align, wrap, gap) {
+    return `display: flex;\nflex-direction: ${dir};\njustify-content: ${just};\nalign-items: ${align};\nflex-wrap: ${wrap};\ngap: ${gap}px;`;
+  }
+
+  filter(blur, bright, cont, gray, sepia, hue) {
+    return `filter: blur(${blur}px) brightness(${bright}%) contrast(${cont}%) grayscale(${gray}%) sepia(${sepia}%) hue-rotate(${hue}deg);`;
+  }
+
+  transform(rot, scale, skewX, skewY, tx, ty) {
+    return `transform: rotate(${rot}deg) scale(${scale}) skew(${skewX}deg, ${skewY}deg) translate(${tx}px, ${ty}px);`;
   }
 }
 

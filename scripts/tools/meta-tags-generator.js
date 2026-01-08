@@ -174,16 +174,14 @@ class MetaTagsTool extends BaseTool {
       document.getElementById('p-in-img').style.backgroundImage = `url('${val('img') || fallbackImg}')`;
 
       // Code Generation
-      if (window.DevTools.metaTagsTools) {
-        const data = {};
-        Object.keys(els).forEach(k => data[k] = els[k].value);
-        // Map keys correctly for generator
-        const map = { title: 'title', desc: 'description', img: 'image', url: 'url', site: 'siteName', author: 'author', tw: 'twitterHandle' };
-        const genData = {};
-        Object.keys(data).forEach(k => genData[map[k]] = data[k]);
+      const data = {};
+      Object.keys(els).forEach(k => data[k] = els[k].value);
+      // Map keys correctly for generator
+      const map = { title: 'title', desc: 'description', img: 'image', url: 'url', site: 'siteName', author: 'author', tw: 'twitterHandle' };
+      const genData = {};
+      Object.keys(data).forEach(k => genData[map[k]] = data[k] || '');
 
-        document.getElementById('m-out-code').textContent = window.DevTools.metaTagsTools.generate(genData);
-      }
+      document.getElementById('m-out-code').textContent = this.generateMetaTags(genData);
     };
 
     Object.values(els).forEach(e => e.addEventListener('input', updatePreviews));
@@ -209,6 +207,17 @@ class MetaTagsTool extends BaseTool {
           els.desc.value = 'Read about the latest trends in technology and development.';
           els.img.value = 'https://source.unsplash.com/random/800x600?tech';
           els.site.value = 'MyBlog';
+        } else if (id === 'product') {
+          els.title.value = 'Amazing Product - Shop Now';
+          els.desc.value = 'Best quality product you can find online. Buy now with 50% discount.';
+          els.img.value = 'https://source.unsplash.com/random/800x600?product';
+          els.site.value = 'MyShop';
+        } else if (id === 'portfolio') {
+          els.title.value = 'John Doe - Portfolio';
+          els.desc.value = 'Showcasing my latest work in web design and development.';
+          els.img.value = 'https://source.unsplash.com/random/800x600?design';
+          els.site.value = 'JohnDoe';
+          els.author.value = 'John Doe';
         }
         updatePreviews();
       };
@@ -217,11 +226,47 @@ class MetaTagsTool extends BaseTool {
     document.getElementById('m-btn-copy').onclick = () => {
       navigator.clipboard.writeText(document.getElementById('m-out-code').textContent);
       const btn = document.getElementById('m-btn-copy');
+      const original = btn.textContent;
       btn.textContent = '✅ Copied';
-      setTimeout(() => btn.textContent = '📋 Copy', 1500);
+      setTimeout(() => btn.textContent = original, 1500);
     };
 
     updatePreviews();
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.metaTagsTools)
+
+  generateMetaTags(data) {
+    const { title, description, image, url, siteName, author, twitterHandle } = data;
+
+    let html = `<!-- Primary Meta Tags -->
+<title>${title}</title>
+<meta name="title" content="${title}">
+<meta name="description" content="${description}">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="${url}">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${description}">
+<meta property="og:image" content="${image}">
+`;
+
+    if (siteName) html += `<meta property="og:site_name" content="${siteName}">\n`;
+
+    html += `
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="${url}">
+<meta property="twitter:title" content="${title}">
+<meta property="twitter:description" content="${description}">
+<meta property="twitter:image" content="${image}">
+`;
+
+    if (twitterHandle) html += `<meta name="twitter:creator" content="${twitterHandle}">\n`;
+    if (author) html += `<meta name="author" content="${author}">\n`;
+
+    return html;
   }
 }
 
