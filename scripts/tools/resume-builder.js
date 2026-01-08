@@ -80,12 +80,12 @@ class ResumeBuilderTool extends BaseTool {
                 <!-- Title removed as requested -->
 
                 <div style="display: flex; gap: 10px; overflow-x: auto; align-items: center; flex: 1;">
-                    ${tabs.map(t => `
-                        <div class="res-step ${this.currentTab === t.id ? 'active' : ''}" onclick="window._resTab('${t.id}')">
-                            <span class="step-icon">${t.icon}</span>
-                            <span class="step-label">${t.label}</span>
-                        </div>
-                    `).join('')}
+                    <div class="res-step ${this.currentTab === 'personal' ? 'active' : ''}" onclick="window._resTab('personal')"><span class="step-icon">👤</span> <span class="step-label">${txt.tabs.p}</span></div>
+                    <div class="res-step ${this.currentTab === 'exp' ? 'active' : ''}" onclick="window._resTab('exp')"><span class="step-icon">💼</span> <span class="step-label">${txt.tabs.x}</span></div>
+                    <div class="res-step ${this.currentTab === 'edu' ? 'active' : ''}" onclick="window._resTab('edu')"><span class="step-icon">🎓</span> <span class="step-label">${txt.tabs.e}</span></div>
+                    <div class="res-step ${this.currentTab === 'certs' ? 'active' : ''}" onclick="window._resTab('certs')"><span class="step-icon">🏅</span> <span class="step-label">${txt.tabs.c}</span></div>
+                    <div class="res-step ${this.currentTab === 'skills' ? 'active' : ''}" onclick="window._resTab('skills')"><span class="step-icon">⚡</span> <span class="step-label">${txt.tabs.s}</span></div>
+                    <div class="res-step ${this.currentTab === 'preview' ? 'active' : ''}" onclick="window._resTab('preview')"><span class="step-icon">👁️</span> <span class="step-label">${txt.tabs.v}</span></div>
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -209,9 +209,11 @@ class ResumeBuilderTool extends BaseTool {
         window._addItem = (type) => {
             if (!this.data.experience) this.data.experience = [];
             if (!this.data.education) this.data.education = [];
+            if (!this.data.certificates) this.data.certificates = [];
 
             if (type === 'exp') this.data.experience.push({ comp: '', role: '', date: '', desc: '' });
             else if (type === 'edu') this.data.education.push({ sch: '', deg: '', date: '' });
+            else if (type === 'certs') this.data.certificates.push({ name: '', issuer: '', date: '' });
             this._save();
             this.renderTabContent();
         };
@@ -237,7 +239,7 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     navigate(dir) {
-        const tabs = ['personal', 'exp', 'edu', 'skills', 'preview']; // 'design' tab is now integrated into the nav bar
+        const tabs = ['personal', 'exp', 'edu', 'certs', 'skills', 'preview']; // 'design' tab is now integrated into the nav bar
         const idx = tabs.indexOf(this.currentTab);
         const newIdx = idx + dir;
         if (newIdx >= 0 && newIdx < tabs.length) {
@@ -350,23 +352,25 @@ class ResumeBuilderTool extends BaseTool {
     renderTabContent() {
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const txt = isTr ? {
-            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', s: 'Yetenekler', d: 'Tasarım', v: 'Önizleme' },
+            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', s: 'Yetenekler', d: 'Tasarım', v: 'Önizleme' },
             btn: { next: 'Sonraki Adım >', prev: '< Geri', reset: 'Sıfırla', print: 'Yazdır / PDF' },
             lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle', summary: 'Özet / Hakkımda', languages: 'Diller', interests: 'İlgi Alanları', skills: 'Yetenekler' },
             exp: { title: 'İş Deneyimi', add: 'Deneyim Ekle', company: 'Şirket Adı', position: 'Pozisyon', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
             edu: { title: 'Eğitim', add: 'Eğitim Ekle', school: 'Okul Adı', degree: 'Derece / Bölüm', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
+            certs: { title: 'Sertifikalar', add: 'Sertifika Ekle', name: 'Sertifika Adı', issuer: 'Veren Kurum', date: 'Tarih' },
             design: { title: 'Görünüm Ayarları', color: 'Renk Teması', font: 'Yazı Tipi', template: 'Şablon Seçimi' }
         } : {
-            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', s: 'Skills', d: 'Design', v: 'Preview' },
+            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', s: 'Skills', d: 'Design', v: 'Preview' },
             btn: { next: 'Next Step >', prev: '< Back', reset: 'Reset', print: 'Print / PDF' },
             lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo', summary: 'Summary / About Me', languages: 'Languages', interests: 'Interests', skills: 'Skills' },
             exp: { title: 'Work Experience', add: 'Add Experience', company: 'Company Name', position: 'Position', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
             edu: { title: 'Education', add: 'Add Education', school: 'School Name', degree: 'Degree / Field of Study', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
+            certs: { title: 'Certificates', add: 'Add Certificate', name: 'Certificate Name', issuer: 'Issuer', date: 'Date' },
             design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' }
         };
 
-        const renderStickyNav = (isCompact = false) => {
-            const tabs = ['personal', 'exp', 'edu', 'skills', 'preview'];
+        const renderStickyNav = (isCompact = false, warningBadge = '') => {
+            const tabs = ['personal', 'exp', 'edu', 'certs', 'skills', 'preview'];
             const currentIdx = tabs.indexOf(this.currentTab);
 
             let nextBtn = '';
@@ -380,7 +384,8 @@ class ResumeBuilderTool extends BaseTool {
                 <div class="res-sticky-nav ${isCompact ? 'compact' : ''}">
                     ${this.currentTab !== 'personal' ? `<button onclick="window._resNav(-1)" class="btn btn-outline btn-sm" style="min-width: 70px; background: var(--surface);">${txt.btn.prev}</button>` : ''}
                     <button onclick="window._resReset()" class="btn btn-text btn-sm" style="color: #ef4444; opacity: 0.8;">${txt.btn.reset}</button>
-                    <div style="flex:1;"></div>
+                    ${warningBadge ? warningBadge : '<div style="flex:1;"></div>'}
+                    ${!warningBadge ? '<div style="flex:1;"></div>' : ''}
                     ${nextBtn}
                 </div>
             `;
@@ -465,26 +470,6 @@ class ResumeBuilderTool extends BaseTool {
             }
         }
         else if (this.currentTab === 'exp') {
-            const currentTheme = d.theme || 'modern';
-            const limit = this.THEME_LIMITS[currentTheme] || 99;
-            const expCount = d.experience.length;
-            const isOverLimit = expCount >= limit;
-            const isCritical = expCount > limit;
-
-            let warningHtml = '';
-            if (isOverLimit) {
-                const warningColor = isCritical ? '#ef4444' : '#f59e0b';
-                const warningBg = isCritical ? '#fef2f2' : '#fffbeb';
-                const warningIcon = isCritical ? '⚠️' : '💡';
-                const warningText = isTr
-                    ? `${warningIcon} Bu tema için önerilen: ${limit} deneyim (Şu an: ${expCount})`
-                    : `${warningIcon} Recommended for this theme: ${limit} experiences (Current: ${expCount})`;
-
-                warningHtml = `<div style="background: ${warningBg}; border: 1px solid ${warningColor}; border-radius: 6px; padding: 8px 12px; font-size: 0.8rem; color: ${warningColor}; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: 600;">${warningText}</span>
-                </div>`;
-            }
-
             div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
@@ -493,7 +478,6 @@ class ResumeBuilderTool extends BaseTool {
                             <h3 style="margin: 0; font-size: 1.1rem;">${txt.exp.title}</h3>
                             <button onclick="window._addItem('exp')" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">+ ${txt.exp.add}</button>
                         </div>
-                        ${warningHtml}
                         <div class="res-exp-grid">
                             ${d.experience.map((ex, i) => `
                                 <div class="res-item-card" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; position: relative; background: rgba(255,255,255,0.02);">
@@ -550,6 +534,44 @@ class ResumeBuilderTool extends BaseTool {
                                         <div>
                                             <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.edu.start} / ${txt.edu.end}</label>
                                             <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('education', this.value, ${i}, 'date')" value="${ed.date || ''}" placeholder="2018-2022">
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div style="height: 100px; flex-shrink: 0;"></div>
+                </div>
+            `;
+            c.appendChild(div);
+        }
+        else if (this.currentTab === 'certs') {
+            if (!d.certificates) d.certificates = [];
+
+            div.innerHTML = `
+                ${renderStickyNav()}
+                <div class="res-scroll-container">
+                    <div class="res-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">${txt.certs.title}</h3>
+                            <button onclick="window._addItem('certs')" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">+ ${txt.certs.add}</button>
+                        </div>
+                        <div class="res-exp-grid">
+                            ${d.certificates.map((cert, i) => `
+                                <div class="res-item-card" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; position: relative; background: rgba(255,255,255,0.02);">
+                                    <button onclick="window._removeItem('certificates', ${i})" style="position: absolute; top: 6px; right: 6px; background: none; border: none; color: #ef4444; cursor: pointer; padding: 3px; z-index: 10; font-size: 0.9rem;">✕</button>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div>
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.certs.name}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('certificates', this.value, ${i}, 'name')" value="${cert.name || ''}" placeholder="${isTr ? 'Yazılım Uzmanı' : 'Software Expert'}">
+                                        </div>
+                                        <div>
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.certs.issuer}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('certificates', this.value, ${i}, 'issuer')" value="${cert.issuer || ''}" placeholder="Google">
+                                        </div>
+                                        <div>
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.certs.date}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('certificates', this.value, ${i}, 'date')" value="${cert.date || ''}" placeholder="2023">
                                         </div>
                                     </div>
                                 </div>
@@ -647,9 +669,28 @@ class ResumeBuilderTool extends BaseTool {
             const thGrid = div.querySelector('.theme-grid'); // localized scope if needed
         }
         else if (this.currentTab === 'preview') {
+            // Generate warning for sticky nav
+            const currentTheme = d.theme || 'modern';
+            const limit = this.THEME_LIMITS[currentTheme] || 99;
+            const expCount = d.experience.length;
+            const isOverLimit = expCount >= limit;
+            const isCritical = expCount > limit;
+
+            let warningBadge = '';
+            if (isOverLimit) {
+                const warningColor = isCritical ? '#ef4444' : '#f59e0b';
+                const warningBg = isCritical ? '#fef2f2' : '#fffbeb';
+                const warningIcon = isCritical ? '⚠️' : '💡';
+                const warningText = isTr
+                    ? `${warningIcon} ${txt.tabs.x}: ${expCount}/${limit}`
+                    : `${warningIcon} Exp: ${expCount}/${limit}`;
+
+                warningBadge = `<div style="background: ${warningBg}; border: 1px solid ${warningColor}; border-radius: 4px; padding: 4px 10px; font-size: 0.75rem; color: ${warningColor}; font-weight: 600; white-space: nowrap;">${warningText}</div>`;
+            }
+
             div.innerHTML = `
                 <div id="res-preview-wrapper" class="res-fade-in" style="display: flex; flex-direction: column; flex: 1; height: 100%; min-height: 0;">
-                    ${renderStickyNav(true)}
+                    ${renderStickyNav(true, warningBadge)}
 
             <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 20px 0;">
                 <div id="res-page-wrapper" style="display: flex; justify-content: center; min-height: min-content; width: 100%;">
