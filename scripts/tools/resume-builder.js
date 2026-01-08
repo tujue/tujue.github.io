@@ -236,13 +236,21 @@ class ResumeBuilderTool extends BaseTool {
         };
         window._upField = (field, value, index = null, subField = null) => {
             if (index !== null && subField !== null) {
-                this.data[field][index][subField] = value;
+                if (this.data[field][index]) this.data[field][index][subField] = value;
             } else if (index !== null) {
-                this.data[field][index] = value;
+                if (this.data[field]) this.data[field][index] = value;
             } else {
                 this.data[field] = value;
             }
             this._save();
+            this.renderTabContent();
+
+            // Force Preview Update for Global Settings
+            if (field.includes('Font') || field === 'theme' || field === 'color') {
+                const res = window.DevTools.resumeGenerator.generateResumeHTML(this.data);
+                let style = document.getElementById('res-style-inj');
+                if (style) style.textContent = res.css + ' /* ' + Date.now() + ' */';
+            }
         };
 
         this.renderTabContent();

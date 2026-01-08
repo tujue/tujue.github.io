@@ -722,8 +722,8 @@
 
                 // --- GLOBAL FONT OVERRIDES ---
                 css += `
-                    .res-name, .res-title, .res-sec-title, .v-name-side, .v-title-side, .v-side-title, .v-sec-head, .e-name, .e-title, .e-side-title, .e-sec-title, .a-name, .a-title, .a-sec-title, .s-name, .s-title, .s-skills-title, .s-head, .k-name, .k-title, .k-sec-name, .k-r-title, .o-name, .o-title-badge, .o-box-title, h1, h2, h3, h4, h5, h6 { font-family: ${hF} !important; }
-                    .a4-page, .v-main, .v-sidebar, .e-main, .e-sidebar, .s-left, .s-right, .k-left, .k-right, .res-desc, .res-item, .res-role, .res-comp, .res-date, .res-tag, .res-item-head, p, span, div, li, a, td, th { font-family: ${bF} !important; }
+                    .a4-page .res-name, .a4-page .res-title, .a4-page .res-sec-title, .a4-page .v-name-side, .a4-page .v-title-side, .a4-page .v-side-title, .a4-page .v-sec-head, .a4-page .e-name, .a4-page .e-title, .a4-page .e-side-title, .a4-page .e-sec-title, .a4-page .a-name, .a4-page .a-title, .a4-page .a-sec-title, .a4-page .s-name, .a4-page .s-title, .a4-page .s-skills-title, .a4-page .s-head, .a4-page .k-name, .a4-page .k-title, .a4-page .k-sec-name, .a4-page .k-r-title, .a4-page .o-name, .a4-page .o-title-badge, .a4-page .o-box-title, .a4-page h1, .a4-page h2, .a4-page h3, .a4-page h4, .a4-page h5, .a4-page h6 { font-family: ${hF} !important; }
+                    .a4-page, .a4-page .v-main, .a4-page .v-sidebar, .a4-page .e-main, .a4-page .e-sidebar, .a4-page .s-left, .a4-page .s-right, .a4-page .k-left, .a4-page .k-right, .a4-page .res-desc, .a4-page .res-item, .a4-page .res-role, .a4-page .res-comp, .a4-page .res-date, .a4-page .res-tag, .a4-page .res-item-head, .a4-page p, .a4-page span, .a4-page div, .a4-page li, .a4-page a, .a4-page td, .a4-page th { font-family: ${bF} !important; }
                 `;
 
                 // --- HTML STRUCTURE ---
