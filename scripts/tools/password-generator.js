@@ -3,6 +3,13 @@ class PasswordGeneratorTool extends BaseTool {
     constructor(config) {
         super(config);
         this.currentMode = 'random';
+        this.WORDS = [
+            'apple', 'banana', 'orange', 'grape', 'mango', 'sky', 'blue', 'river', 'mountain', 'forest',
+            'eagle', 'lion', 'tiger', 'wolf', 'bear', 'star', 'moon', 'sun', 'planet', 'galaxy',
+            'fire', 'water', 'earth', 'wind', 'storm', 'gold', 'silver', 'diamond', 'ruby', 'emerald',
+            'happy', 'smile', 'laugh', 'dream', 'hope', 'peace', 'love', 'brave', 'strong', 'smart',
+            'code', 'data', 'web', 'tech', 'cyber', 'secure', 'lock', 'key', 'token', 'crypt'
+        ];
     }
 
     renderUI() {
@@ -125,9 +132,7 @@ class PasswordGeneratorTool extends BaseTool {
 
     setupListeners() {
         const modeBtn = (m) => document.getElementById(`pwd-mode-${m}`);
-        const optsDiv = (m) => document.getElementById(`pwd-m-${m}-options`); // Wait, IDs differ
 
-        // Manual mapping for sections
         const sections = {
             random: document.getElementById('pwd-random-options'),
             memorable: document.getElementById('pwd-memorable-options'),
@@ -138,18 +143,22 @@ class PasswordGeneratorTool extends BaseTool {
         const setMode = (mode) => {
             this.currentMode = mode;
             Object.keys(sections).forEach(m => {
-                sections[m].style.display = m === mode ? 'block' : 'none';
+                const sec = sections[m];
+                if (sec) sec.style.display = m === mode ? 'block' : 'none';
                 const btn = modeBtn(m);
-                if (m === mode) btn.classList.replace('btn-secondary', 'btn-primary');
-                else btn.classList.replace('btn-primary', 'btn-secondary');
+                if (btn) {
+                    if (m === mode) btn.classList.replace('btn-secondary', 'btn-primary');
+                    else btn.classList.replace('btn-primary', 'btn-secondary');
+                }
             });
             this.generate();
         };
 
-        ['random', 'memorable', 'passphrase', 'pin'].forEach(m => modeBtn(m).onclick = () => setMode(m));
+        ['random', 'memorable', 'passphrase', 'pin'].forEach(m => {
+            const btn = modeBtn(m);
+            if (btn) btn.onclick = () => setMode(m);
+        });
 
-        // Range displays
-        // Range displays - Explicit mapping to avoid complexity errors
         const rangeMap = [
             { input: 'pwd-length', display: 'pwd-length-display' },
             { input: 'pwd-memorable-count', display: 'pwd-memorable-count-display' },
@@ -168,6 +177,15 @@ class PasswordGeneratorTool extends BaseTool {
                 };
             }
         });
+
+        const inputs = [
+            'pwd-uppercase', 'pwd-lowercase', 'pwd-numbers', 'pwd-symbols', 'pwd-exclude-similar', 'pwd-passphrase-separator'
+        ];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.onchange = () => this.generate();
+        });
+
 
         document.getElementById('pwd-generate-btn').onclick = () => this.generate();
         document.getElementById('copy-pwd-btn').onclick = (e) => this.copyToClipboard(document.getElementById('pwd-output').textContent);
@@ -197,44 +215,101 @@ class PasswordGeneratorTool extends BaseTool {
                 separator: document.getElementById('pwd-passphrase-separator').value
             };
             if (this.currentMode === 'pin') return { length: parseInt(document.getElementById('pwd-pin-length').value) };
+            return {};
         };
 
         if (batch === 1) {
-            const res = window.DevTools.passwordGenerator.generateFromMode(this.currentMode, getOpts());
+            const res = this.generateFromMode(this.currentMode, getOpts());
             if (res.success) {
                 output.textContent = res.password;
                 this.updateStrength(res.score, res.strength);
             }
         } else {
-            const res = window.DevTools.passwordGenerator.generateBatch(batch, this.currentMode, getOpts());
-            if (res.success) {
-                // Better UI for batch generation
-                output.innerHTML = res.passwords.map(p => `
-                    <div class="pwd-batch-item" style="
-                        display: flex; 
-                        justify-content: space-between; 
-                        align-items: center; 
-                        padding: 0.75rem 1rem; 
-                        background: rgba(255,255,255,0.05); 
-                        margin-bottom: 0.5rem; 
-                        border-radius: 6px;
-                        border: 1px solid var(--border-color);
-                        font-family: var(--font-mono);
-                        font-size: 1rem;
-                    ">
-                        <span>${p}</span>
-                        <button onclick="window.activeToolInstance.copyToClipboard('${p}')" class="btn btn-sm btn-secondary" style="padding: 2px 8px; font-size: 0.75rem;">📋</button>
-                    </div>
-                `).join('');
-
-                const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
-                const pwdTxt = isTr ? 'parola' : 'passwords';
-                badge.textContent = `${batch} ${pwdTxt}`;
-                fill.style.width = '100%';
-                fill.style.background = 'var(--primary)';
-                details.textContent = '';
+            const passwords = [];
+            for (let i = 0; i < batch; i++) {
+                const res = this.generateFromMode(this.currentMode, getOpts());
+                if (res.success) passwords.push(res.password);
             }
+
+            output.innerHTML = passwords.map(p => `
+                <div class="pwd-batch-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: rgba(255,255,255,0.05); margin-bottom: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 1rem;">
+                    <span>${p}</span>
+                    <button onclick="window.activeToolInstance.copyToClipboard('${p}')" class="btn btn-sm btn-secondary" style="padding: 2px 8px; font-size: 0.75rem;">📋</button>
+                </div>
+            `).join('');
+
+            const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+            const pwdTxt = isTr ? 'parola' : 'passwords';
+            badge.textContent = `${batch} ${pwdTxt}`;
+            fill.style.width = '100%';
+            fill.style.background = 'var(--primary)';
+            details.textContent = '';
         }
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools)
+
+    generateFromMode(mode, opts) {
+        let password = '';
+        let score = 0;
+        let strength = 'Weak';
+
+        if (mode === 'random') {
+            const chars = {
+                lower: 'abcdefghijklmnopqrstuvwxyz',
+                upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                number: '0123456789',
+                symbol: '!@#$%^&*()_+~`|}{[]:;?><,./-='
+            };
+
+            let charset = '';
+            if (opts.lowercase) charset += chars.lower;
+            if (opts.uppercase) charset += chars.upper;
+            if (opts.numbers) charset += chars.number;
+            if (opts.symbols) charset += chars.symbol;
+
+            if (opts.excludeSimilar) {
+                charset = charset.replace(/[0O1lI]/g, '');
+            }
+
+            if (!charset) charset = chars.lower; // Fallback
+
+            for (let i = 0; i < opts.length; i++) {
+                const randomIndex = crypto.getRandomValues(new Uint32Array(1))[0] % charset.length;
+                password += charset[randomIndex];
+            }
+
+            // Simple scoring
+            score = Math.min(10, Math.floor(opts.length / 2) + (opts.symbols ? 2 : 0) + (opts.numbers ? 1 : 0));
+        }
+        else if (mode === 'pin') {
+            const digits = '0123456789';
+            for (let i = 0; i < opts.length; i++) {
+                const randomIndex = crypto.getRandomValues(new Uint32Array(1))[0] % digits.length;
+                password += digits[randomIndex];
+            }
+            score = 3;
+        }
+        else if (mode === 'memorable' || mode === 'passphrase') {
+            const count = opts.wordCount || 3;
+            const sep = opts.separator || '-';
+            const words = [];
+            for (let i = 0; i < count; i++) {
+                const randomIndex = crypto.getRandomValues(new Uint32Array(1))[0] % this.WORDS.length;
+                const word = this.WORDS[randomIndex];
+                // Capitalize for memorable
+                words.push(mode === 'memorable' ? word.charAt(0).toUpperCase() + word.slice(1) : word);
+            }
+            password = words.join(sep);
+            score = Math.min(10, count * 2);
+        }
+
+        if (score < 4) strength = 'Weak';
+        else if (score < 7) strength = 'Medium';
+        else if (score < 9) strength = 'Strong';
+        else strength = 'Very Strong';
+
+        return { success: true, password: password, score: score, strength: strength };
     }
 
     updateStrength(score, strength) {
