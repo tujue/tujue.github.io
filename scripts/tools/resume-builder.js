@@ -235,40 +235,46 @@ class ResumeBuilderTool extends BaseTool {
 
         // Temporarily remove zoom for accurate PDF generation
         const originalTransform = page.style.transform;
-        page.style.transform = 'scale(1)';
-        page.style.boxShadow = 'none'; // Remove shadow for PDF
+        page.style.transform = 'none';
+        page.style.boxShadow = 'none';
 
-        // Use html2canvas and jspdf to generate PDF
-        import('html2canvas').then(html2canvasModule => {
-            const html2canvas = html2canvasModule.default;
-            return html2canvas(page, {
-                scale: 2, // Higher scale for better quality
-                useCORS: true, // Enable CORS for images
-                allowTaint: true // Allow tainting canvas
+        // Small delay to ensure transform applied
+        setTimeout(() => {
+            import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js').then(module => {
+                const html2canvas = module.default || module;
+                return html2canvas(page, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                });
+            }).then(canvas => {
+                page.style.transform = originalTransform;
+                page.style.boxShadow = '';
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new window.jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`CV_${this.data.name || 'Resume'}.pdf`);
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }).catch(error => {
+                console.error('Error generating PDF:', error);
+                page.style.transform = originalTransform;
+                page.style.boxShadow = '';
+                btn.textContent = originalText;
+                btn.disabled = false;
+                alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
             });
-        }).then(canvas => {
-            page.style.transform = originalTransform; // Restore original transform
-            page.style.boxShadow = ''; // Restore shadow
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new window.jspdf.jsPDF({
-                orientation: 'portrait',
-                unit: 'px',
-                format: [page.offsetWidth, page.offsetHeight]
-            });
-            pdf.addImage(imgData, 'PNG', 0, 0, page.offsetWidth, page.offsetHeight);
-            pdf.save('resume.pdf');
-
-            btn.textContent = originalText;
-            btn.disabled = false;
-        }).catch(error => {
-            console.error('Error generating PDF:', error);
-            btn.textContent = originalText;
-            btn.disabled = false;
-            page.style.transform = originalTransform; // Restore original transform
-            page.style.boxShadow = ''; // Restore shadow
-            alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
-        });
+        }, 100);
     }
 
     renderTabContent() {
@@ -393,7 +399,10 @@ class ResumeBuilderTool extends BaseTool {
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
-                        <h3 style="margin-bottom: 15px; font-size: 1.15rem;">${txt.exp.title}</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0; font-size: 1.15rem;">${txt.exp.title}</h3>
+                            <button onclick="window._addItem('exp')" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">+ ${txt.exp.add}</button>
+                        </div>
                         <div class="res-exp-grid">
                             ${d.experience.map((ex, i) => `
                                 <div class="res-item-card" style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative; background: rgba(255,255,255,0.02);">
@@ -419,7 +428,6 @@ class ResumeBuilderTool extends BaseTool {
                                 </div>
                             `).join('')}
                         </div>
-                        <button onclick="window._addItem('exp')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px; padding: 12px;">+ ${txt.exp.add}</button>
                     </div>
                     <div style="height: 150px; flex-shrink: 0;"></div>
                 </div>
@@ -431,7 +439,10 @@ class ResumeBuilderTool extends BaseTool {
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
-                        <h3 style="margin-bottom: 15px; font-size: 1.15rem;">${txt.edu.title}</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0; font-size: 1.15rem;">${txt.edu.title}</h3>
+                            <button onclick="window._addItem('edu')" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">+ ${txt.edu.add}</button>
+                        </div>
                         <div class="res-exp-grid">
                             ${d.education.map((ed, i) => `
                                 <div class="res-item-card" style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative; background: rgba(255,255,255,0.02);">
@@ -453,7 +464,6 @@ class ResumeBuilderTool extends BaseTool {
                                 </div>
                             `).join('')}
                         </div>
-                        <button onclick="window._addItem('edu')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px; padding: 12px;">+ ${txt.edu.add}</button>
                     </div>
                     <div style="height: 150px; flex-shrink: 0;"></div>
                 </div>
