@@ -270,11 +270,16 @@ class JSONMasterTool extends BaseTool {
 
         document.getElementById('js-tg-gen').onclick = () => {
             try {
+                if (!tgInput.value.trim()) {
+                    showNotification('Please enter JSON to generate types', 'warning');
+                    tgOutput.value = '';
+                    return;
+                }
                 const results = this.generateTypes(tgInput.value, tgRoot.value || 'Root', tgLang.value);
                 tgOutput.value = results;
             } catch (e) {
                 showNotification('Error: ' + e.message, 'error');
-                tgOutput.value = '// Error generating types\n' + e.message;
+                tgOutput.value = ''; // Don't write error to output
             }
         };
 
@@ -344,7 +349,7 @@ class JSONMasterTool extends BaseTool {
                 showNotification(`Generated ${rows.length} statements!`, 'success');
             } catch (e) {
                 sqlOutput.value = '';
-                showNotification('Error: ' + e.message, 'error');
+                showNotification(e.message, 'error');
             }
         };
 
