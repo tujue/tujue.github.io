@@ -156,6 +156,19 @@ class TextTools extends BaseTool {
             findreplace: document.getElementById('pnl-fr')
         };
 
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+        const txt = isTr ? {
+            stats: {
+                flesch: 'FLESCH PUANI', level: 'SEVİYE', words: 'KELİME / KARAKTER',
+                sent: 'CÜMLE', read: 'OKUMA SÜRESİ', speak: 'KONUŞMA SÜRESİ'
+            }
+        } : {
+            stats: {
+                flesch: 'FLESCH SCORE', level: 'LEVEL', words: 'WORDS / CHARS',
+                sent: 'SENTENCES', read: 'READING TIME', speak: 'SPEAKING TIME'
+            }
+        };
+
         mode.onchange = () => {
             Object.values(panels).forEach(p => { if (p) p.style.display = 'none'; });
             if (panels[mode.value]) panels[mode.value].style.display = 'block';
@@ -172,84 +185,143 @@ class TextTools extends BaseTool {
 
             if (m === 'format') {
                 const action = document.getElementById('fmt-action').value;
-                if (action === 'slugify') {
-                    outPre.textContent = val.toString().toLowerCase().trim()
-                        .replace(/\s+/g, '-')           // Replace spaces with -
-                        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-                        .replace(/\-\-+/g, '-');        // Replace multiple - with single -
-                } else {
-                    outPre.textContent = window.DevTools.advancedTextTools.formatText(val, action);
-                }
+                outPre.textContent = this.formatText(val, action);
             } else if (m === 'convert') {
                 const action = document.getElementById('conv-action').value;
-                switch (action) {
-                    case 'html-enc':
-                        outPre.textContent = val.replace(/[\u00A0-\u9999<>\&]/g, function (i) {
-                            return '&#' + i.charCodeAt(0) + ';';
-                        });
-                        break;
-                    case 'html-dec':
-                        const doc = new DOMParser().parseFromString(val, "text/html");
-                        outPre.textContent = doc.documentElement.textContent;
-                        break;
-                    case 'url-enc': outPre.textContent = encodeURIComponent(val); break;
-                    case 'url-dec': outPre.textContent = decodeURIComponent(val); break;
-                    case 'bin-enc': outPre.textContent = val.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' '); break;
-                    case 'bin-dec': outPre.textContent = val.split(' ').map(b => String.fromCharCode(parseInt(b, 2))).join(''); break;
-                    case 'morse-enc':
-                        const morseCode = { 'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.' };
-                        outPre.textContent = val.toUpperCase().split('').map(c => morseCode[c] || c).join(' ');
-                        break;
-                    case 'morse-dec':
-                        const revMorse = { '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O', '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T', '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y', '--..': 'Z', '-----': '0', '.----': '1', '..---': '2', '...--': '3', '....-': '4', '.....': '5', '-....': '6', '--...': '7', '---..': '8', '----.': '9' };
-                        outPre.textContent = val.split(' ').map(c => revMorse[c] || c).join('');
-                        break;
-                }
+                outPre.textContent = this.convertText(val, action);
             } else if (m === 'findreplace') {
                 const f = document.getElementById('fr-find').value;
                 const r = document.getElementById('fr-replace').value;
                 const reg = document.getElementById('fr-regex').checked;
                 const cs = document.getElementById('fr-case').checked;
-                outPre.textContent = window.DevTools.advancedTextTools.findReplace(val, f, r, reg, cs ? 'g' : 'gi');
+                outPre.textContent = this.findReplace(val, f, r, reg, cs ? 'g' : 'gi');
             } else if (m === 'grammar') {
-                outPre.textContent = window.DevTools.advancedTextTools.checkGrammar(val);
+                outPre.textContent = this.checkGrammar(val);
             } else if (m === 'readability') {
-                const res = window.DevTools.textAnalyzer.analyze(val);
-                if (res.success) {
-                    outPre.style.display = 'none';
-                    statsGrid.style.display = 'grid';
-                    statsGrid.innerHTML = `
-                        <div class="card" style="padding:1rem; text-align:center;">
-                            <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.flesch}</div>
-                            <div style="font-size:1.8rem; font-weight:700; color:var(--primary);">${res.stats.fleschScore}</div>
-                        </div>
-                        <div class="card" style="padding:1rem; text-align:center;">
-                            <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.level}</div>
-                            <div style="font-size:1.1rem; font-weight:700;">${res.stats.readability}</div>
-                        </div>
-                        <div class="card" style="padding:1rem; text-align:center;">
-                            <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.words}</div>
-                            <div style="font-size:1.2rem; font-weight:700;">${res.stats.words} / ${res.stats.chars}</div>
-                        </div>
-                        <div class="card" style="padding:1rem; text-align:center;">
-                            <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.sent}</div>
-                            <div style="font-size:1.2rem; font-weight:700;">${res.stats.sentences}</div>
-                        </div>
-                        <div class="card" style="padding:1rem; text-align:center;">
-                            <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.read}</div>
-                            <div style="font-size:1.2rem; font-weight:700;">${res.stats.readingTime}</div>
-                        </div>
-                        <div class="card" style="padding:1rem; text-align:center;">
-                            <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.speak}</div>
-                            <div style="font-size:1.2rem; font-weight:700;">${res.stats.speakingTime}</div>
-                        </div>
-                    `;
-                }
+                const res = this.analyze(val);
+                outPre.style.display = 'none';
+                statsGrid.style.display = 'grid';
+                statsGrid.innerHTML = `
+                    <div class="card" style="padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.flesch}</div>
+                        <div style="font-size:1.8rem; font-weight:700; color:var(--primary);">${res.fleschScore}</div>
+                    </div>
+                    <div class="card" style="padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.level}</div>
+                        <div style="font-size:1.1rem; font-weight:700;">${res.readability}</div>
+                    </div>
+                    <div class="card" style="padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.words}</div>
+                        <div style="font-size:1.2rem; font-weight:700;">${res.words} / ${res.chars}</div>
+                    </div>
+                    <div class="card" style="padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.sent}</div>
+                        <div style="font-size:1.2rem; font-weight:700;">${res.sentences}</div>
+                    </div>
+                    <div class="card" style="padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.read}</div>
+                        <div style="font-size:1.2rem; font-weight:700;">${res.readingTime}</div>
+                    </div>
+                    <div class="card" style="padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; opacity:0.5;">${txt.stats.speak}</div>
+                        <div style="font-size:1.2rem; font-weight:700;">${res.speakingTime}</div>
+                    </div>
+                `;
             }
         };
 
         document.getElementById('text-btn-process').onclick = process;
         document.getElementById('text-copy-btn').onclick = () => this.copyToClipboard(outPre.textContent);
+    }
+
+    // INTERNAL LOGIC
+
+    formatText(text, action) {
+        switch (action) {
+            case 'uppercase': return text.toUpperCase();
+            case 'lowercase': return text.toLowerCase();
+            case 'titlecase': return text.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            case 'reverse': return text.split('').reverse().join('');
+            case 'trim': return text.split('\n').map(l => l.trim()).join('\n');
+            case 'remove-extra-spaces': return text.replace(/\s+/g, ' ').trim();
+            case 'slugify':
+                return text.toString().toLowerCase().trim()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w\-]+/g, '')
+                    .replace(/\-\-+/g, '-');
+            default: return text;
+        }
+    }
+
+    convertText(val, action) {
+        switch (action) {
+            case 'html-enc': return val.replace(/[\u00A0-\u9999<>\&]/g, i => '&#' + i.charCodeAt(0) + ';');
+            case 'html-dec': return new DOMParser().parseFromString(val, "text/html").documentElement.textContent;
+            case 'url-enc': return encodeURIComponent(val);
+            case 'url-dec': return decodeURIComponent(val);
+            case 'bin-enc': return val.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+            case 'bin-dec': return val.split(' ').map(b => String.fromCharCode(parseInt(b, 2))).join('');
+            case 'morse-enc':
+                const morseCode = { 'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.' };
+                return val.toUpperCase().split('').map(c => morseCode[c] || c).join(' ');
+            case 'morse-dec':
+                const revMorse = { '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O', '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T', '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y', '--..': 'Z', '-----': '0', '.----': '1', '..---': '2', '...--': '3', '....-': '4', '.....': '5', '-....': '6', '--...': '7', '---..': '8', '----.': '9' };
+                return val.split(' ').map(c => revMorse[c] || c).join('');
+            default: return '';
+        }
+    }
+
+    findReplace(text, find, replace, isRegex, flags) {
+        if (!find) return text;
+        try {
+            if (isRegex) {
+                const regex = new RegExp(find, flags);
+                return text.replace(regex, replace);
+            }
+            return text.replaceAll(find, replace);
+        } catch (e) {
+            return 'Regex Error: ' + e.message;
+        }
+    }
+
+    checkGrammar(text) {
+        // Mock grammar check
+        return "Grammar check requires a backend service. This is a local mock.\n\n" + text;
+    }
+
+    analyze(text) {
+        const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        const chars = text.length;
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+        const syllables = text.split(/[aeiouy]+/i).length - 1;
+
+        // Flesch Reading Ease
+        // 206.835 - 1.015(total words / total sentences) - 84.6(total syllables / total words)
+        const avgWordsPerSent = sentences > 0 ? words / sentences : 0;
+        const avgSylPerWord = words > 0 ? syllables / words : 0;
+        let score = 206.835 - (1.015 * avgWordsPerSent) - (84.6 * avgSylPerWord);
+        score = Math.round(score * 10) / 10;
+        if (score > 100) score = 100;
+        if (score < 0) score = 0;
+
+        let level = 'Easy';
+        if (score < 30) level = 'Very Confusing';
+        else if (score < 50) level = 'Difficult';
+        else if (score < 60) level = 'Fairly Difficult';
+        else if (score < 70) level = 'Standard';
+        else if (score < 80) level = 'Fairly Easy';
+        else if (score < 90) level = 'Easy';
+        else level = 'Very Easy';
+
+        return {
+            words,
+            chars,
+            sentences,
+            fleschScore: score,
+            readability: level,
+            readingTime: Math.ceil(words / 200) + ' min',
+            speakingTime: Math.ceil(words / 130) + ' min'
+        };
     }
 }
 
