@@ -73,35 +73,104 @@ class CodeBeautifierTool extends BaseTool {
             const code = input.value;
             if (!code.trim()) return;
 
-            let res;
+            let result = '';
+            let message = 'Beautified!';
+
             try {
-                switch (lang) {
-                    case 'json': res = window.DevTools.codeBeautifier.beautifyJSON(code); break;
-                    case 'javascript': res = window.DevTools.codeBeautifier.beautifyJS(code); break;
-                    case 'typescript': res = window.DevTools.codeBeautifier.beautifyTypeScript(code); break;
-                    case 'html': res = window.DevTools.codeBeautifier.beautifyHTML(code); break;
-                    case 'css': res = window.DevTools.codeBeautifier.beautifyCSS(code); break;
-                    case 'sql': res = window.DevTools.codeBeautifier.beautifySQL(code); break;
-                    case 'python': res = window.DevTools.codeBeautifier.beautifyPython(code); break;
-                    case 'xml': res = window.DevTools.codeBeautifier.beautifyXML(code); break;
-                    case 'php': res = window.DevTools.codeBeautifier.beautifyPHP(code); break;
-                    default: res = { success: false, message: 'Unsupported' };
+                if (lang === 'json') {
+                    result = this.beautifyJSON(code);
+                } else if (lang === 'xml' || lang === 'html') {
+                    result = this.beautifyXML(code);
+                } else if (lang === 'sql') {
+                    result = this.beautifySQL(code);
+                } else {
+                    // Generic fallback for JS/TS/CSS/PHP/Python if no library found
+                    // Try to use js_beautify if available
+                    if (window.js_beautify) {
+                        if (lang === 'css') result = window.js_beautify.css(code);
+                        else if (lang === 'html') result = window.js_beautify.html(code);
+                        else result = window.js_beautify(code);
+                    } else {
+                        // Very simple indentation fallback
+                        result = this.simpleIndent(code);
+                        message = 'Formatted (Basic)';
+                    }
                 }
 
-                if (res.success) {
-                    output.textContent = res.result;
-                    status.textContent = res.message;
-                    status.style.color = 'var(--success)';
-                } else {
-                    this.showNotification(res.message, 'error');
-                }
+                output.textContent = result;
+                status.textContent = message;
+                status.style.color = 'var(--success)';
             } catch (e) {
                 this.showNotification(e.message, 'error');
+                status.textContent = 'Error';
+                status.style.color = 'var(--danger)';
             }
         };
 
         beautifyBtn.onclick = beautify;
         document.getElementById('beautify-copy-btn').onclick = () => this.copyToClipboard(output.textContent);
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools)
+
+    beautifyJSON(code) {
+        try {
+            const parsed = JSON.parse(code);
+            return JSON.stringify(parsed, null, 2);
+        } catch (e) {
+            throw new Error('Invalid JSON: ' + e.message);
+        }
+    }
+
+    beautifyXML(xml) {
+        let formatted = '';
+        let indent = '';
+        const tab = '  ';
+
+        xml.split(/>\s*</).forEach(node => {
+            if (node.match(/^\/\w/)) indent = indent.substring(tab.length); // decrease indent
+            formatted += indent + '<' + node + '>\r\n';
+            if (node.match(/^<?\w[^>]*[^\/]$/) && !node.startsWith("?")) indent += tab; // increase indent
+        });
+
+        return formatted.substring(1, formatted.length - 3);
+    }
+
+    beautifySQL(sql) {
+        // Basic SQL Formatter
+        const keywords = ["SELECT", "FROM", "WHERE", "AND", "OR", "ORDER BY", "GROUP BY", "JAVING", "LIMIT", "INSERT INTO", "VALUES", "UPDATE", "SET", "DELETE FROM", "JOIN", "LEFT JOIN", "RIGHT JOIN", "INNER JOIN"];
+        let formatted = sql;
+        keywords.forEach(kw => {
+            const regex = new RegExp(`\\b${kw}\\b`, 'gi');
+            formatted = formatted.replace(regex, `\n${kw}`);
+        });
+        return formatted.trim();
+    }
+
+    simpleIndent(code) {
+        // Fallback structural indenter for C-like syntaxes (JS, CSS, PHP)
+        let res = '';
+        let indent = 0;
+        const lines = code.split('\n');
+
+        // If single line code, try to split by semi-colons or braces
+        let tokens = code;
+        if (lines.length < 2) {
+            tokens = code.replace(/{/g, '{\n').replace(/}/g, '\n}').replace(/;/g, ';\n');
+        }
+
+        tokens.split('\n').forEach(line => {
+            line = line.trim();
+            if (!line) return;
+
+            if (line.includes('}')) indent--;
+            if (indent < 0) indent = 0;
+
+            res += '  '.repeat(indent) + line + '\n';
+
+            if (line.includes('{')) indent++;
+        });
+        return res;
     }
 }
 

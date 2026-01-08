@@ -131,20 +131,18 @@ class RandomGeneratorTool extends BaseTool {
             colorPx.style.display = 'none';
             teamRes.innerHTML = '';
 
-            const rg = window.DevTools.randomGenerator;
-
             switch (mode) {
                 case 'number':
-                    result = rg.number(parseInt(document.getElementById('num-min').value), parseInt(document.getElementById('num-max').value));
+                    result = this.generateNumber(parseInt(document.getElementById('num-min').value), parseInt(document.getElementById('num-max').value));
                     break;
                 case 'dice': {
                     const sides = parseInt(document.getElementById('dice-s').value);
                     const count = parseInt(document.getElementById('dice-c').value);
-                    const d = rg.multipleDice(sides, count);
+                    const d = this.generateDice(sides, count);
 
                     if (sides === 6 && count <= 5) {
                         const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-                        const visual = d.rolls.map(r => faces[r - 1]).join(' ');
+                        const visual = d.rolls.map(r => faces[r - 1] || r).join(' ');
                         result = `${visual} (${d.total})`;
                     } else {
                         result = `🎲 ${d.total} [${d.rolls.join(', ')}]`;
@@ -153,29 +151,29 @@ class RandomGeneratorTool extends BaseTool {
                     break;
                 }
                 case 'uuid':
-                    result = rg.uuid();
+                    result = crypto.randomUUID();
                     resArea.style.fontSize = '1.2rem';
                     break;
                 case 'coin': {
-                    const coinRes = rg.coinFlip();
+                    const heads = Math.random() > 0.5;
                     const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
                     if (isTr) {
-                        result = coinRes === 'Heads' ? '🌑 Yazı' : '🌕 Tura';
+                        result = heads ? '🌑 Yazı' : '🌕 Tura';
                     } else {
-                        result = coinRes === 'Heads' ? '🌑 Heads' : '🌕 Tails';
+                        result = heads ? '🌑 Heads' : '🌕 Tails';
                     }
                     break;
                 }
                 case 'color': {
-                    const c = rg.randomColor();
-                    result = c.hex;
+                    const c = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+                    result = c;
                     colorPx.style.display = 'block';
-                    colorPx.style.background = c.hex;
+                    colorPx.style.background = c;
                     break;
                 }
                 case 'name': {
                     const names = document.getElementById('names-list').value.split('\n').filter(n => n.trim());
-                    if (names.length) result = `🎯 ${rg.namePicker(names).picked}`;
+                    if (names.length) result = `🎯 ${names[Math.floor(Math.random() * names.length)]}`;
                     else result = 'Empty List';
                     break;
                 }
@@ -190,17 +188,21 @@ class RandomGeneratorTool extends BaseTool {
                     const tNames = document.getElementById('names-list').value.split('\n').filter(n => n.trim());
                     const tCount = parseInt(document.getElementById('team-count').value);
                     if (tNames.length >= tCount) {
-                        const tr = rg.teamPicker(tNames, tCount);
+                        const teams = this.generateTeams(tNames, tCount);
                         result = 'Teams Created';
                         resArea.style.fontSize = '1.5rem';
-                        tr.teams.forEach((t, i) => {
+                        teams.forEach((t, i) => {
                             teamRes.innerHTML += `<div class="card" style="padding:1rem; background:rgba(255,255,255,0.05);"><strong>Team ${i + 1}:</strong> ${t.join(', ')}</div>`;
                         });
                     } else result = 'Need more names';
                     break;
                 }
                 case 'lottery':
-                    result = rg.lotteryNumbers(6, 49, 1).numbers.join(' - ');
+                    const nums = new Set();
+                    while (nums.size < 6) {
+                        nums.add(Math.floor(Math.random() * 49) + 1);
+                    }
+                    result = Array.from(nums).sort((a, b) => a - b).join(' - ');
                     resArea.style.fontSize = '2rem';
                     break;
                 case 'user': {
@@ -245,6 +247,38 @@ class RandomGeneratorTool extends BaseTool {
         document.getElementById('rnd-copy-btn').onclick = () => this.copyToClipboard(resArea.textContent);
 
         generate(); // Initial
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools)
+
+    generateNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    generateDice(sides, count) {
+        const rolls = [];
+        let total = 0;
+        for (let i = 0; i < count; i++) {
+            const roll = Math.floor(Math.random() * sides) + 1;
+            rolls.push(roll);
+            total += roll;
+        }
+        return { total, rolls };
+    }
+
+    generateTeams(names, teamCount) {
+        // Fisher-Yates shuffle
+        const shuffled = [...names];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        const teams = Array.from({ length: teamCount }, () => []);
+        shuffled.forEach((name, i) => {
+            teams[i % teamCount].push(name);
+        });
+        return teams;
     }
 }
 
