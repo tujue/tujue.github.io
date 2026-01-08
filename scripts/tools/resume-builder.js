@@ -15,15 +15,10 @@ class ResumeBuilderTool extends BaseTool {
 
             const header = document.querySelector('.workspace-header');
             if (header) {
-                // Ultra compact mode, NO BORDER to merge with tabs
-                header.style.cssText = 'margin-bottom: 0px !important; padding: 5px 15px !important; min-height: 35px !important; border-bottom: none !important;';
-
-                const title = header.querySelector('.workspace-title');
-                if (title) title.style.cssText = 'font-size: 1.25rem !important; margin: 0; line-height: 1.2;';
-
-                // Close button compaction
-                const closeBtn = header.querySelector('.close-btn');
-                if (closeBtn) closeBtn.style.cssText = 'width: 28px; height: 28px; font-size: 1rem;';
+                // Completely HIDE the default workspace header to reclaim space
+                // We will integrate the title and close button into the tool's nav bar instead
+                this._origHeaderDisplay = header.style.display;
+                header.style.setProperty('display', 'none', 'important');
             }
         }, 10);
 
@@ -61,8 +56,13 @@ class ResumeBuilderTool extends BaseTool {
         <div class="tool-content resume-wizard" style="width: 100%; height: calc(100vh - 120px); background: var(--bg-primary); display: flex; flex-direction: column;">
             
             <!-- Wizard Header -->
-            <div class="res-wizard-nav" style="justify-content: space-between; padding-right: 20px;">
-                <div style="display: flex; gap: 30px; overflow-x: auto; align-items: center;">
+            <div class="res-wizard-nav" style="justify-content: space-between; padding-right: 10px;">
+                <!-- NEW: Integrated Title -->
+                <div style="font-weight:700; font-size:1.1rem; color:var(--text-primary); margin-right: 10px; display:flex; align-items:center; gap:8px; white-space:nowrap;">
+                    <span style="color:var(--primary);">CV</span>
+                </div>
+
+                <div style="display: flex; gap: 10px; overflow-x: auto; align-items: center; flex: 1;">
                     ${tabs.map(t => `
                         <div class="res-step ${this.currentTab === t.id ? 'active' : ''}" onclick="window._resTab('${t.id}')">
                             <span class="step-icon">${t.icon}</span>
@@ -83,6 +83,9 @@ class ResumeBuilderTool extends BaseTool {
                         <option value="" disabled selected>🎨 ${isTr ? 'Hızlı Tema' : 'Quick Theme'}</option>
                         ${Object.keys(txt.themes).map(key => `<option value="${key}" ${this.data.theme === key ? 'selected' : ''}>${txt.themes[key]}</option>`).join('')}
                     </select>
+                    
+                    <!-- NEW: Integrated Close Button -->
+                    <button onclick="window.closeWorkspace()" style="background:none; border:none; color:var(--text-secondary); font-size:1.2rem; cursor:pointer; padding:5px 10px; margin-left:5px;" title="${isTr ? 'Kapat' : 'Close'}">✕</button>
                 </div>
             </div>
 
@@ -555,7 +558,10 @@ class ResumeBuilderTool extends BaseTool {
 
         // Restore header styles
         const header = document.querySelector('.workspace-header');
-        if (header) header.style.cssText = '';
+        if (header) {
+            header.style.display = this._origHeaderDisplay || '';
+            header.style.cssText = '';
+        }
 
         const title = document.querySelector('.workspace-header .workspace-title');
         if (title) title.style.cssText = '';
