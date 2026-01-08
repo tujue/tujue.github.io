@@ -24,11 +24,12 @@ class ResumeBuilderTool extends BaseTool {
             themes: { modern: 'Modern', nova: 'Nova (Modern)', orbit: 'Orbit (Dark)', bloom: 'Bloom (Pastel)', wave: 'Wave (Curve)', bold: 'Bold (Sharp)', prime: 'Prime (Corp)', elegant: 'Elegant (New)', titan: 'Titan (New)', cyber: 'Cyber (New)', brutal: 'Brutal (New)', executive: 'Executive', minimal: 'Minimal', leftside: 'Left Side', skyline: 'Skyline', tech: 'Tech' }
         };
 
-        { id: 'personal', icon: '👤', label: txt.tabs.p },
-        { id: 'exp', icon: '💼', label: txt.tabs.x },
-        { id: 'edu', icon: '🎓', label: txt.tabs.e },
-        { id: 'skills', icon: '⚡', label: txt.tabs.s },
-        { id: 'preview', icon: '👁️', label: txt.tabs.v }
+        const tabs = [
+            { id: 'personal', icon: '👤', label: txt.tabs.p },
+            { id: 'exp', icon: '💼', label: txt.tabs.x },
+            { id: 'edu', icon: '🎓', label: txt.tabs.e },
+            { id: 'skills', icon: '⚡', label: txt.tabs.s },
+            { id: 'preview', icon: '👁️', label: txt.tabs.v }
         ];
 
         return `
