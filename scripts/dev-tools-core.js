@@ -621,7 +621,7 @@
                     css += `.a4-page { padding: 50px 70px; } .res-sec-title { border: none; letter-spacing: 0.2em; font-size: 0.85rem; color: #a0aec0; margin-bottom: 20px; text-align: right; margin-right: -20px; padding-right: 20px; border-right: 3px solid ${color}; } .res-name { font-weight: 300; letter-spacing: -1px; font-size: 3rem; } .res-item-head { flex-direction: column; gap: 2px; } .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; } .res-tag { background: white; border: 1px solid #e2e8f0; color: #718096; } `;
                 }
                 else if (theme === 'skyline') {
-                    css += `.res-name { font-size: 5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 10px; right: 40px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 50px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 15px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; } .res-sec-title::after { content: ''; width: 40px; height: 6px; background: ${color}; } `;
+                    css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; }`;
                 }
                 else if (theme === 'leftside') {
                     css += `.a4-page { display: grid; grid-template-columns: 260px 1fr; padding: 0; min-height: 1123px; } 
@@ -1315,26 +1315,26 @@
                         `).join('')}
                     </div>
 
-                    <div class="res-section" style="margin-bottom: 15px;">
-                        <div class="res-sec-title" style="margin-bottom: 8px;">${lbl.skills}</div>
-                        <div class="res-skills">
-                            ${d.skills.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
+                    <div class="res-section" style="margin-bottom: 12px;">
+                        <div class="res-sec-title" style="margin-bottom: 6px;">${lbl.skills}</div>
+                        <div class="res-skills" style="gap: 6px;">
+                            ${d.skills.split(',').map(s => s.trim() ? `<span class="res-tag" style="padding: 3px 8px; font-size: 0.8rem;">${s.trim()}</span>` : '').join('')}
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         ${d.languages ? `
                         <div class="res-section" style="margin-bottom: 0;">
-                            <div class="res-sec-title" style="margin-bottom: 8px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                            <div class="res-skills">
-                                 ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag" style="background:${d.color}15; color:${d.color}; border:1px solid ${d.color}40;">${s.trim()}</span>` : '').join('')}
+                            <div class="res-sec-title" style="margin-bottom: 6px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+                            <div class="res-skills" style="gap: 6px;">
+                                 ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag" style="background:${d.color}15; color:${d.color}; border:1px solid ${d.color}40; padding: 3px 8px; font-size: 0.8rem;">${s.trim()}</span>` : '').join('')}
                             </div>
                         </div>` : '<div></div>'}
 
                         ${d.interests ? `
                         <div class="res-section" style="margin-bottom: 0;">
-                            <div class="res-sec-title" style="margin-bottom: 8px;">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-                            <div class="res-desc" style="margin-top:0;">${d.interests}</div>
+                            <div class="res-sec-title" style="margin-bottom: 6px;">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                            <div class="res-desc" style="margin-top:0; font-size: 0.8rem; line-height: 1.4;">${d.interests}</div>
                         </div>` : ''}
                     </div>
     `;
