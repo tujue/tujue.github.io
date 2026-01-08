@@ -103,7 +103,7 @@ class ResumeBuilderTool extends BaseTool {
                 .theme-item:hover { transform: translateY(-3px); background: rgba(var(--primary-rgb), 0.1); }
                 .theme-item.active { border-color: var(--primary); background: rgba(var(--primary-rgb), 0.1); font-weight: bold; color: var(--primary); }
                 
-                #res-preview-container { height: 100%; display: flex; justify-content: center; overflow: hidden; background: #525659; border-radius: 8px; padding: 40px; position: relative; }
+                #res-preview-container { height: 100%; display: flex; justify-content: center; overflow: hidden; background: #525659; border-radius: 8px; padding: 0; position: relative; }
                 .a4-page { transition: transform 0.2s; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
                 /* Animations */
@@ -536,7 +536,7 @@ class ResumeBuilderTool extends BaseTool {
         const page = document.getElementById('res-a4-page');
         if (!container || !page) return;
 
-        const contW = container.clientWidth - 40; // Reduced padding for wider view
+        const contW = container.clientWidth; // Full width usage
         const pageW = 794;
         const pageH = 1123;
 
@@ -551,7 +551,7 @@ class ResumeBuilderTool extends BaseTool {
         page.style.transform = `scale(${this.scaleValue})`;
         // Adjust layout space for scaled element
         page.style.marginBottom = `-${(1 - this.scaleValue) * pageH}px`;
-        page.style.marginTop = '20px'; // Add some breathing room at top
+        page.style.marginTop = '0px'; // Add some breathing room at top
 
         const lbl = document.getElementById('z-val');
         if (lbl) lbl.textContent = this.zoom === 'fit' ? 'FIT W' : Math.round(this.scaleValue * 100) + '%';
