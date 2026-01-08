@@ -106,12 +106,12 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 5px; margin: 0 auto; width: 100%; }
-                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 40px; }
+                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 40px 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
-                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 1200px; margin: 0 auto; }
+                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin-bottom: 40px; }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
@@ -267,6 +267,7 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     renderTabContent() {
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const c = document.getElementById('res-content-area');
         c.innerHTML = '';
         const d = this.data;
@@ -574,6 +575,7 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     fitPreview() {
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const container = document.getElementById('res-preview-container');
         const page = document.getElementById('res-a4-page');
         if (!container || !page) return;
