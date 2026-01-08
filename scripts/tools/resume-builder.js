@@ -243,10 +243,20 @@ class ResumeBuilderTool extends BaseTool {
                 this.data[field] = value;
             }
             this._save();
+
+            // Special handling for Fonts (CSS Only - No Flash)
+            if (field.includes('Font')) {
+                const res = window.DevTools.resumeGenerator.generateResumeHTML(this.data);
+                let style = document.getElementById('res-style-inj');
+                if (style) style.textContent = res.css;
+                if (this.currentTab === 'preview') this.fitPreview();
+                return; // Skip full render
+            }
+
             this.renderTabContent();
 
-            // Force Preview Update for Global Settings
-            if (field.includes('Font') || field === 'theme' || field === 'color') {
+            // Force Preview Update for Global Settings (Theme/Color)
+            if (field === 'theme' || field === 'color') {
                 const res = window.DevTools.resumeGenerator.generateResumeHTML(this.data);
                 let style = document.getElementById('res-style-inj');
                 if (style) style.textContent = res.css;
