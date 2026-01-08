@@ -466,31 +466,243 @@ class JSONMasterTool extends BaseTool {
         let obj;
         try { obj = JSON.parse(jsonStr); } catch (e) { throw new Error('Invalid JSON'); }
 
+        const models = [];
+        const seen = new Set();
+        const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+        const toPascal = s => s.split(/[_-]/).map(capitalize).join('');
+
         if (lang === 'ts') {
-            const getType = (v) => {
+            const getType = (v, k) => {
                 if (v === null) return 'any';
-                if (Array.isArray(v)) return v.length ? `${getType(v[0])}[]` : 'any[]';
-                if (typeof v === 'object') return '{ [key: string]: any }'; // Simplified
+                if (Array.isArray(v)) {
+                    if (v.length === 0) return 'any[]';
+                    const firstItem = v[0];
+                    if (typeof firstItem === 'object' && firstItem !== null) {
+                        return `${toPascal(k)}[]`;
+                    }
+                    return `${typeof firstItem}[]`;
+                }
+                if (typeof v === 'object') return toPascal(k);
                 return typeof v;
             };
-            let code = `interface ${rootName} {\n`;
-            for (const [k, v] of Object.entries(obj)) {
-                code += `  ${k}: ${getType(v)};\n`;
-            }
-            code += '}';
-            return code;
+
+            const process = (o, name) => {
+                if (!o || typeof o !== 'object' || Array.isArray(o) || seen.has(name)) return;
+                seen.add(name);
+
+                let code = `export interface ${name} {\n`;
+                for (let [k, v] of Object.entries(o)) {
+                    code += `    ${k}: ${getType(v, k)};\n`;
+                }
+                code += `}\n`;
+                models.push(code);
+
+                // Recursively process nested objects
+                for (let [k, v] of Object.entries(o)) {
+                    if (v && typeof v === 'object' && !Array.isArray(v)) {
+                        process(v, toPascal(k));
+                    } else if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object' && v[0] !== null) {
+                        process(v[0], toPascal(k));
+                    }
+                }
+            };
+
+            process(obj, rootName);
+            return models.reverse().join('\n');
         }
-        else if (lang === 'go') {
-            let code = `type ${rootName} struct {\n`;
-            for (const [k, v] of Object.entries(obj)) {
-                const type = typeof v === 'number' ? 'float64' : typeof v === 'boolean' ? 'bool' : 'string';
-                const name = k.charAt(0).toUpperCase() + k.slice(1);
-                code += `  ${name} ${type} \`json:"${k}"\`\n`;
-            }
-            code += '}';
-            return code;
+
+        if (lang === 'csharp') {
+            const getType = (v, k) => {
+                if (v === null) return 'object';
+                if (Array.isArray(v)) {
+                    if (v.length === 0) return 'List<object>';
+                    const firstItem = v[0];
+                    if (typeof firstItem === 'object' && firstItem !== null) {
+                        return `List<${toPascal(k)}>`;
+                    }
+                    const baseType = typeof firstItem === 'number' ? (firstItem % 1 === 0 ? 'int' : 'double') :
+                        typeof firstItem === 'boolean' ? 'bool' : 'string';
+                    return `List<${baseType}>`;
+                }
+                if (typeof v === 'object') return toPascal(k);
+                if (typeof v === 'number') return v % 1 === 0 ? 'int' : 'double';
+                if (typeof v === 'boolean') return 'bool';
+                return 'string';
+            };
+
+            const process = (o, name) => {
+                if (!o || typeof o !== 'object' || Array.isArray(o) || seen.has(name)) return;
+                seen.add(name);
+
+                let code = `public class ${name}\n{\n`;
+                for (let [k, v] of Object.entries(o)) {
+                    const type = getType(v, k);
+                    code += `    [JsonPropertyName("${k}")]\n`;
+                    code += `    public ${type} ${toPascal(k)} { get; set; }\n\n`;
+                }
+                code += `}\n`;
+                models.push(code);
+
+                for (let [k, v] of Object.entries(o)) {
+                    if (v && typeof v === 'object' && !Array.isArray(v)) {
+                        process(v, toPascal(k));
+                    } else if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object' && v[0] !== null) {
+                        process(v[0], toPascal(k));
+                    }
+                }
+            };
+
+            process(obj, rootName);
+            return "using System.Text.Json.Serialization;\nusing System.Collections.Generic;\n\n" + models.reverse().join('\n');
         }
-        return `// Type generation for ${lang} not fully implemented yet.\n// Please use TypeScript for best results.`;
+
+        if (lang === 'go') {
+            const getType = (v, k) => {
+                if (v === null) return 'interface{}';
+                if (Array.isArray(v)) {
+                    if (v.length === 0) return '[]interface{}';
+                    const firstItem = v[0];
+                    if (typeof firstItem === 'object' && firstItem !== null) {
+                        return `[]${toPascal(k)}`;
+                    }
+                    const baseType = typeof firstItem === 'number' ? (firstItem % 1 === 0 ? 'int' : 'float64') :
+                        typeof firstItem === 'boolean' ? 'bool' : 'string';
+                    return `[]${baseType}`;
+                }
+                if (typeof v === 'object') return toPascal(k);
+                if (typeof v === 'number') return v % 1 === 0 ? 'int' : 'float64';
+                if (typeof v === 'boolean') return 'bool';
+                return 'string';
+            };
+
+            const process = (o, name) => {
+                if (!o || typeof o !== 'object' || Array.isArray(o) || seen.has(name)) return;
+                seen.add(name);
+
+                let code = `type ${name} struct {\n`;
+                for (let [k, v] of Object.entries(o)) {
+                    code += `    ${toPascal(k)} ${getType(v, k)} \`json:"${k}"\`\n`;
+                }
+                code += `}\n`;
+                models.push(code);
+
+                for (let [k, v] of Object.entries(o)) {
+                    if (v && typeof v === 'object' && !Array.isArray(v)) {
+                        process(v, toPascal(k));
+                    } else if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object' && v[0] !== null) {
+                        process(v[0], toPascal(k));
+                    }
+                }
+            };
+
+            process(obj, rootName);
+            return models.reverse().join('\n');
+        }
+
+        if (lang === 'java') {
+            const getType = (v, k) => {
+                if (v === null) return 'Object';
+                if (Array.isArray(v)) {
+                    if (v.length === 0) return 'List<Object>';
+                    const firstItem = v[0];
+                    if (typeof firstItem === 'object' && firstItem !== null) {
+                        return `List<${toPascal(k)}>`;
+                    }
+                    const baseType = typeof firstItem === 'number' ? (firstItem % 1 === 0 ? 'Integer' : 'Double') :
+                        typeof firstItem === 'boolean' ? 'Boolean' : 'String';
+                    return `List<${baseType}>`;
+                }
+                if (typeof v === 'object') return toPascal(k);
+                if (typeof v === 'number') return v % 1 === 0 ? 'Integer' : 'Double';
+                if (typeof v === 'boolean') return 'Boolean';
+                return 'String';
+            };
+
+            const process = (o, name) => {
+                if (!o || typeof o !== 'object' || Array.isArray(o) || seen.has(name)) return;
+                seen.add(name);
+
+                let code = `public class ${name} {\n`;
+
+                // Fields
+                for (let [k, v] of Object.entries(o)) {
+                    code += `    private ${getType(v, k)} ${k};\n`;
+                }
+                code += `\n`;
+
+                // Getters and Setters
+                for (let [k, v] of Object.entries(o)) {
+                    const type = getType(v, k);
+                    const cap = toPascal(k);
+                    code += `    public ${type} get${cap}() { return ${k}; }\n`;
+                    code += `    public void set${cap}(${type} ${k}) { this.${k} = ${k}; }\n\n`;
+                }
+
+                code += `}\n`;
+                models.push(code);
+
+                for (let [k, v] of Object.entries(o)) {
+                    if (v && typeof v === 'object' && !Array.isArray(v)) {
+                        process(v, toPascal(k));
+                    } else if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object' && v[0] !== null) {
+                        process(v[0], toPascal(k));
+                    }
+                }
+            };
+
+            process(obj, rootName);
+            return "import java.util.List;\n\n" + models.reverse().join('\n');
+        }
+
+        if (lang === 'python') {
+            const getType = (v, k) => {
+                if (v === null) return 'Any';
+                if (Array.isArray(v)) {
+                    if (v.length === 0) return 'List[Any]';
+                    const firstItem = v[0];
+                    if (typeof firstItem === 'object' && firstItem !== null) {
+                        return `List[${toPascal(k)}]`;
+                    }
+                    const baseType = typeof firstItem === 'number' ? (firstItem % 1 === 0 ? 'int' : 'float') :
+                        typeof firstItem === 'boolean' ? 'bool' : 'str';
+                    return `List[${baseType}]`;
+                }
+                if (typeof v === 'object') return toPascal(k);
+                if (typeof v === 'number') return v % 1 === 0 ? 'int' : 'float';
+                if (typeof v === 'boolean') return 'bool';
+                return 'str';
+            };
+
+            const process = (o, name) => {
+                if (!o || typeof o !== 'object' || Array.isArray(o) || seen.has(name)) return;
+                seen.add(name);
+
+                let code = `@dataclass\nclass ${name}:\n`;
+                const entries = Object.entries(o);
+                if (entries.length === 0) {
+                    code += "    pass\n";
+                } else {
+                    for (let [k, v] of entries) {
+                        code += `    ${k}: ${getType(v, k)}\n`;
+                    }
+                }
+                code += `\n`;
+                models.push(code);
+
+                for (let [k, v] of Object.entries(o)) {
+                    if (v && typeof v === 'object' && !Array.isArray(v)) {
+                        process(v, toPascal(k));
+                    } else if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object' && v[0] !== null) {
+                        process(v[0], toPascal(k));
+                    }
+                }
+            };
+
+            process(obj, rootName);
+            return "from dataclasses import dataclass\nfrom typing import List, Any\n\n" + models.reverse().join('\n');
+        }
+
+        return `// Type generation for ${lang} not fully implemented yet.`;
     }
 }
 
