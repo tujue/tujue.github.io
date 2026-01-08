@@ -51,13 +51,13 @@ class ResumeBuilderTool extends BaseTool {
     renderUI() {
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const txt = isTr ? {
-            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', l: 'Diller', s: 'Yetenekler', d: 'Görünüm', v: 'Önizleme' },
+            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', v: 'Önizleme' },
             lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle' },
             btn: { next: 'Sonraki Adım >', prev: '< Geri', print: 'Yazdır / PDF', reset: 'Sıfırla' },
             fonts: { sans: 'Standart', modern: 'Modern', display: 'Zarif', strong: 'Güçlü', serif: 'Serif', condensed: 'Sıkışık', mono: 'Kod' },
             themes: { modern: 'Modern', nova: 'Nova (Modern)', orbit: 'Orbit (Koyu)', bloom: 'Bloom (Pastel)', wave: 'Wave (Dalga)', bold: 'Bold (Güçlü)', prime: 'Prime (Kurumsal)', elegant: 'Elegant (Yeni)', titan: 'Titan (Yeni)', cyber: 'Cyber (Yeni)', brutal: 'Brutal (Yeni)', executive: 'Yönetici', minimal: 'Minimal', leftside: 'Sol Sütun', skyline: 'Skyline', tech: 'Teknoloji' }
         } : {
-            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', l: 'Languages', s: 'Skills', d: 'Design', v: 'Preview' },
+            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', v: 'Preview' },
             lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo' },
             btn: { next: 'Next Step >', prev: '< Back', print: 'Print / PDF', reset: 'Reset' },
             fonts: { sans: 'Standard', modern: 'Modern', display: 'Elegant', strong: 'Strong', serif: 'Serif', condensed: 'Condensed', mono: 'Code' },
@@ -84,9 +84,6 @@ class ResumeBuilderTool extends BaseTool {
                     <div class="res-step ${this.currentTab === 'exp' ? 'active' : ''}" onclick="window._resTab('exp')"><span class="step-icon">💼</span> <span class="step-label">${txt.tabs.x}</span></div>
                     <div class="res-step ${this.currentTab === 'edu' ? 'active' : ''}" onclick="window._resTab('edu')"><span class="step-icon">🎓</span> <span class="step-label">${txt.tabs.e}</span></div>
                     <div class="res-step ${this.currentTab === 'certs' ? 'active' : ''}" onclick="window._resTab('certs')"><span class="step-icon">🏅</span> <span class="step-label">${txt.tabs.c}</span></div>
-                    <div class="res-step ${this.currentTab === 'languages' ? 'active' : ''}" onclick="window._resTab('languages')"><span class="step-icon">🗣️</span> <span class="step-label">${txt.tabs.l}</span></div>
-                    <div class="res-step ${this.currentTab === 'skills' ? 'active' : ''}" onclick="window._resTab('skills')"><span class="step-icon">⚡</span> <span class="step-label">${txt.tabs.s}</span></div>
-                    <div class="res-step ${this.currentTab === 'design' ? 'active' : ''}" onclick="window._resTab('design')"><span class="step-icon">🎨</span> <span class="step-label">${txt.tabs.d}</span></div>
                     <div class="res-step ${this.currentTab === 'preview' ? 'active' : ''}" onclick="window._resTab('preview')"><span class="step-icon">👁️</span> <span class="step-label">${txt.tabs.v}</span></div>
                 </div>
                 
@@ -94,10 +91,7 @@ class ResumeBuilderTool extends BaseTool {
                     <div style="position: relative; width: 34px; height: 34px; overflow: hidden; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--bg-primary);" title="${isTr ? 'Renk Teması' : 'Color Theme'}">
                         <input type="color" oninput="window._setColor(this.value)" value="${this.data.color}" style="width: 150%; height: 150%; padding: 0; margin: 0; cursor: pointer; border: none; background: none;">
                     </div>
-                    <select onchange="window._setFont(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; outline: none;" title="${isTr ? 'Yazı Tipi' : 'Font'}">
-                        <option value="" disabled selected>🔤 ${isTr ? 'Yazı Tipi' : 'Font'}</option>
-                        ${Object.keys(txt.fonts).map(key => `<option value="${key}" ${this.data.font === key ? 'selected' : ''}>${txt.fonts[key]}</option>`).join('')}
-                    </select>
+                    <!-- Font Selector moved to Personal Info with Header/Body options -->
                     <select onchange="window._setTheme(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; outline: none;" title="${isTr ? 'Tema Değiştir' : 'Change Theme'}">
                         <option value="" disabled selected>🎨 ${isTr ? 'Hızlı Tema' : 'Quick Theme'}</option>
                         ${Object.keys(txt.themes).map(key => `<option value="${key}" ${this.data.theme === key ? 'selected' : ''}>${txt.themes[key]}</option>`).join('')}
@@ -459,6 +453,30 @@ class ResumeBuilderTool extends BaseTool {
                                  <label class="form-label">${isTr ? 'Yetenekler & Uzmanlık (React, Node.js...)' : 'Skills & Expertise (React, Node.js...)'}</label>
                                 <textarea class="form-input" rows="2" oninput="window._upField('skills', this.value)" style="resize: vertical; min-height: 60px;" placeholder="JavaScript, CSS, SQL...">${d.skills || ''}</textarea>
                             </div>
+                            <div class="res-full-width">
+                                 <label class="form-label">${isTr ? 'Diller (İngilizce - B2, Almanca - A1...)' : 'Languages (English - B2...)'}</label>
+                                <textarea class="form-input" rows="2" oninput="window._upField('languages', this.value)" style="resize: vertical; min-height: 60px;" placeholder="English, German, French...">${d.languages || ''}</textarea>
+                            </div>
+                            
+                            <!-- Font Selection (Embedded) -->
+                            <div class="res-full-width" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                                <h4 style="margin-bottom: 10px; font-size: 0.95rem; opacity: 0.8;">🔤 ${isTr ? 'Yazı Tipi Ayarları' : 'Font Settings'}</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div>
+                                        <label class="form-label">${isTr ? 'Başlık Fontu' : 'Header Font'}</label>
+                                        <select class="form-input" onchange="window._upField('headerFont', this.value)">
+                                            ${Object.keys(txt.fonts).map(key => `<option value="${key}" ${d.headerFont === key || (!d.headerFont && d.font === key) ? 'selected' : ''}>${txt.fonts[key]}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label">${isTr ? 'İçerik Fontu' : 'Content Font'}</label>
+                                        <select class="form-input" onchange="window._upField('bodyFont', this.value)">
+                                            ${Object.keys(txt.fonts).map(key => `<option value="${key}" ${d.bodyFont === key || (!d.bodyFont && key === 'sans') ? 'selected' : ''}>${txt.fonts[key]}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <!-- Dedicated Spacer -->
