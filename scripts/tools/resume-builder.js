@@ -784,6 +784,70 @@ class ResumeBuilderTool extends BaseTool {
 
                 // Optimized Update
                 if (page.innerHTML !== res.html) page.innerHTML = res.html;
+
+                // Inject layout fix CSS to prevent overlap
+                let layoutFix = document.getElementById('res-layout-fix');
+                if (!layoutFix) {
+                    layoutFix = document.createElement('style');
+                    layoutFix.id = 'res-layout-fix';
+                    document.head.appendChild(layoutFix);
+                }
+                layoutFix.textContent = `
+                    /* Prevent text overlap in all themes */
+                    .a4-page * {
+                        line-height: 1.4 !important;
+                    }
+                    
+                    /* Fix flex space-between headers */
+                    .res-item-head,
+                    .e-item-head,
+                    .v-item-top {
+                        display: block !important;
+                        overflow: hidden !important;
+                        margin-bottom: 8px !important;
+                    }
+                    
+                    .res-item-head > *:first-child,
+                    .e-item-head > *:first-child,
+                    .v-item-top > *:first-child {
+                        float: left !important;
+                        max-width: 65% !important;
+                    }
+                    
+                    .res-item-head > *:last-child,
+                    .e-item-head > *:last-child,
+                    .v-item-top > *:last-child {
+                        float: right !important;
+                        text-align: right !important;
+                        max-width: 30% !important;
+                    }
+                    
+                    /* Ensure proper spacing */
+                    .res-item,
+                    .e-item,
+                    .v-item {
+                        margin-bottom: 15px !important;
+                        clear: both !important;
+                    }
+                    
+                    /* Fix contact section */
+                    .res-contact > * {
+                        display: inline-block !important;
+                        margin-right: 15px !important;
+                    }
+                    
+                    /* Fix skills/tags */
+                    .res-tag,
+                    .v-tag,
+                    .e-tag,
+                    .s-skill-badge,
+                    .k-skill-badge {
+                        display: inline-block !important;
+                        margin: 3px !important;
+                        white-space: nowrap !important;
+                    }
+                `;
+
                 this.fitPreview();
             } else {
                 document.getElementById('res-a4-page').innerHTML = 'Core module update required.';
