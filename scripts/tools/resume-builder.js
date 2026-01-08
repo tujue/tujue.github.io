@@ -11,10 +11,15 @@ class ResumeBuilderTool extends BaseTool {
 
             const header = document.querySelector('.workspace-header');
             if (header) {
-                header.style.cssText = 'margin-bottom: 0px !important; padding-top: 10px !important; padding-bottom: 10px !important; min-height: 50px;';
+                // Ultra compact mode
+                header.style.cssText = 'margin-bottom: 0px !important; padding: 2px 15px !important; min-height: 35px !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important;';
 
                 const title = header.querySelector('.workspace-title');
-                if (title) title.style.cssText = 'font-size: 1.5rem !important; margin: 0;';
+                if (title) title.style.cssText = 'font-size: 1.25rem !important; margin: 0; line-height: 1.2;';
+
+                // Close button compaction
+                const closeBtn = header.querySelector('.close-btn');
+                if (closeBtn) closeBtn.style.cssText = 'width: 28px; height: 28px; font-size: 1rem;';
             }
         }, 10);
 
@@ -91,14 +96,14 @@ class ResumeBuilderTool extends BaseTool {
             </div>
 
             <style>
-                .res-wizard-nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 0 20px; gap: 30px; overflow-x: auto; flex-shrink: 0; }
-                .res-step { padding: 15px 5px; cursor: pointer; border-bottom: 3px solid transparent; opacity: 0.6; display: flex; align-items: center; gap: 8px; white-space: nowrap; transition: 0.2s; }
+                .res-wizard-nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 0 10px; gap: 15px; overflow-x: auto; flex-shrink: 0; min-height: 45px; align-items: center; }
+                .res-step { padding: 8px 5px; cursor: pointer; border-bottom: 3px solid transparent; opacity: 0.6; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; font-size: 0.9rem; }
                 .res-step:hover { opacity: 1; background: rgba(0,0,0,0.02); }
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow: hidden; position: relative; padding: 30px; margin: 0 auto; width: 100%; }
-                .res-wizard-footer { padding: 20px 40px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
+                .res-wizard-content { flex: 1; overflow: hidden; position: relative; padding: 5px; margin: 0 auto; width: 100%; }
+                .res-wizard-footer { padding: 10px 20px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
