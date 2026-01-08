@@ -188,7 +188,7 @@ class BGRemoverTool extends BaseTool {
         btnKeep.onclick = () => setMode('keep');
         btnLasso.onclick = () => setMode('lasso');
 
-        btnApply.onclick = () => {
+        btnApply.onclick = async () => {
             if (this.mode === 'keep') {
                 if (!this.selection) { alert('Please select an area first.'); return; }
                 this._saveUndo();
@@ -206,7 +206,13 @@ class BGRemoverTool extends BaseTool {
             }
             else if (this.mode === 'lasso') {
                 if (this.lassoPath.length < 3) { alert('Please draw a loop first.'); return; }
-                this._saveUndo();
+
+                // Restore clean state before cropping (visual line removal)
+                if (this.undoStack.length > 0) {
+                    const cleanState = this.undoStack.pop();
+                    this.ctx.putImageData(cleanState, 0, 0);
+                    this._saveUndo(); // Save it as pre-crop state
+                }
 
                 // Create mask
                 const temp = document.createElement('canvas');
@@ -231,30 +237,30 @@ class BGRemoverTool extends BaseTool {
                 btnDl.style.display = 'block';
             }
             else if (this.mode === 'magic') {
-                // ... Existing Magic Logic ...
                 if (btnApply.textContent.includes('...')) return;
+
+                if (!this.targetColor) {
+                    alert('Please click on the image to pick a color to remove.');
+                    return;
+                }
+
                 const originalText = btnApply.textContent;
                 btnApply.textContent = '⏳ Processing...';
                 btnApply.style.opacity = '0.7';
 
+                // Allow UI to update
                 setTimeout(() => {
                     this._saveUndo();
-                    const res = window.DevTools.bgRemoverTools.removeBackground(this.canvas, {
+                    this._magicErase({
                         tolerance: parseInt(tolIn.value),
                         targetColor: this.targetColor,
-                        contiguous: true,
                         startX: this.clickPos.x,
                         startY: this.clickPos.y
                     });
-                    const next = new Image();
-                    next.onload = () => {
-                        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                        this.ctx.drawImage(next, 0, 0);
-                        btnApply.textContent = originalText;
-                        btnApply.style.opacity = '1';
-                        btnDl.style.display = 'block';
-                    };
-                    next.src = res;
+
+                    btnApply.textContent = originalText;
+                    btnApply.style.opacity = '1';
+                    btnDl.style.display = 'block';
                 }, 50);
             }
         };
@@ -313,23 +319,6 @@ class BGRemoverTool extends BaseTool {
             }
             if (this.mode === 'lasso') {
                 this.isLassoing = true;
-                // Save undo snapshot before drawing path visual on canvas?
-                // Actually, we want to draw the path temporarily on top.
-                // But simplified: draw on canvas, then if undo, it reverts.
-                // Better: Draw on canvas but save snapshot BEFORE drawing path.
-                // BUT apply removes background.
-                // Let's draw the visual trail on canvas using a distinct color, then on apply, use the array points.
-                // Wait, if I draw on canvas, I dirty the image.
-                // I should use `undoStack` to clear the line before apply?
-                // Or just trust the user will click apply.
-                // Let's save undo NOW so we can revert the red line if user cancels ?
-                // For simplicity: Lasso trail is drawn on the image directly. User clicks Apply -> it uses path points to crop original (from undo stack??)
-                // Actually: We can just use the path points to crop CURRENT canvas. The line drawn will be excluded if outside loop. If inside loop, it stays.
-                // Problem: The red line remains on the image.
-                // Solution: We need a temporary overlay canvas or we repaint image on mouseup.
-                // For this iteration: Let's assume user draws, sees red line, then clicks apply.
-                // On apply: restore from undo (clean image), THEN apply crop.
-
                 this._saveUndo(); // Save CLEAN image
                 this.lassoPath = [{ x: p.x, y: p.y }];
                 this.ctx.beginPath();
@@ -341,7 +330,6 @@ class BGRemoverTool extends BaseTool {
             }
 
             if (this.mode === 'magic') {
-                // ...
                 const px = this.ctx.getImageData(p.x, p.y, 1, 1).data;
                 this.targetColor = { r: px[0], g: px[1], b: px[2] };
                 document.getElementById('bgr-c-preview').style.backgroundColor = `rgb(${px[0]},${px[1]},${px[2]})`;
@@ -382,7 +370,6 @@ class BGRemoverTool extends BaseTool {
         window.addEventListener('mouseup', (e) => {
             if (this.mode === 'keep' && this.isSelecting) {
                 this.isSelecting = false;
-                // ... (Calc selection) ...
                 const r = this.canvas.getBoundingClientRect();
                 const sx = this.canvas.width / r.width;
                 const sy = this.canvas.height / r.height;
@@ -398,59 +385,11 @@ class BGRemoverTool extends BaseTool {
                 this.isLassoing = false;
                 this.ctx.closePath();
                 this.ctx.stroke();
-                // Path is complete. Wait for Apply.
-                // Note: The canvas now has a red line on it.
-                // When Apply is clicked: 
-                // 1. We should revert to the state BEFORE the red line (which is in undoStack.pop() if we saved it).
-                // 2. But we need both the Clean Image (to crop) AND the Path.
-                // Strategy in btnApply:
-                // We have `this.lassoPath`. We have `undoStack`.
-                // Pop the last undo (clean image) -> Restore it -> Then Clip.
             }
             if (this.mode === 'brush') this.isDrawing = false;
         });
-
-        // Fix for Apply Button Logic regarding Lasso
-        const originalApply = btnApply.onclick;
-        btnApply.onclick = () => {
-            if (this.mode === 'lasso') {
-                if (this.lassoPath.length < 3) { alert('Draw a loop first.'); return; }
-
-                // Restore clean image from undo stack (remove the red guide line)
-                // The last save was just before drawing started.
-                if (this.undoStack.length > 0) {
-                    const cleanState = this.undoStack.pop();
-                    this.ctx.putImageData(cleanState, 0, 0);
-                    // Note: We popped it, so it's gone from history. We should probably re-add it or just manage history better.
-                    // Actually, if we crop, that's a new state. The "clean state" becomes the previous state.
-                    this._saveUndo(); // Save the clean state again as "previous"
-                }
-
-                // Now perform clip
-                const temp = document.createElement('canvas');
-                temp.width = this.canvas.width;
-                temp.height = this.canvas.height;
-                const tx = temp.getContext('2d');
-
-                tx.beginPath();
-                tx.moveTo(this.lassoPath[0].x, this.lassoPath[0].y);
-                this.lassoPath.forEach(p => tx.lineTo(p.x, p.y));
-                tx.closePath();
-                tx.clip();
-
-                tx.drawImage(this.canvas, 0, 0);
-
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.ctx.drawImage(temp, 0, 0);
-
-                this.lassoPath = [];
-                btnDl.style.display = 'block';
-                return;
-            }
-            originalApply(); // Valid for other modes
-        };
     }
-    // ... Methods ...
+
     _handleFile(f) {
         if (!f) return;
         const reader = new FileReader();
@@ -463,16 +402,18 @@ class BGRemoverTool extends BaseTool {
                 this.canvas.style.display = 'block';
                 document.getElementById('bgr-placeholder').style.display = 'none';
                 document.getElementById('bgr-btn-dl').style.display = 'block';
-                this.undoStack = []; // Clear stack on new file
+                this.undoStack = [];
             };
             this.img.src = e.target.result;
         };
         reader.readAsDataURL(f);
     }
+
     _saveUndo() {
         this.undoStack.push(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
         if (this.undoStack.length > 10) this.undoStack.shift();
     }
+
     _erase(x, y) {
         const size = parseInt(document.getElementById('bgr-in-size').value);
         this.ctx.save();
@@ -482,5 +423,52 @@ class BGRemoverTool extends BaseTool {
         this.ctx.fill();
         this.ctx.restore();
     }
+
+    // INTERNAL LOGIC: Flood Fill Eraser (Magic Wand)
+    _magicErase(options) {
+        const { tolerance, targetColor, startX, startY } = options;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const imgData = this.ctx.getImageData(0, 0, width, height);
+        const data = imgData.data;
+
+        // Simple Color Distance
+        const colorMatch = (idx) => {
+            const r = data[idx];
+            const g = data[idx + 1];
+            const b = data[idx + 2];
+            return Math.abs(r - targetColor.r) <= tolerance &&
+                Math.abs(g - targetColor.g) <= tolerance &&
+                Math.abs(b - targetColor.b) <= tolerance;
+        };
+
+        const stack = [[startX, startY]];
+        const seen = new Uint8Array(width * height);
+
+        const getIdx = (x, y) => (y * width + x) * 4;
+
+        // BFS Flood Fill
+        while (stack.length) {
+            const [cx, cy] = stack.pop();
+            const idx = getIdx(cx, cy);
+            const seenIdx = cy * width + cx;
+
+            if (cx < 0 || cx >= width || cy < 0 || cy >= height || seen[seenIdx]) continue;
+
+            if (colorMatch(idx)) {
+                // Erase pixel (set alpha to 0)
+                data[idx + 3] = 0;
+                seen[seenIdx] = 1;
+
+                stack.push([cx + 1, cy]);
+                stack.push([cx - 1, cy]);
+                stack.push([cx, cy + 1]);
+                stack.push([cx, cy - 1]);
+            }
+        }
+
+        this.ctx.putImageData(imgData, 0, 0);
+    }
 }
+
 window.initBgRemoverLogic = BGRemoverTool;
