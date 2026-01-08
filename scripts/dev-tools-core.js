@@ -722,8 +722,8 @@
 
                 // --- GLOBAL FONT OVERRIDES ---
                 css += `
-                    .res-name, .res-title, .res-sec-title, .v-name-side, .v-title-side, .v-side-title, .v-sec-head, .e-name, .e-title, .e-side-title, .e-sec-title, .a-name, .a-title, .a-sec-title, .s-name, .s-title, .s-skills-title, .s-head, .k-name, .k-title, .k-sec-name, .k-r-title, .o-name, .o-title-badge, .o-box-title { font-family: ${hF} !important; }
-                    .a4-page, .v-main, .v-sidebar, .e-main, .e-sidebar, .s-left, .s-right, .k-left, .k-right { font-family: ${bF}; }
+                    .res-name, .res-title, .res-sec-title, .v-name-side, .v-title-side, .v-side-title, .v-sec-head, .e-name, .e-title, .e-side-title, .e-sec-title, .a-name, .a-title, .a-sec-title, .s-name, .s-title, .s-skills-title, .s-head, .k-name, .k-title, .k-sec-name, .k-r-title, .o-name, .o-title-badge, .o-box-title, h1, h2, h3, h4, h5, h6 { font-family: ${hF} !important; }
+                    .a4-page, .v-main, .v-sidebar, .e-main, .e-sidebar, .s-left, .s-right, .k-left, .k-right, .res-desc, .res-item, .res-role, .res-comp, .res-date, .res-tag, .res-item-head, p, span, div, li, a, td, th { font-family: ${bF} !important; }
                 `;
 
                 // --- HTML STRUCTURE ---
