@@ -632,15 +632,37 @@ class ResumeBuilderTool extends BaseTool {
                              </div>
                         </div>
                         <div>
-                             <label class="form-label">Yazı Tipi</label>
-                             <select class="form-input" id="in-font">
+                             <label class="form-label">Başlık Yazı Tipi</label>
+                             <select class="form-input" id="in-header-font">
                                 <option value="sans">Inter (Standart)</option>
                                 <option value="modern">Poppins (Modern)</option>
                                 <option value="display">Playfair Display (Zarif)</option>
                                 <option value="strong">Oswald (Güçlü)</option>
-                                <option value="serif">Lora (Okunaklı)</option>
-                                <option value="condensed">Condensed (Sıkışık)</option>
-                                <option value="mono">Monospace (Kod)</option>
+                                <option value="serif">Lora (Serif)</option>
+                                <option value="mono">JetBrains Mono (Kod)</option>
+                                <option value="condensed">Roboto Condensed (Sıkışık)</option>
+                                <option value="sweet">Nunito (Tatlı)</option>
+                                <option value="clean">Open Sans (Temiz)</option>
+                                <option value="elegant2">Raleway (Zarif 2)</option>
+                                <option value="charismatic">Merriweather (Karizmatik)</option>
+                                <option value="modern2">Lato (Modern 2)</option>
+                             </select>
+                        </div>
+                        <div style="margin-top: 15px;">
+                             <label class="form-label">İçerik Yazı Tipi</label>
+                             <select class="form-input" id="in-body-font">
+                                <option value="sans">Inter (Standart)</option>
+                                <option value="modern">Poppins (Modern)</option>
+                                <option value="display">Playfair Display (Zarif)</option>
+                                <option value="strong">Oswald (Güçlü)</option>
+                                <option value="serif">Lora (Serif)</option>
+                                <option value="mono">JetBrains Mono (Kod)</option>
+                                <option value="condensed">Roboto Condensed (Sıkışık)</option>
+                                <option value="sweet">Nunito (Tatlı)</option>
+                                <option value="clean">Open Sans (Temiz)</option>
+                                <option value="elegant2">Raleway (Zarif 2)</option>
+                                <option value="charismatic">Merriweather (Karizmatik)</option>
+                                <option value="modern2">Lato (Modern 2)</option>
                              </select>
                         </div>
                     </div>
@@ -659,11 +681,19 @@ class ResumeBuilderTool extends BaseTool {
             c.appendChild(div);
 
             document.getElementById('in-color').oninput = (e) => { d.color = e.target.value; this._save(); };
-            const fontSel = document.getElementById('in-font');
-            fontSel.value = d.font || 'sans';
-            fontSel.onchange = () => { d.font = fontSel.value; this._save(); };
+            const hFontSel = document.getElementById('in-header-font');
+            const bFontSel = document.getElementById('in-body-font');
+            hFontSel.value = d.headerFont || d.font || 'sans';
+            bFontSel.value = d.bodyFont || d.font || 'sans';
+            const updateFonts = () => {
+                d.headerFont = hFontSel.value;
+                d.bodyFont = bFontSel.value;
+                this._save();
+            };
+            hFontSel.onchange = updateFonts;
+            bFontSel.onchange = updateFonts;
 
-            fontSel.onchange = () => { d.font = fontSel.value; this._save(); };
+
 
             // _setTheme is now global in setupListeners
             const thGrid = div.querySelector('.theme-grid'); // localized scope if needed

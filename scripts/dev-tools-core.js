@@ -267,35 +267,43 @@
                     serif: "'Lora', serif",
                     mono: "'JetBrains Mono', monospace",
                     condensed: "'Roboto Condensed', sans-serif",
-                    display: "'Playfair Display', serif", // New for Elegant
-                    modern: "'Poppins', sans-serif", // New for Modern
-                    strong: "'Oswald', sans-serif" // New for Titan
+                    display: "'Playfair Display', serif", // Elegant
+                    modern: "'Poppins', sans-serif", // Modern
+                    strong: "'Oswald', sans-serif", // Titan
+                    sweet: "'Nunito', sans-serif",
+                    clean: "'Open Sans', sans-serif",
+                    elegant2: "'Raleway', sans-serif",
+                    charismatic: "'Merriweather', serif",
+                    modern2: "'Lato', sans-serif"
                 };
 
-                let f = d.font ? fonts[d.font] : fonts.sans;
+                let hF = d.headerFont && fonts[d.headerFont] ? fonts[d.headerFont] : (d.font && fonts[d.font] ? fonts[d.font] : fonts.sans);
+                let bF = d.bodyFont && fonts[d.bodyFont] ? fonts[d.bodyFont] : (d.font && fonts[d.font] ? fonts[d.font] : fonts.sans);
 
                 // Theme-Specific Defaults
                 if (theme === 'elegant') {
-                    if (!d.font || d.font === 'sans') f = fonts.display;
-                    if (!d.color || d.color === '#2d3748') color = '#b08d55'; // Gold default
+                    if (!d.headerFont) hF = fonts.display;
+                    if (!d.color || d.color === '#2d3748') color = '#b08d55';
                 }
                 else if (theme === 'titan') {
-                    if (!d.font || d.font === 'sans') f = fonts.strong;
-                    if (!d.color || d.color === '#2d3748') color = '#1a365d'; // Dark Blue default
+                    if (!d.headerFont) hF = fonts.strong;
+                    if (!d.color || d.color === '#2d3748') color = '#1a365d';
                 }
                 else if (theme === 'cyber') {
-                    if (!d.font || d.font === 'sans') f = fonts.mono;
-                    if (!d.color || d.color === '#2d3748') color = '#06b6d4'; // Cyan
+                    if (!d.headerFont) hF = fonts.mono;
+                    if (!d.bodyFont) bF = fonts.mono;
+                    if (!d.color || d.color === '#2d3748') color = '#06b6d4';
                 }
                 else if (theme === 'brutal') {
-                    if (!d.font || d.font === 'sans') f = fonts.mono;
-                    if (!d.color || d.color === '#2d3748') color = '#ef4444'; // Red
+                    if (!d.headerFont) hF = fonts.mono;
+                    if (!d.bodyFont) bF = fonts.mono;
+                    if (!d.color || d.color === '#2d3748') color = '#ef4444';
                 }
 
                 const photoHtml = d.photo ? `<img src="${d.photo}" class="res-photo" alt="Profile">` : '';
 
                 // Import Google Fonts
-                const fontImport = `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600;700;800&family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Roboto+Condensed:wght@400;700&display=swap');`;
+                const fontImport = `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600;700;800&family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Roboto+Condensed:wght@400;700&family=Nunito:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700;900&family=Lato:wght@300;400;700&display=swap');`;
 
                 // --- BASE CSS ---
                 let css = `
@@ -306,16 +314,16 @@
                     .res-name { font-size: 2.2rem; font-weight: 700; color: ${color}; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.02em; }
                     .res-title { font-size: 1.05rem; color: ${color}80; margin-bottom: 16px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
                     .res-contact { display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.9rem; color: #4a5568; align-items: center; }
-                    .res-section { margin-bottom: 20px; page-break-inside: avoid; }
-                    .res-sec-title { font-size: 0.85rem; font-weight: 700; color: ${color}; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1.5px solid ${color}60; padding-bottom: 4px; letter-spacing: 0.08em; }
-                    .res-item { margin-bottom: 16px; }
+                    .res-section { margin-bottom: 18px; page-break-inside: avoid; }
+                    .res-sec-title { font-size: 0.75rem; font-weight: 700; color: ${color}; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1.5px solid ${color}60; padding-bottom: 3px; letter-spacing: 0.1em; }
+                    .res-item { margin-bottom: 14px; }
                     .res-item-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; margin-bottom: 4px; font-size: 1.05rem; }
                     .res-role { color: ${color}; }
                     .res-comp { font-weight: 500; color: #4a5568; font-size: 0.95rem; }
                     .res-date { font-size: 0.85rem; color: #718096; font-weight: 500; white-space: nowrap; margin-left:10px; }
                     .res-desc { font-size: 0.9rem; color: #4a5568; white-space: pre-line; line-height: 1.55; margin-top: 5px; }
                     .res-skills { display: flex; flex-wrap: wrap; gap: 8px; }
-                    .res-tag { background: ${color}10; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; color: ${color}; border: 1px solid ${color}40; font-weight: 600; }
+                    .res-tag { background: #f7fafc; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; color: #2d3748; border: 1px solid #e2e8f0; font-weight: 600; }
                     `;
 
                 // --- THEME CSS OVERRIDES ---
@@ -385,13 +393,13 @@
                         .res-skills .res-tag { 
                             background: transparent; 
                             color: #c0c0c0; 
-                            border: 1px solid ${c}60; 
+                            border: 1px solid #444; 
                             padding: 3px 8px; 
                             font-size: 0.8rem;
                             position: relative;
                             border-radius: 0;
                         }
-                        .res-skills .res-tag::before { content: ""; position: absolute; top: -1px; left: -1px; width: 3px; height: 3px; background: ${c}; }
+                        .res-skills .res-tag::before { content: ""; position: absolute; top: -1px; left: -1px; width: 3px; height: 3px; background: #666; }
                         .res-photo { border: 2px solid ${c}; box-shadow: 0 0 15px ${c}40; }
                     `;
                 }
@@ -406,23 +414,23 @@
                             .res-sec-title { background: ${color}; color: white; display: inline-block; padding: 5px 10px; font-weight: bold; text-transform: uppercase; border: 2px solid ${color}; margin-bottom: 10px; font-size: 0.9rem; box-shadow: 4px 4px 0 ${color}40; } 
                             .res-role { color: ${color}; font-weight: 900; }
                             .res-item { border-left: 3px solid ${color}; padding-left: 10px; }
-                            .res-tag { border: 2px solid ${color}; background: transparent; color: #1a1a1a; border-radius: 0; font-weight: bold; font-size: 0.75rem; }`
+                            .res-tag { border: 2px solid #333; background: transparent; color: #1a1a1a; border-radius: 0; font-weight: bold; font-size: 0.75rem; }`
                         ;
                 }
                 else if (theme === 'nova') {
                     if (!d.color || d.color === '#2d3748') color = '#be185d'; // Pink
                     css += `
                         .a4-page { display: grid; grid-template-columns: 200px 1fr; padding: 0; min-height: 1123px; font-family: 'Inter', sans-serif; overflow: hidden; }
-                        .v-sidebar { background: linear-gradient(135deg, ${color}15 0%, ${color}25 100%); color: white; padding: 40px 20px; display: flex; flex-direction: column; border-right: 3px solid ${color}; }
+                        .v-sidebar { background: #1a1a1a; color: white; padding: 40px 20px; display: flex; flex-direction: column; border-right: 3px solid ${color}; }
                         .v-photo { width: 120px; height: 120px; border-radius: 50%; border: 4px solid ${color}; margin: 0 auto 15px; display:block; object-fit: cover; box-shadow: 0 4px 12px ${color}40; }
-                        .v-name-side { text-align: center; color: ${color}; margin-bottom: 8px; font-weight: 700; font-size: 1.1rem; line-height: 1.2; }
-                        .v-title-side { text-align: center; color: #fff; margin-bottom: 30px; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+                        .v-name-side { text-align: center; color: white; margin-bottom: 8px; font-weight: 700; font-size: 1.1rem; line-height: 1.2; }
+                        .v-title-side { text-align: center; color: #a3a3a3; margin-bottom: 30px; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
                         
                         .v-side-sec { margin-bottom: 30px; }
-                        .v-side-title { font-size: 0.85rem; text-transform: uppercase; border-bottom: 2px solid ${color}60; padding-bottom: 8px; margin-bottom: 15px; font-weight: 700; color: ${color}; letter-spacing:1px; }
+                        .v-side-title { font-size: 0.85rem; text-transform: uppercase; border-bottom: 2px solid ${color}; padding-bottom: 8px; margin-bottom: 15px; font-weight: 700; color: ${color}; letter-spacing:1px; }
                         .v-info-group { margin-bottom: 12px; }
                         .v-label { color: #a1a1aa; font-size: 0.7rem; font-weight:600; display:block; margin-bottom:3px; }
-                        .v-val { color: #fff; font-size: 0.75rem; word-break: break-word; line-height: 1.3; }
+                        .v-val { color: #e5e5e5; font-size: 0.75rem; word-break: break-word; line-height: 1.3; }
                         
                         .v-main { background: #fafafa; padding: 45px 35px; color: #333; }
                         
@@ -442,13 +450,13 @@
                         
                         .v-lang-item { margin-bottom: 12px; }
                         .v-lang-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
-                        .v-lang-name { font-weight: 600; font-size: 0.85rem; color: #27272a; }
-                        .v-lang-level { font-size: 0.75rem; color: #71717a; }
-                        .v-lang-bar { width: 100%; height: 6px; background: #e4e4e7; border-radius: 3px; overflow: hidden; }
+                        .v-lang-name { font-weight: 600; font-size: 0.85rem; color: #e5e5e5; }
+                        .v-lang-level { font-size: 0.75rem; color: #a1a1aa; }
+                        .v-lang-bar { width: 100%; height: 6px; background: #404040; border-radius: 3px; overflow: hidden; }
                         .v-lang-fill { height: 100%; background: ${color}; }
                         
                         .v-skills { display: flex; flex-wrap: wrap; gap: 8px; }
-                        .v-tag { background: ${color}15; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: ${color}; border: 1px solid ${color}40; text-transform: uppercase; }
+                        .v-tag { background: white; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: #18181b; border: 1px solid #e4e4e7; text-transform: uppercase; }
                         
                         .v-interests { font-size: 0.85rem; color: #52525b; line-height: 1.6; }
                      `;
@@ -473,7 +481,7 @@
                         .e-val { word-break: break-word; }
                         
                         .e-skill-item { margin-bottom: 8px; }
-                        .e-skill-name { display: block; font-size: 0.8rem; margin-bottom: 4px; font-weight: 500; color: #ecf0f1; border-left: 2px solid ${color}; padding-left: 8px; line-height: 1.4; }
+                        .e-skill-name { display: block; font-size: 0.8rem; margin-bottom: 4px; font-weight: 500; color: #ecf0f1; border-left: 2px solid #95a5a6; padding-left: 8px; line-height: 1.4; }
                         .e-bar-bg { display: none; } /* Bars Removed */
                         .e-bar-fill { display: none; }
 
@@ -496,7 +504,7 @@
                         .e-desc { font-size: 0.8rem; color: #444; line-height: 1.4; margin-top: 4px; font-weight: 400; }
                         
                         .e-cert-item { margin-bottom: 12px; font-size: 0.75rem; color: #ecf0f1; }
-                        .e-cert-name { font-weight: 600; color: white; }
+                        .e-cert-name { font-weight: 600; color: #2c3e50; }
                         
                         .e-interests { display: flex; flex-direction: column; gap: 8px; }
                         .e-interest-item { display: block; font-size: 0.8rem; font-weight: 500; color: #ecf0f1; border-left: 2px solid ${color}; padding-left: 8px; line-height: 1.4; }
@@ -517,7 +525,7 @@
                         .a-skill-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.8rem; font-weight: 500; color: #555; }
                         .a-dots { display: flex; gap: 4px; }
                         .a-dot { width: 9px; height: 9px; border-radius: 50%; background: #d5d8dc; }
-                        .a-dot.active { background: ${color}; }
+                        .a-dot.active { background: #7f8c8d; }
                         .a-contact-row { margin-bottom: 10px; font-size: 0.75rem; color: #555; line-height: 1.3; }
                         .a-label { display: block; font-weight: 700; color: ${color}; font-size: 0.7rem; margin-bottom: 2px; }
                         .a-right { text-align: left; padding-top: 40px; }
@@ -563,7 +571,7 @@
                         .s-info { font-size: 0.8rem; color: #888; margin-bottom: 6px; font-weight: 500; font-style: italic; }
                         .s-desc { font-size: 0.85rem; color: #555; line-height: 1.5; }
                         .s-skill-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-                        .s-tag { background: ${color}15; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: ${color}; border-left: 3px solid ${color}; }
+                        .s-tag { background: #f3f4f6; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: #374151; border-left: 3px solid #d1d5db; }
                     `;
                 }
                 else if (theme === 'bold') {
@@ -588,7 +596,7 @@
                         .k-skill-row { margin-bottom: 12px; }
                         .k-skill-label { color: #e8e8e8; font-size: 0.78rem; margin-bottom: 5px; display: block; font-weight: 500; }
                         .k-skill-bar-bg { width: 100%; height: 5px; background: #1a202c; border-radius: 3px; }
-                        .k-skill-bar-fill { height: 100%; background: ${color}; border-radius: 3px; }
+                        .k-skill-bar-fill { height: 100%; background: #a0aec0; border-radius: 3px; }
                         .k-interest-bullet { color: #e8e8e8; font-size: 0.75rem; margin-bottom: 6px; font-weight: 300; }
                         .k-right { background: #f7f7f7; padding: 30px 25px; color: #333; }
                         .k-r-section { margin-bottom: 25px; }
@@ -652,6 +660,8 @@
                              .res-item { display: inline-block; width: 48%; vertical-align: top; margin-bottom: 12px; margin-right: 2%; }
                              .res-item:nth-child(2n) { margin-right: 0; }
                              .res-role { color: ${color}; font-weight: 700; }
+                             .res-tag { background: #f7fafc; color: #2d3748; border: 1px solid #e2e8f0; }
+                             .res-skills { color: #2d3748; }
                              @media print { .res-item { page-break-inside: avoid; } } `;
                 }
                 else if (theme === 'executive') {
@@ -665,7 +675,7 @@
                              .res-sec-title { border: none; border-bottom: 2px solid ${color}30; font-size: 1.2rem; color: ${color}; }
                              .res-item-head { align-items: center; }
                              .res-role { font-weight: 700; font-size: 1.1rem; color: ${color}; } 
-                             .res-tag { background: ${color}10; color: ${color}; border: 1px solid ${color}30; font-weight: 600; }`;
+                             .res-tag { background: #f7fafc; color: #2d3748; border: 1px solid #e2e8f0; font-weight: 600; }`;
                 }
                 else if (theme === 'minimal') {
                     css += `.a4-page { padding: 30px 40px; } 
@@ -675,11 +685,10 @@
                            .res-sec-title { border: none; letter-spacing: 0.2em; font-size: 0.85rem; color: ${color}; margin-bottom: 20px; text-align: right; margin-right: -20px; padding-right: 20px; border-right: 3px solid ${color}; } 
                            .res-item-head { flex-direction: column; gap: 2px; } 
                            .res-role { color: ${color}; font-weight: 600; }
-                           .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; } 
-                           .res-tag { background: ${color}10; border: 1px solid ${color}40; color: ${color}; font-weight: 500; } `;
+                           .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; }                            .res-tag { background: #f7fafc; border: 1px solid #e2e8f0; color: #2d3748; font-weight: 500; } `;
                 }
                 else if (theme === 'skyline') {
-                    css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; }`;
+                    css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; background: #f7fafc; color: #2d3748; border: 1px solid #e2e8f0; }`;
                 }
                 else if (theme === 'leftside') {
                     css += `.a4-page { display: grid; grid-template-columns: 280px 1fr; padding: 0; min-height: 1123px; } 
@@ -708,8 +717,14 @@
                             .res-comp { font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 3px; }
                             .res-date { font-size: 0.7rem; color: #94a3b8; }
                             .res-desc { font-size: 0.7rem; color: #475569; line-height: 1.3; margin-top: 4px; }
-                            .res-tag { background: #eff6ff; color: ${c}; border: 1px solid ${c}40; border-radius: 6px; font-size: 0.75rem; padding: 4px 8px; }`;
+                            .res-tag { background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.75rem; padding: 4px 8px; }`;
                 }
+
+                // --- GLOBAL FONT OVERRIDES ---
+                css += `
+                    .res-name, .res-title, .res-sec-title, .v-name-side, .v-title-side, .v-side-title, .v-sec-head, .e-name, .e-title, .e-side-title, .e-sec-title, .a-name, .a-title, .a-sec-title, .s-name, .s-title, .s-skills-title, .s-head, .k-name, .k-title, .k-sec-name, .k-r-title, .o-name, .o-title-badge, .o-box-title { font-family: ${hF} !important; }
+                    .a4-page, .v-main, .v-sidebar, .e-main, .e-sidebar, .s-left, .s-right, .k-left, .k-right { font-family: ${bF}; }
+                `;
 
                 // --- HTML STRUCTURE ---
                 let html = '';
@@ -792,7 +807,7 @@
             <div class="v-section">
                 <div class="v-sec-head">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                    ${d.certificates.map(cert => `<span class="v-tag" style="font-size: 0.7rem;">${cert.name} - ${cert.issuer} (${cert.date})</span>`).join('')}
+                    ${d.certificates.map(cert => `<span class="v-tag" style="font-size: 0.7rem; color: #18181b; background: white; border: 1px solid #e4e4e7;">${cert.name} - ${cert.issuer} (${cert.date})</span>`).join('')}
                 </div>
             </div>` : ''}
             
@@ -881,8 +896,24 @@
                                     <div class="e-role-hl">${e.deg}</div>
                                     <div class="e-date">${e.date}</div>
                                 </div>
+
+
                             `).join('')}
             </div>
+
+            ${d.certificates && d.certificates.length > 0 ? `
+            <div class="e-section">
+               <div class="e-sec-title">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
+                ${d.certificates.map(c => `
+                                <div class="e-item">
+                                    <div class="e-item-head">
+                                        <div class="e-comp">${c.name}</div>
+                                        <div class="e-date">${c.date}</div>
+                                    </div>
+                                    <div class="e-desc" style="color:#2c3e50">${c.issuer}</div>
+                                </div>
+                            `).join('')}
+            </div>` : ''}
         </div>
     `;
                 }
@@ -1022,15 +1053,12 @@
             </div>
             ` : ''}
             
-            <div class="s-section">
-                <div class="s-head">${lbl.skills || 'YETENEKLER'}</div>
-                <div class="s-skill-cloud">${d.skills.split(',').map(s => s.trim() ? `<span class="s-tag">${s.trim()}</span>` : '').join('')}</div>
-            </div>
+
 
             ${d.languages ? `
             <div class="s-section">
                 <div class="s-head">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                <div class="s-skill-cloud">${d.languages.split(',').map(s => s.trim() ? `<span class="s-tag" style="background:var(--primary-light); color:var(--primary);">${s.trim()}</span>` : '').join('')}</div>
+                <div class="s-skill-cloud">${d.languages.split(',').map(s => s.trim() ? `<span class="s-tag" style="background:var(--primary-light); color:var(--primary);"></span>` : '').join('')}</div>
             </div>
             ` : ''}
 
@@ -1239,11 +1267,7 @@
             <div class="o-circle-white">
                 <div class="o-name">${d.name}</div>
                 <div class="o-title-badge">${d.title.toUpperCase()}</div>
-                ${d.certificates && d.certificates.length > 0 ? `
-                <div style="margin-top: 15px; max-width: 100%;">
-                    ${d.certificates.slice(0, 3).map(cert => `<span class="o-cert-badge" style="font-size: 0.65rem;">${cert.name}</span>`).join('')}
-                </div>
-                ` : ''}
+
             </div>
             <div class="o-circle-yellow">
                 ${d.photo ? `<img src="${d.photo}" class="o-photo">` : ''}
@@ -1298,14 +1322,14 @@
                 </div>
             </div>` : ''}
             
-            ${d.certificates && d.certificates.length > 3 ? `
-            <div class="o-box" ${!d.languages ? 'style="grid-column: span 2;"' : ''}>
+            ${d.certificates && d.certificates.length > 0 ? `
+            <div class="o-box" style="grid-column: span 2;">
                 <div class="o-box-head">
                     <div class="o-icon-box">🏅</div>
-                    <div class="o-box-title">${isTr ? 'Diğer Sertifikalar' : 'More Certificates'}</div>
+                    <div class="o-box-title">${isTr ? 'Sertifikalar' : 'Certificates'}</div>
                 </div>
                 <div class="o-box-content">
-                    ${d.certificates.slice(3).map(cert => `<span class="o-cert-badge">${cert.name} - ${cert.issuer}</span>`).join('')}
+                    ${d.certificates.map(cert => `<span class="o-cert-badge">${cert.name} - ${cert.issuer} (${cert.date})</span>`).join('')}
                 </div>
             </div>` : ''}
         </div>
