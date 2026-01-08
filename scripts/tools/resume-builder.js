@@ -341,17 +341,65 @@ class ResumeBuilderTool extends BaseTool {
             window.scrollTo(0, 0);
 
             // Inject PDF Specific Fixes (Line Height & Gap Fallback)
-            let pdfStyle = document.createElement('style');
-            pdfStyle.id = 'res-pdf-fix';
-            pdfStyle.textContent = `
+            let theme = this.data.theme || 'modern';
+            let pdfCss = `
                 body.pdf-mode .a4-page * { line-height: 1.4 !important; }
-                body.pdf-mode .v-sidebar { float: left !important; width: 33% !important; display: block !important; margin: 0 !important; }
-                body.pdf-mode .v-main { float: right !important; width: 63% !important; display: block !important; margin: 0 !important; }
-                body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }
                 body.pdf-mode .res-contact > div { margin-bottom: 10px !important; }
                 body.pdf-mode .res-skills { gap: 5px !important; }
                 body.pdf-mode .res-tag { margin: 2px !important; display: inline-block !important; }
             `;
+
+            // Theme Specific Fixes (Convert Grid/Flex to Floats for html2canvas)
+            if (theme === 'nova') {
+                pdfCss += `
+                    body.pdf-mode .v-sidebar { float: left !important; width: 33% !important; display: block !important; margin: 0 !important; }
+                    body.pdf-mode .v-main { float: right !important; width: 63% !important; display: block !important; margin: 0 !important; }
+                `;
+            } else if (theme === 'orbit') {
+                pdfCss += `
+                    body.pdf-mode .e-sidebar { float: left !important; width: 30% !important; display: block !important; margin: 0 !important; }
+                    body.pdf-mode .e-main { float: right !important; width: 65% !important; display: block !important; margin: 0 !important; }
+                `;
+            } else if (theme === 'bloom') {
+                pdfCss += `
+                    body.pdf-mode .a-container { display: block !important; }
+                    body.pdf-mode .a-left { float: left !important; width: 35% !important; display: block !important; }
+                    body.pdf-mode .a-right { float: right !important; width: 60% !important; display: block !important; }
+                `;
+            } else if (theme === 'wave') {
+                pdfCss += `
+                   body.pdf-mode .s-left { float: left !important; width: 32% !important; display: block !important; }
+                   body.pdf-mode .s-right { float: right !important; width: 64% !important; display: block !important; }
+                `;
+            } else if (theme === 'bold') {
+                pdfCss += `
+                   body.pdf-mode .k-left { float: left !important; width: 35% !important; display: block !important; }
+                   body.pdf-mode .k-right { float: right !important; width: 60% !important; display: block !important; }
+                `;
+            } else if (theme === 'prime') {
+                pdfCss += `
+                    body.pdf-mode .o-grid { display: block !important; }
+                    body.pdf-mode .o-box { display: block !important; width: 100% !important; margin-bottom: 20px !important; }
+                `;
+            } else if (theme === 'leftside') {
+                pdfCss += `
+                    body.pdf-mode .res-left { float: left !important; width: 30% !important; display: block !important; }
+                    body.pdf-mode .res-right { float: right !important; width: 66% !important; display: block !important; }
+                `;
+            } else {
+                // Standard Layouts (Linearize bottom grid)
+                pdfCss += `
+                    body.pdf-mode div[style*="display: grid"] { display: block !important; }
+                    body.pdf-mode div[style*="grid-template-columns"] { display: block !important; }
+                 `;
+            }
+
+            // Clearfix
+            pdfCss += `body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }`;
+
+            let pdfStyle = document.createElement('style');
+            pdfStyle.id = 'res-pdf-fix';
+            pdfStyle.textContent = pdfCss;
             document.head.appendChild(pdfStyle);
 
             // Wait for layout reflow
