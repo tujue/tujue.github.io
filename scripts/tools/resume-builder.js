@@ -314,17 +314,59 @@ class ResumeBuilderTool extends BaseTool {
         loadLibraries().then(async () => {
             try {
                 const page = document.querySelector('.a4-page');
+                const container = page.parentElement;
                 if (!page) {
                     throw new Error('CV sayfası bulunamadı');
                 }
 
-                // Capture as-is
+                // Store original styles
+                const originalContainerTransform = container.style.transform;
+                const originalContainerShadow = container.style.boxShadow;
+
+                // Clean up for capture
+                container.style.transform = 'none';
+                container.style.boxShadow = 'none';
+
+                // Inject capture-safe CSS
+                const captureStyle = document.createElement('style');
+                captureStyle.id = 'capture-safe-css';
+                captureStyle.textContent = `
+                    .a4-page,
+                    .a4-page * {
+                        transform: none !important;
+                        text-shadow: none !important;
+                        box-shadow: none !important;
+                        filter: none !important;
+                        -webkit-font-smoothing: antialiased !important;
+                        -moz-osx-font-smoothing: grayscale !important;
+                    }
+                    
+                    .a4-page::before,
+                    .a4-page::after,
+                    .a4-page *::before,
+                    .a4-page *::after {
+                        display: none !important;
+                    }
+                `;
+                document.head.appendChild(captureStyle);
+
+                // Wait for fonts and layout
+                await document.fonts.ready;
+                await new Promise(r => setTimeout(r, 500));
+
+                // Capture
                 const canvas = await html2canvas(page, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: '#ffffff'
+                    backgroundColor: '#ffffff',
+                    removeContainer: false
                 });
+
+                // Restore original styles
+                container.style.transform = originalContainerTransform;
+                container.style.boxShadow = originalContainerShadow;
+                captureStyle.remove();
 
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new window.jspdf.jsPDF({
