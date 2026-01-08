@@ -910,7 +910,20 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
-    _load() { const s = localStorage.getItem('dt_resume_v2'); return s ? JSON.parse(s) : null; }
+    _load() {
+        const s = localStorage.getItem('dt_resume_v2');
+        if (!s) return null;
+        try {
+            const data = JSON.parse(s);
+            // Auto-migrate legacy randomuser images to new local default
+            if (data.photo && data.photo.includes('randomuser.me')) {
+                data.photo = 'assets/default-avatar.png';
+            }
+            return data;
+        } catch (e) {
+            return null;
+        }
+    }
     _getDefaults() {
         // Check language for localized sample data
         const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
@@ -923,7 +936,7 @@ class ResumeBuilderTool extends BaseTool {
             phone: '+90 555 012 34 56',
             address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
             summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
-            photo: 'https://randomuser.me/api/portraits/men/32.jpg', // Placeholder image
+            photo: 'assets/default-avatar.png', // Default local avatar
             skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
             theme: 'modern',
             font: 'sans',
