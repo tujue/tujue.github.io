@@ -250,16 +250,18 @@ class ResumeBuilderTool extends BaseTool {
                 let style = document.getElementById('res-style-inj');
                 if (style) style.textContent = res.css;
                 if (this.currentTab === 'preview') this.fitPreview();
-                return; // Skip full render
+                return;
             }
 
-            this.renderTabContent();
+            // DO NOT renderTabContent for standard inputs (prevents focus loss)
+            // Only render for specific global changes that affect UI structure
 
-            // Force Preview Update for Global Settings (Theme/Color)
+            // Force Preview Update and Render for Global Settings
             if (field === 'theme' || field === 'color') {
+                this.renderTabContent(); // Render UI (Sticky Nav color etc)
                 const res = window.DevTools.resumeGenerator.generateResumeHTML(this.data);
                 let style = document.getElementById('res-style-inj');
-                if (style) style.textContent = res.css;
+                if (style) style.textContent = res.css; // Update Preview CSS
             }
         };
 
@@ -343,7 +345,10 @@ class ResumeBuilderTool extends BaseTool {
             pdfStyle.id = 'res-pdf-fix';
             pdfStyle.textContent = `
                 body.pdf-mode .a4-page * { line-height: 1.4 !important; }
-                body.pdf-mode .v-sidebar > div, body.pdf-mode .res-contact > div { margin-bottom: 10px !important; }
+                body.pdf-mode .v-sidebar { float: left !important; width: 33% !important; display: block !important; margin: 0 !important; }
+                body.pdf-mode .v-main { float: right !important; width: 63% !important; display: block !important; margin: 0 !important; }
+                body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }
+                body.pdf-mode .res-contact > div { margin-bottom: 10px !important; }
                 body.pdf-mode .res-skills { gap: 5px !important; }
                 body.pdf-mode .res-tag { margin: 2px !important; display: inline-block !important; }
             `;
