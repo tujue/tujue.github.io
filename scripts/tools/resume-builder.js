@@ -98,10 +98,10 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow: hidden; position: relative; width: 100%; display: flex; flex-direction: column; min-height: 0; }
-                .res-scroll-container { flex: 1; overflow-y: auto !important; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; align-items: center; position: relative; min-height: 0; }
+                .res-wizard-content { flex: 1; overflow: hidden !important; position: relative; width: 100%; display: flex; flex-direction: column; min-height: 0; }
+                .res-scroll-container { flex: 1; overflow-y: auto !important; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; align-items: center; position: relative; min-height: 0; -webkit-overflow-scrolling: touch; }
                 /* Padding to ensure bottom elements are reachable */
-                .res-content-scroll-fix { padding-bottom: 150px; width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+                .res-content-scroll-fix { padding-bottom: 200px; width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
                 
                 .res-sticky-nav { position: sticky; top: 0; z-index: 155; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 10px 15px; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(8px); width: 100%; flex-shrink: 0; }
                 .res-sticky-nav.compact { padding: 6px 15px; min-height: 40px; }
@@ -169,8 +169,11 @@ class ResumeBuilderTool extends BaseTool {
             this.renderTabContent();
         };
         window._addItem = (type) => {
-            if (type === 'exp') this.data.experience.push(this._getDefaultExperience());
-            else if (type === 'edu') this.data.education.push(this._getDefaultEducation());
+            if (!this.data.experience) this.data.experience = [];
+            if (!this.data.education) this.data.education = [];
+
+            if (type === 'exp') this.data.experience.push({ comp: '', role: '', date: '', desc: '' });
+            else if (type === 'edu') this.data.education.push({ sch: '', deg: '', date: '' });
             this._save();
             this.renderTabContent();
         };
@@ -312,6 +315,7 @@ class ResumeBuilderTool extends BaseTool {
         div.style.flexDirection = 'column';
         div.style.minHeight = '0';
         div.style.width = '100%';
+        div.style.height = '100%';
 
         if (this.currentTab === 'personal') {
             div.innerHTML = `
@@ -538,7 +542,7 @@ class ResumeBuilderTool extends BaseTool {
         }
         else if (this.currentTab === 'preview') {
             div.innerHTML = `
-                < div id = "res-preview-wrapper" class="res-fade-in" style = "display: flex; flex-direction: column; height: 100%;" >
+                <div id="res-preview-wrapper" class="res-fade-in" style="display: flex; flex-direction: column; flex: 1; height: 100%; min-height: 0;">
                     ${renderStickyNav(true)}
 
             <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 20px 0;">
@@ -555,7 +559,7 @@ class ResumeBuilderTool extends BaseTool {
                     <button id="z-fit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.75rem; font-weight:bold; padding: 5px 2px;">${isTr ? 'SIĞDIR' : 'FIT SCREEN'}</button>
                 </div>
             </div>
-                </div >
+        </div>
                 `;
             c.appendChild(div);
 
@@ -614,9 +618,8 @@ class ResumeBuilderTool extends BaseTool {
             this._save();
         };
         window._addItem = (t) => {
-            const l = t === 'exp' ? this.data.experience : this.data.education;
-            if (t === 'exp') l.push({ role: '', comp: '', date: '', desc: '' });
-            else l.push({ deg: '', sch: '', date: '' });
+            if (t === 'exp') this.data.experience.push({ role: '', comp: '', date: '', desc: '' });
+            else this.data.education.push({ deg: '', sch: '', date: '' });
             this._save();
             this.renderTabContent();
         };
