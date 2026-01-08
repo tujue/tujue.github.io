@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2.6.8';
+const CACHE_VERSION = 'v2.7.0'; // Major Performance Update
 const CACHE_NAME = `tulpar-${CACHE_VERSION}`;
 const ASSETS = [
     './',
@@ -11,6 +11,10 @@ const ASSETS = [
     './scripts/legal-content.js',
     './scripts/tools-definitions.js',
     './scripts/tools/BaseTool.js',
+    './scripts/workspace-fixed.js',
+    './scripts/renderer-fixed.js',
+    './scripts/performance.js',
+    './scripts/accessibility.js',
     './manifest.json',
     'https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Lato:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;700&family=Oswald:wght@400;500;700&family=Playfair+Display:wght@400;700&family=Raleway:wght@400;600;700&family=Roboto:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap'
 ];

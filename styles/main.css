@@ -318,7 +318,10 @@ h4 {
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.3s ease,
+        opacity 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -462,7 +465,7 @@ h4 {
     align-items: center;
     justify-content: center;
     font-size: var(--text-xl);
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
 }
 
 .close-btn:hover {
@@ -494,7 +497,7 @@ h4 {
     color: var(--text-primary);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
-    transition: all var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 /* ========== UI POLISH: IMPROVED FOCUS STATES ========== */
@@ -770,7 +773,7 @@ select option {
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;

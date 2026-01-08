@@ -72,15 +72,31 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="dns-prefetch" href="https://unpkg.com">
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inconsolata:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Lato:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;700&family=Nunito:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;500;700&family=Playfair+Display:wght@400;700&family=Raleway:wght@400;600;700&family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet">
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inconsolata:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Lato:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;700&family=Nunito:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;500;700&family=Playfair+Display:wght@400;700&family=Raleway:wght@400;600;700&family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet">
+  </noscript>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </noscript>
 
   <script>
     // CACHE BUSTER - Semantic Versioning
@@ -201,6 +217,31 @@
   <!-- ========== CRITICAL CSS (INLINE for faster render) ========== -->
   <style>
     /* Critical CSS inlined for immediate render - Full styles loaded async below */
+    /* FORCE FONT DISPLAY SWAP FOR FONT AWESOME (Fix PageSpeed Warning) */
+    @font-face {
+      font-family: 'Font Awesome 6 Free';
+      font-style: normal;
+      font-weight: 900;
+      font-display: swap;
+      src: url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2) format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Font Awesome 6 Brands';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2) format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Font Awesome 6 Free';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2) format('woff2');
+    }
+
     :root {
       --primary-gradient: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
       --bg-dark: #0f0f23;
@@ -261,6 +302,17 @@
       padding: 0 var(--space-lg)
     }
 
+    /* CLS FIX: Reserve space for dynamic tools grid immediately */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      min-height: 1200px;
+      /* Pre-allocate height to prevent layout shift when JS loads */
+      content-visibility: auto;
+      /* Performance boost */
+    }
+
     .header {
       padding: var(--space-lg) 0;
       position: sticky;
@@ -317,7 +369,13 @@
       font-size: var(--text-xl);
       color: var(--text-secondary);
       max-width: 600px;
-      margin: 0 auto var(--space-lg)
+      margin: 0 auto var(--space-lg);
+      content-visibility: auto;
+      /* LCP Optimization */
+      contain-intrinsic-size: 0 60px;
+      /* Prevent layout shift during render */
+      text-rendering: optimizeSpeed;
+      /* Prioritize speed over legibility precision */
     }
 
     .hero-badge {
@@ -349,7 +407,8 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       color: var(--text-primary);
-      font-size: var(--text-base)
+      font-size: var(--text-base);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .skip-to-content {
@@ -391,6 +450,20 @@
       .container {
         padding: 0 1rem
       }
+    }
+
+    /* SEO Link Styles */
+    .seo-link {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    .seo-link:hover {
+      color: var(--accent-blue);
+      text-decoration: underline;
     }
   </style>
 
@@ -581,113 +654,49 @@
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Developer Utilities</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('json-master-studio'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">JSON
-                    Studio & Validator</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('xml-formatter'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">XML
-                    Formatter / CSV</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('base64-tool'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Base64
-                    Encoder/Decoder</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('jwt-decoder'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">JWT
-                    Decoder & Debugger</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('regex-tester'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Regex
-                    Tester</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('json-master-studio'); return false;" class="seo-link">JSON Studio</a> •
+                <a href="#" onclick="openTool('xml-formatter'); return false;" class="seo-link">XML/CSV</a> •
+                <a href="#" onclick="openTool('base64-tool'); return false;" class="seo-link">Base64</a> •
+                <a href="#" onclick="openTool('jwt-decoder'); return false;" class="seo-link">JWT Debugger</a> •
+                <a href="#" onclick="openTool('regex-tester'); return false;" class="seo-link">Regex Tester</a>
+              </div>
             </div>
             <div>
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Image & Media</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('ocr-tool'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Online
-                    OCR (Image to Text)</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('background-remover'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">AI
-                    Background Remover</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('image-compressor'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Image
-                    Compressor</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('svg-optimizer'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">SVG
-                    Optimizer</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('favicon-generator'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Favicon
-                    Generator</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('ocr-tool'); return false;" class="seo-link">Online OCR</a> •
+                <a href="#" onclick="openTool('background-remover'); return false;" class="seo-link">BG Remover</a> •
+                <a href="#" onclick="openTool('image-compressor'); return false;" class="seo-link">Compressor</a> •
+                <a href="#" onclick="openTool('svg-optimizer'); return false;" class="seo-link">SVG Optimizer</a> •
+                <a href="#" onclick="openTool('favicon-generator'); return false;" class="seo-link">Favicon</a>
+              </div>
             </div>
             <div>
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Security & Web</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('password-generator'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Password
-                    Generator</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('hash-generator'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Hash
-                    Generator</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('ip-lookup'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">IP
-                    Lookup</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('ssl-checker'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">SSL
-                    Checker</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('web-scraper'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Web
-                    Scraper</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('password-generator'); return false;" class="seo-link">Password Gen</a> •
+                <a href="#" onclick="openTool('hash-generator'); return false;" class="seo-link">Hash Gen</a> •
+                <a href="#" onclick="openTool('ip-lookup'); return false;" class="seo-link">IP Lookup</a> •
+                <a href="#" onclick="openTool('ssl-checker'); return false;" class="seo-link">SSL Check</a> •
+                <a href="#" onclick="openTool('web-scraper'); return false;" class="seo-link">Web Scraper</a>
+              </div>
             </div>
             <div>
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Document & PDF</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('pdf-tools'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">PDF
-                    Merger & Splitter</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('resume-builder'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Resume
-                    Builder</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('word-counter'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Word
-                    Counter</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('text-diff'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Diff
-                    Checker</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('markdown-editor'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Markdown
-                    Editor</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('pdf-tools'); return false;" class="seo-link">PDF Tools</a> •
+                <a href="#" onclick="openTool('resume-builder'); return false;" class="seo-link">Resume Builder</a> •
+                <a href="#" onclick="openTool('word-counter'); return false;" class="seo-link">Word Counter</a> •
+                <a href="#" onclick="openTool('text-diff'); return false;" class="seo-link">Diff Checker</a> •
+                <a href="#" onclick="openTool('markdown-editor'); return false;" class="seo-link">Markdown</a>
+              </div>
             </div>
           </div>
         </article>
@@ -711,113 +720,49 @@
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Geliştirici Araçları</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('json-master-studio'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">JSON
-                    Düzenleyici</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('xml-formatter'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">XML /
-                    CSV Dönüştürücü</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('base64-tool'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Base64
-                    Şifreleme</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('jwt-decoder'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">JWT
-                    Token Çözücü</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('regex-tester'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Regex
-                    Test Aracı</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('json-master-studio'); return false;" class="seo-link">JSON Editör</a> •
+                <a href="#" onclick="openTool('xml-formatter'); return false;" class="seo-link">XML/CSV</a> •
+                <a href="#" onclick="openTool('base64-tool'); return false;" class="seo-link">Base64</a> •
+                <a href="#" onclick="openTool('jwt-decoder'); return false;" class="seo-link">JWT Çözücü</a> •
+                <a href="#" onclick="openTool('regex-tester'); return false;" class="seo-link">Regex Test</a>
+              </div>
             </div>
             <div>
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Görsel ve Medya</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('ocr-tool'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Online
-                    OCR (Resimden Yazı)</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('background-remover'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Arka
-                    Plan Silici</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('image-compressor'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Resim
-                    Sıkıştırma</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('svg-optimizer'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">SVG
-                    Optimize</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('favicon-generator'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Favicon
-                    Yapma</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('ocr-tool'); return false;" class="seo-link">Online OCR</a> •
+                <a href="#" onclick="openTool('background-remover'); return false;" class="seo-link">BG Silici</a> •
+                <a href="#" onclick="openTool('image-compressor'); return false;" class="seo-link">Resim Sıkıştır</a> •
+                <a href="#" onclick="openTool('svg-optimizer'); return false;" class="seo-link">SVG Optimize</a> •
+                <a href="#" onclick="openTool('favicon-generator'); return false;" class="seo-link">Favicon</a>
+              </div>
             </div>
             <div>
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Web ve Güvenlik</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('password-generator'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Şifre
-                    Oluşturucu</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('hash-generator'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Hash
-                    Hesaplama</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('ip-lookup'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">IP
-                    Adresim Nedir?</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('ssl-checker'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">SSL
-                    Kontrol</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('web-scraper'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Web Site
-                    Kazıyıcı</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('password-generator'); return false;" class="seo-link">Şifre Üretici</a> •
+                <a href="#" onclick="openTool('hash-generator'); return false;" class="seo-link">Hash</a> •
+                <a href="#" onclick="openTool('ip-lookup'); return false;" class="seo-link">IP Sorgula</a> •
+                <a href="#" onclick="openTool('ssl-checker'); return false;" class="seo-link">SSL Kontrol</a> •
+                <a href="#" onclick="openTool('web-scraper'); return false;" class="seo-link">Web Kazıyıcı</a>
+              </div>
             </div>
             <div>
               <h3
                 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7;">
                 Döküman ve PDF</h3>
-              <ul
-                style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('pdf-tools'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">PDF
-                    Birleştirme</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('resume-builder'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">CV
-                    Hazırlama</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('word-counter'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Kelime
-                    Sayacı</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('text-diff'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Metin
-                    Karşılaştırma</a></li>
-                <li style="margin-bottom: 4px;"><a href="#" onclick="openTool('markdown-editor'); return false;"
-                    style="color:inherit; text-decoration:none; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Markdown
-                    Editörü</a></li>
-              </ul>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                <a href="#" onclick="openTool('pdf-tools'); return false;" class="seo-link">PDF Araçları</a> •
+                <a href="#" onclick="openTool('resume-builder'); return false;" class="seo-link">CV Hazırla</a> •
+                <a href="#" onclick="openTool('word-counter'); return false;" class="seo-link">Kelime Sayacı</a> •
+                <a href="#" onclick="openTool('text-diff'); return false;" class="seo-link">Metin Farkı</a> •
+                <a href="#" onclick="openTool('markdown-editor'); return false;" class="seo-link">Markdown</a>
+              </div>
             </div>
           </div>
         </article>
@@ -837,8 +782,7 @@
     <div class="container">
       <p>
         <a href="#" onclick="window.showLegal('copyright'); return false;" data-i18n="footer.rights"
-          style="color:inherit; text-decoration:none; transition:color 0.2s;"
-          onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">
+          class="footer-link">
           © 2025 TULPAR. All rights reserved.
         </a>
       </p>
@@ -892,20 +836,22 @@
   <!-- ========== SCRIPTS ========== -->
   <!-- Lazy Loading: External libraries loaded on-demand -->
   <!-- Uncomment below to load all libraries upfront (increases initial load time): -->
+  <!-- 
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://unpkg.com/tesseract.js@5.0.3/dist/tesseract.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exifreader@4.23.3/dist/exif-reader.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script> 
+  -->
 
   <!-- Lazy Loader (loads libraries only when needed) -->
   <script src="scripts/lazy-loader.js" defer></script>
 
   <!-- Legal Content -->
-  <script src="scripts/legal-content.js"></script>
+  <script src="scripts/legal-content.js" defer></script>
 
   <!-- Internationalization (i18n) -->
-  <script src="scripts/i18n.js?v=v3.10.6"></script>
+  <script src="scripts/i18n.js?v=v3.10.6" defer></script>
 
   <!-- UI Enhancements (keyboard shortcuts, search, categories) -->
   <script src="scripts/ui-enhancements.js" defer></script>
@@ -917,27 +863,30 @@
   <script src="scripts/performance.js" defer></script>
 
   <!-- ========== MODULAR SYSTEM v2.0.0 ========== -->
-  <!-- Tool Definitions (metadata for all 38 tools) - loaded synchronously to ensure TOOLS is available -->
-  <script src="scripts/tools-definitions.js?v=v3.10.6"></script>
+  <!-- Tool Definitions (metadata for all 38 tools) -->
+  <script src="scripts/tools-definitions.js?v=v3.10.6" defer></script>
 
   <!-- Base Tool Class -->
   <script src="scripts/tools/BaseTool.js?v=v3.10.6" defer></script>
 
   <!-- DevTools Core (restored common utilities) -->
+  <!-- 
   <script>
     // CACHE BUSTER: Force reload of core script
     const coreScript = document.createElement('script');
     coreScript.src = `scripts/dev-tools-core.js?t=${Date.now()}`;
+    coreScript.defer = true; // Add defer dynamically
     document.currentScript.parentNode.insertBefore(coreScript, document.currentScript.nextSibling);
   </script>
+  -->
 
   <!-- Core Application Logic (Fixed Non-Module Versions) -->
   <!-- state.js still as module - it's OK as it doesn't export to window -->
   <script type="module" src="scripts/modules/core/state.js"></script>
   <!-- FIXED: Use non-module workspace -->
-  <script src="scripts/workspace-fixed.js?v=2.7.3"></script>
+  <script src="scripts/workspace-fixed.js?v=2.7.3" defer></script>
   <!-- FIXED: Use non-module renderer -->
-  <script src="scripts/renderer-fixed.js?v=2.7.3"></script>
+  <script src="scripts/renderer-fixed.js?v=2.7.3" defer></script>
 
   <!-- Main Application (Orchestrator) -->
   <script src="scripts/main.js?v=v3.10.6" defer></script>

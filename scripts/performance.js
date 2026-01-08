@@ -181,34 +181,6 @@
         }
     }
 
-    // ========== OPTIMIZE TOOL CARDS RENDERING ==========
-
-    function optimizeToolCardsRendering() {
-        const toolsGrid = document.getElementById('tools-grid');
-        if (!toolsGrid) return;
-
-        // Use requestAnimationFrame for smooth rendering
-        const observer = new MutationObserver(() => {
-            requestAnimationFrame(() => {
-                const cards = toolsGrid.querySelectorAll('.tool-card');
-
-                // Add will-change for cards that will animate
-                cards.forEach((card, index) => {
-                    if (index < 12) { // First visible cards
-                        card.style.willChange = 'transform';
-
-                        // Remove will-change after animation
-                        setTimeout(() => {
-                            card.style.willChange = 'auto';
-                        }, 1000);
-                    }
-                });
-            });
-        });
-
-        observer.observe(toolsGrid, { childList: true });
-    }
-
     // ========== DEBOUNCE SCROLL EVENTS ==========
 
     function debounceScrollEvents() {
@@ -233,13 +205,11 @@
             requestIdleCallback(() => {
                 // Initialize non-critical features
                 setupLazyLoading();
-                optimizeToolCardsRendering();
             });
         } else {
             // Fallback to setTimeout
             setTimeout(() => {
                 setupLazyLoading();
-                optimizeToolCardsRendering();
             }, 1);
         }
     }
