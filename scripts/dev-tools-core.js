@@ -653,13 +653,7 @@
         </div>
     </div>` : ''}
 
-    ${d.interests ? `
-    <div class="v-side-sec">
-        <div class="v-side-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-         <div class="v-info-group" style="display:block;">
-             ${d.interests.split(',').map(s => `<div style="margin-bottom:5px;">• ${s.trim()}</div>`).join('')}
-        </div>
-    </div>` : ''}
+
 
     </div>
         <div class="v-main">
@@ -698,6 +692,12 @@
                                 </div>
                             `).join('')}
             </div>
+            
+            ${d.interests ? `
+            <div class="v-section">
+                <div class="v-sec-head">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                <div class="v-interests">${d.interests}</div>
+            </div>` : ''}
             </div>
         </div>
     `;
