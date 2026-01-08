@@ -233,48 +233,85 @@ class ResumeBuilderTool extends BaseTool {
             return;
         }
 
-        // Temporarily remove zoom for accurate PDF generation
-        const originalTransform = page.style.transform;
-        page.style.transform = 'none';
-        page.style.boxShadow = 'none';
+        // Load libraries if not already loaded
+        const loadLibraries = () => {
+            return new Promise((resolve, reject) => {
+                if (window.html2canvas && window.jspdf) {
+                    resolve();
+                    return;
+                }
 
-        // Small delay to ensure transform applied
-        setTimeout(() => {
-            import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js').then(module => {
-                const html2canvas = module.default || module;
-                return html2canvas(page, {
+                const scripts = [];
+
+                if (!window.html2canvas) {
+                    const html2canvasScript = document.createElement('script');
+                    html2canvasScript.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                    scripts.push(new Promise((res, rej) => {
+                        html2canvasScript.onload = res;
+                        html2canvasScript.onerror = rej;
+                        document.head.appendChild(html2canvasScript);
+                    }));
+                }
+
+                if (!window.jspdf) {
+                    const jspdfScript = document.createElement('script');
+                    jspdfScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    scripts.push(new Promise((res, rej) => {
+                        jspdfScript.onload = res;
+                        jspdfScript.onerror = rej;
+                        document.head.appendChild(jspdfScript);
+                    }));
+                }
+
+                Promise.all(scripts).then(resolve).catch(reject);
+            });
+        };
+
+        loadLibraries().then(() => {
+            // Temporarily remove zoom for accurate PDF generation
+            const originalTransform = page.style.transform;
+            page.style.transform = 'none';
+            page.style.boxShadow = 'none';
+
+            setTimeout(() => {
+                window.html2canvas(page, {
                     scale: 2,
                     useCORS: true,
                     allowTaint: true,
                     backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    page.style.transform = originalTransform;
+                    page.style.boxShadow = '';
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new window.jspdf.jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    const imgWidth = 210; // A4 width in mm
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                    pdf.save(`CV_${this.data.name || 'Resume'}.pdf`);
+
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }).catch(error => {
+                    console.error('Error generating PDF:', error);
+                    page.style.transform = originalTransform;
+                    page.style.boxShadow = '';
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    alert('PDF oluşturulurken bir hata oluştu: ' + error.message);
                 });
-            }).then(canvas => {
-                page.style.transform = originalTransform;
-                page.style.boxShadow = '';
-
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new window.jspdf.jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
-                const imgWidth = 210; // A4 width in mm
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                pdf.save(`CV_${this.data.name || 'Resume'}.pdf`);
-
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }).catch(error => {
-                console.error('Error generating PDF:', error);
-                page.style.transform = originalTransform;
-                page.style.boxShadow = '';
-                btn.textContent = originalText;
-                btn.disabled = false;
-                alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
-            });
-        }, 100);
+            }, 100);
+        }).catch(error => {
+            console.error('Error loading PDF libraries:', error);
+            btn.textContent = originalText;
+            btn.disabled = false;
+            alert('PDF kütüphaneleri yüklenemedi. Lütfen internet bağlantınızı kontrol edin.');
+        });
     }
 
     renderTabContent() {
