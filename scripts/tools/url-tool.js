@@ -75,37 +75,34 @@ class URLTool extends BaseTool {
         const output = document.getElementById('url-output');
         const status = document.getElementById('url-status');
         const detailsPanel = document.getElementById('url-details-panel');
-        const detailsContent = document.getElementById('url-details-content');
+        const showNotification = window.showNotification || ((msg) => alert(msg));
 
         const handleAction = (action) => {
             const val = input.value.trim();
-            if (!val) { this.showNotification('Please enter input', 'error'); return; }
+            if (!val) { showNotification('Please enter input', 'error'); return; }
 
             let res;
             if (action === 'parseQueryString') {
-                // Check if it's a full URL first
                 try {
                     const u = new URL(val);
-                    res = window.DevTools.urlTool.parseURL(val); // Extract params from full URL
+                    res = this.parseURL(val); // Extract params from full URL
                 } catch (e) {
-                    // Treat as raw query string
                     let q = val;
                     if (q.startsWith('?')) q = q.substring(1);
-                    res = window.DevTools.urlTool.parseQueryString(q);
+                    res = this.parseQueryString(q);
                 }
+            } else if (typeof this[action] === 'function') {
+                res = this[action](val);
             } else {
-                res = window.DevTools.urlTool[action](val);
+                return; // Unknown action
             }
 
             if (res.success) {
                 if (action === 'parseURL' || (action === 'parseQueryString' && res.data && res.data.params)) {
-                    // Try to render breakdown for both
                     if (action === 'parseURL') this._renderBreakdown(res.data);
                     else if (res.data) {
-                        // Creating a fake object for renderBreakdown
-                        this._renderBreakdown({ protocol: '-', hostname: '-', pathname: '-', params: res.data });
+                        this._renderBreakdown({ protocol: '-', hostname: '-', pathname: '-', params: res.data || res.result }); // Fix structure
                     }
-
                     output.textContent = JSON.stringify(res.data || res.result, null, 2);
                 } else {
                     detailsPanel.style.display = 'none';
@@ -116,7 +113,7 @@ class URLTool extends BaseTool {
             } else {
                 output.textContent = '';
                 detailsPanel.style.display = 'none';
-                this.showNotification(res.message, 'error');
+                showNotification(res.message, 'error');
             }
         };
 
@@ -130,20 +127,21 @@ class URLTool extends BaseTool {
     _renderBreakdown(data) {
         const panel = document.getElementById('url-details-panel');
         const content = document.getElementById('url-details-content');
+        const params = data.params || data; // Handle direct params object
 
         let html = `
             <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px; font-size: 0.9rem;">
-                <span style="opacity: 0.5;">Protocol:</span><strong style="color: var(--primary);">${data.protocol}</strong>
-                <span style="opacity: 0.5;">Hostname:</span><strong>${data.hostname}</strong>
-                <span style="opacity: 0.5;">Path:</span><strong style="color: var(--secondary);">${data.pathname}</strong>
+                <span style="opacity: 0.5;">Protocol:</span><strong style="color: var(--primary);">${data.protocol || '-'}</strong>
+                <span style="opacity: 0.5;">Hostname:</span><strong>${data.hostname || '-'}</strong>
+                <span style="opacity: 0.5;">Path:</span><strong style="color: var(--secondary);">${data.pathname || '-'}</strong>
             </div>
         `;
 
-        if (Object.keys(data.params).length > 0) {
+        if (Object.keys(params).length > 0) {
             html += `<div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
                 <div style="font-size: 0.8rem; opacity: 0.5; margin-bottom: 8px;">QUERY PARAMETERS</div>
                 <div style="display: grid; gap: 8px;">
-                    ${Object.entries(data.params).map(([k, v]) => `
+                    ${Object.entries(params).map(([k, v]) => `
                         <div style="background: rgba(var(--primary-rgb), 0.1); padding: 8px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.85rem;">
                             <span style="color: var(--primary); font-weight: 700;">${k}</span> = <span>${v}</span>
                         </div>
@@ -154,6 +152,69 @@ class URLTool extends BaseTool {
 
         content.innerHTML = html;
         panel.style.display = 'block';
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools)
+
+    encode(val) {
+        return { success: true, result: encodeURIComponent(val), message: 'Encoded Component' };
+    }
+
+    decode(val) {
+        try {
+            return { success: true, result: decodeURIComponent(val), message: 'Decoded Component' };
+        } catch (e) {
+            return { success: false, message: 'Invalid URI Component' };
+        }
+    }
+
+    encodeURL(val) {
+        return { success: true, result: encodeURI(val), message: 'Encoded Full URL' };
+    }
+
+    decodeURL(val) {
+        try {
+            return { success: true, result: decodeURI(val), message: 'Decoded Full URL' };
+        } catch (e) {
+            return { success: false, message: 'Invalid URI' };
+        }
+    }
+
+    parseURL(val) {
+        try {
+            const url = new URL(val);
+            const params = {};
+            url.searchParams.forEach((v, k) => params[k] = v);
+            return {
+                success: true,
+                message: 'URL Parsed Successfully',
+                data: {
+                    protocol: url.protocol,
+                    hostname: url.hostname,
+                    pathname: url.pathname,
+                    params: params
+                }
+            };
+        } catch (e) {
+            return { success: false, message: 'Invalid URL format' };
+        }
+    }
+
+    parseQueryString(val) {
+        try {
+            const params = {};
+            const search = val.startsWith('?') ? val.slice(1) : val;
+            const pairs = search.split('&');
+            for (const pair of pairs) {
+                if (pair) {
+                    const [key, value] = pair.split('=');
+                    params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+                }
+            }
+            return { success: true, message: 'Query String Parsed', result: params }; // result is used for fake object mismatch
+        } catch (e) {
+            return { success: false, message: 'Error parsing query string' };
+        }
     }
 }
 
