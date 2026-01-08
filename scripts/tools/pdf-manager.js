@@ -114,11 +114,15 @@ class PDFManagerTool extends BaseTool {
     };
 
     btnMerge.onclick = async () => {
+      if (typeof PDFLib === 'undefined') {
+        this.showNotification('PDFLib library not loaded.', 'error');
+        return;
+      }
       if (this.mergeFiles.length === 0) return;
       btnMerge.disabled = true;
       btnMerge.textContent = 'Processing...';
       try {
-        const blob = await window.DevTools.pdfTools.merge(this.mergeFiles);
+        const blob = await this.mergePDFs(this.mergeFiles);
         this._download(blob, 'combined.pdf');
         this.showNotification('PDFs merged successfully!', 'success');
       } catch (err) {
@@ -131,13 +135,17 @@ class PDFManagerTool extends BaseTool {
 
     // Images to PDF
     document.getElementById('pdf-btn-img').onclick = async () => {
+      if (typeof PDFLib === 'undefined') {
+        this.showNotification('PDFLib library not loaded.', 'error');
+        return;
+      }
       const fileInput = document.getElementById('pdf-in-imgs');
       if (!fileInput.files.length) return;
       const btn = document.getElementById('pdf-btn-img');
       btn.disabled = true;
       btn.textContent = '...';
       try {
-        const blob = await window.DevTools.pdfTools.imagesToPdf(fileInput.files);
+        const blob = await this.imagesToPdf(fileInput.files);
         this._download(blob, 'images.pdf');
       } catch (err) { this.showNotification(err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Convert'; }
@@ -145,6 +153,10 @@ class PDFManagerTool extends BaseTool {
 
     // Quick Actions Logic
     inQuick.onchange = async (e) => {
+      if (typeof PDFLib === 'undefined') {
+        this.showNotification('PDFLib library not loaded.', 'error');
+        return;
+      }
       const file = e.target.files[0];
       if (!file) return;
       this.currentQuickFile = file;
@@ -161,7 +173,7 @@ class PDFManagerTool extends BaseTool {
     document.getElementById('pdf-btn-rotate').onclick = async () => {
       if (!this.currentQuickFile) return;
       try {
-        const blob = await window.DevTools.pdfTools.rotate(this.currentQuickFile, 90);
+        const blob = await this.rotatePDF(this.currentQuickFile, 90);
         this._download(blob, 'rotated.pdf');
       } catch (err) { this.showNotification(err.message, 'error'); }
     };
@@ -170,7 +182,7 @@ class PDFManagerTool extends BaseTool {
       const range = document.getElementById('pdf-range-input').value;
       if (!this.currentQuickFile || !range) return;
       try {
-        const blob = await window.DevTools.pdfTools.extract(this.currentQuickFile, range);
+        const blob = await this.extractPages(this.currentQuickFile, range);
         this._download(blob, 'extracted.pdf');
       } catch (err) { this.showNotification(err.message, 'error'); }
     };
@@ -224,6 +236,87 @@ class PDFManagerTool extends BaseTool {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.pdfTools)
+
+  async mergePDFs(files) {
+    const mergedPdf = await PDFLib.PDFDocument.create();
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+    const pdfBytes = await mergedPdf.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+  }
+
+  async imagesToPdf(files) {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      let image;
+      if (file.type === 'image/jpeg') {
+        image = await pdfDoc.embedJpg(arrayBuffer);
+      } else if (file.type === 'image/png') {
+        image = await pdfDoc.embedPng(arrayBuffer);
+      } else {
+        continue;
+      }
+      const page = pdfDoc.addPage([image.width, image.height]);
+      page.drawImage(image, {
+        x: 0,
+        y: 0,
+        width: image.width,
+        height: image.height,
+      });
+    }
+    const pdfBytes = await pdfDoc.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+  }
+
+  async rotatePDF(file, angle) {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    const pages = pdfDoc.getPages();
+    pages.forEach(page => {
+      const rotation = page.getRotation();
+      page.setRotation(PDFLib.degrees(rotation.angle + angle));
+    });
+    const pdfBytes = await pdfDoc.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+  }
+
+  async extractPages(file, rangeStr) {
+    // Parse range string "1-3, 5" -> [0, 1, 2, 4]
+    const parts = rangeStr.split(',').map(p => p.trim());
+    const indices = [];
+
+    parts.forEach(p => {
+      if (p.includes('-')) {
+        const [start, end] = p.split('-').map(n => parseInt(n));
+        for (let i = start; i <= end; i++) indices.push(i - 1);
+      } else {
+        indices.push(parseInt(p) - 1);
+      }
+    });
+
+    const arrayBuffer = await file.arrayBuffer();
+    const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    const newDoc = await PDFLib.PDFDocument.create();
+
+    // Filter valid indices
+    const pageCount = srcDoc.getPageCount();
+    const validIndices = indices.filter(i => i >= 0 && i < pageCount);
+
+    if (validIndices.length === 0) throw new Error("No valid pages selected");
+
+    const copiedPages = await newDoc.copyPages(srcDoc, validIndices);
+    copiedPages.forEach(page => newDoc.addPage(page));
+
+    const pdfBytes = await newDoc.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
   }
 };
 

@@ -115,19 +115,18 @@ class DataConvertersTool extends BaseTool {
 
             let result = '';
             try {
-                const conv = window.DevTools.dataConverters;
                 switch (this.currentType) {
-                    case 'csv-json': result = conv.csvToJson(raw).result; break;
-                    case 'json-csv': result = conv.jsonToCsv(raw).result; break;
-                    case 'json-xml': result = conv.jsonToXml(raw).result; break;
-                    case 'xml-json': result = conv.xmlToJson(raw).result; break;
-                    case 'json-sql': result = conv.jsonToSql(raw).result; break;
+                    case 'csv-json': result = this.csvToJson(raw).result; break;
+                    case 'json-csv': result = this.jsonToCsv(raw).result; break;
+                    case 'json-xml': result = this.jsonToXml(raw).result; break;
+                    case 'xml-json': result = this.xmlToJson(raw).result; break;
+                    case 'json-sql': result = this.jsonToSql(raw).result; break;
                     case 'timestamp-date':
-                        const r = conv.timestampToDate(raw);
+                        const r = this.timestampToDate(raw);
                         result = r.success ? JSON.stringify(r.result, null, 2) : r.message;
                         break;
                     case 'date-timestamp':
-                        const r2 = conv.dateToTimestamp(raw);
+                        const r2 = this.dateToTimestamp(raw);
                         result = r2.success ? JSON.stringify(r2.result, null, 2) : r2.message;
                         break;
                 }
@@ -139,6 +138,156 @@ class DataConvertersTool extends BaseTool {
 
         document.getElementById('data-btn-copy').onclick = () => this.copyToClipboard(outArea.textContent);
         document.getElementById('data-btn-clear').onclick = () => { inArea.value = ''; outArea.textContent = ''; };
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.dataConverters)
+
+    csvToJson(csv) {
+        const lines = csv.split('\n');
+        const result = [];
+        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            const obj = {};
+            const currentline = lines[i].split(','); // Simple split, doesn't handle commas in quotes
+            for (let j = 0; j < headers.length; j++) {
+                obj[headers[j]] = currentline[j]?.trim().replace(/^"|"$/g, '') || "";
+            }
+            result.push(obj);
+        }
+        return { success: true, result: JSON.stringify(result, null, 2) };
+    }
+
+    jsonToCsv(jsonStr) {
+        const json = JSON.parse(jsonStr);
+        const array = Array.isArray(json) ? json : [json];
+        if (array.length === 0) return { success: false, message: "Empty JSON" };
+
+        const headers = Object.keys(array[0]);
+        const csvRows = [];
+        csvRows.push(headers.join(','));
+
+        for (const row of array) {
+            const values = headers.map(header => {
+                const escaped = ('' + row[header]).replace(/"/g, '\\"');
+                return `"${escaped}"`;
+            });
+            csvRows.push(values.join(','));
+        }
+        return { success: true, result: csvRows.join('\n') };
+    }
+
+    jsonToXml(jsonStr) {
+        const json = JSON.parse(jsonStr);
+        let xml = '';
+        const toXml = (obj, rootName = 'root') => {
+            let xml = '';
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (typeof obj[key] === 'object' && obj[key] !== null) {
+                        xml += toXml(obj[key], key);
+                    } else {
+                        xml += `<${key}>${obj[key]}</${key}>`;
+                    }
+                }
+            }
+            return rootName ? `<${rootName}>${xml}</${rootName}>` : xml;
+        }
+        // Handle array root
+        if (Array.isArray(json)) {
+            xml = `<root>${json.map(item => toXml(item, 'item')).join('')}</root>`;
+        } else {
+            xml = toXml(json);
+        }
+        return { success: true, result: xml };
+    }
+
+    xmlToJson(xmlStr) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+
+        const xmlToJson = (xml) => {
+            let obj = {};
+            if (xml.nodeType === 1) { // element
+                if (xml.attributes.length > 0) {
+                    obj["@attributes"] = {};
+                    for (let j = 0; j < xml.attributes.length; j++) {
+                        const attribute = xml.attributes.item(j);
+                        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                    }
+                }
+            } else if (xml.nodeType === 3) { // text
+                obj = xml.nodeValue;
+            }
+
+            if (xml.hasChildNodes()) {
+                for (let i = 0; i < xml.childNodes.length; i++) {
+                    const item = xml.childNodes.item(i);
+                    const nodeName = item.nodeName;
+                    if (typeof (obj[nodeName]) === "undefined") {
+                        const val = xmlToJson(item);
+                        // If text node only, simplify
+                        if (typeof val === 'object' && Object.keys(val).length === 0) continue; // empty
+                        // if text node #text
+                        if (nodeName === "#text") {
+                            const textVal = item.nodeValue.trim();
+                            if (textVal) return textVal; else continue;
+                        }
+                        obj[nodeName] = val;
+                    } else {
+                        if (typeof (obj[nodeName].push) === "undefined") {
+                            const old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        obj[nodeName].push(xmlToJson(item));
+                    }
+                }
+            }
+            return obj;
+        };
+        const res = xmlToJson(xmlDoc.documentElement);
+        return { success: true, result: JSON.stringify(res, null, 2) };
+    }
+
+    jsonToSql(jsonStr) {
+        const json = JSON.parse(jsonStr);
+        const array = Array.isArray(json) ? json : [json];
+        if (array.length === 0) return { success: false, message: "Empty JSON" };
+
+        const tableName = "my_table";
+        const keys = Object.keys(array[0]);
+        let sql = `CREATE TABLE ${tableName} (${keys.map(k => `${k} VARCHAR(255)`).join(', ')});\n`; // Naive schema
+        sql += `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES\n`;
+
+        const values = array.map(row => {
+            const vals = keys.map(k => `'${String(row[k]).replace(/'/g, "''")}'`).join(', ');
+            return `(${vals})`;
+        }).join(',\n');
+
+        sql += values + ';';
+        return { success: true, result: sql };
+    }
+
+    timestampToDate(ts) {
+        const timestamp = parseInt(ts);
+        if (isNaN(timestamp)) return { success: false, message: "Invalid timestamp" };
+        const date = new Date(timestamp * 1000); // assume seconds
+        const result = {
+            iso: date.toISOString(),
+            utc: date.toUTCString(),
+            local: date.toString(),
+            unix: timestamp
+        };
+        return { success: true, result: result };
+    }
+
+    dateToTimestamp(dateStr) {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return { success: false, message: "Invalid date" };
+        const ts = Math.floor(date.getTime() / 1000);
+        return { success: true, result: { timestamp: ts } };
     }
 }
 
