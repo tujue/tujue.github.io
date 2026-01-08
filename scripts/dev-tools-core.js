@@ -671,18 +671,40 @@
         ${d.website ? `<div class="v-info-group"><span class="v-label">${lbl.website}</span><span class="v-val">${d.website}</span></div>` : ''}
     </div>
     
+    ${d.skills ? `
     <div class="v-side-sec">
-        <div class="v-side-title">${isTr ? 'KİŞİSEL' : 'PERSONAL'}</div>
-        <div class="v-info-group"><span class="v-label">${isTr ? 'Doğum tarihi' : 'Birth date'}</span><span class="v-val">24.07.1997</span></div>
-        <div class="v-info-group"><span class="v-label">${isTr ? 'Medeni durum' : 'Marital status'}</span><span class="v-val">${isTr ? 'Bekar' : 'Single'}</span></div>
-        <div class="v-info-group"><span class="v-label">${isTr ? 'Çalışma durumu' : 'Work status'}</span><span class="v-val">${isTr ? 'Çalışıyor' : 'Employed'}</span></div>
-        <div class="v-info-group"><span class="v-label">${isTr ? 'Mezuniyet tarihi' : 'Graduation date'}</span><span class="v-val">${isTr ? 'Mart 2019' : 'March 2019'}</span></div>
-        <div class="v-info-group"><span class="v-label">${isTr ? 'Kariyer seviyesi' : 'Career level'}</span><span class="v-val">${isTr ? 'Üniversite 4. sınıf' : 'University 4th year'}</span></div>
+        <div class="v-side-title">${isTr ? 'YETENEKLER' : 'SKILLS'}</div>
+        <div class="v-skills" style="display:flex; flex-wrap:wrap; gap:5px;">
+            ${d.skills.split(',').map(s => s.trim() ? `<span class="v-tag" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white;">${s.trim()}</span>` : '').join('')}
+        </div>
+    </div>` : ''}
+
+    ${d.languages ? `
+    <div class="v-side-sec">
+        <div class="v-side-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+        <div class="v-info-group" style="display:block;">
+             ${d.languages.split(',').map(s => `<div style="margin-bottom:5px;">• ${s.trim()}</div>`).join('')}
+        </div>
+    </div>` : ''}
+
+    ${d.interests ? `
+    <div class="v-side-sec">
+        <div class="v-side-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+         <div class="v-info-group" style="display:block;">
+             ${d.interests.split(',').map(s => `<div style="margin-bottom:5px;">• ${s.trim()}</div>`).join('')}
+        </div>
+    </div>` : ''}
+
     </div>
-                    </div>
         <div class="v-main">
             <div class="v-name-main">${d.name}</div>
             <div class="v-title-main">${d.title}</div>
+            
+            ${d.summary ? `
+            <div class="v-section">
+                <div class="v-sec-head">${isTr ? 'ÖZET' : 'SUMMARY'}</div>
+                <div class="v-desc">${d.summary}</div>
+            </div>` : ''}
 
             <div class="v-section">
                 <div class="v-sec-head">${lbl.edu}</div>
@@ -690,7 +712,6 @@
                                 <div class="v-item">
                                     <div class="v-item-top">
                                         <div class="v-comp">${e.sch}</div>
-                                        <div class="v-gpa">3.50</div>
                                     </div>
                                     <div class="v-role">${e.deg}</div>
                                     <div class="v-date">${e.date}</div>
@@ -699,7 +720,7 @@
             </div>
 
             <div class="v-section">
-                <div class="v-sec-head">${isTr ? 'STAJ VE İŞ DENEYİMLERİ' : 'INTERNSHIPS & WORK EXPERIENCE'}</div>
+                <div class="v-sec-head">${isTr ? 'İŞ DENEYİMLERİ' : 'WORK EXPERIENCE'}</div>
                 ${d.experience.map(e => `
                                 <div class="v-item">
                                     <div class="v-item-top">
@@ -711,33 +732,6 @@
                                 </div>
                             `).join('')}
             </div>
-            
-            <div class="v-section">
-                <div class="v-sec-head">${isTr ? 'YABANCI DİL' : 'FOREIGN LANGUAGES'}</div>
-                <div class="v-lang-item">
-                    <div class="v-lang-top"><span class="v-lang-name">${isTr ? 'İngilizce' : 'English'}</span><span class="v-lang-level">${isTr ? 'İleri' : 'Advanced'}</span></div>
-                    <div class="v-lang-bar"><div class="v-lang-fill" style="width: 90%"></div></div>
-                </div>
-                <div class="v-lang-item">
-                    <div class="v-lang-top"><span class="v-lang-name">${isTr ? 'Almanca' : 'German'}</span><span class="v-lang-level">${isTr ? 'Orta' : 'Intermediate'}</span></div>
-                    <div class="v-lang-bar"><div class="v-lang-fill" style="width: 60%"></div></div>
-                </div>
-                <div class="v-lang-item">
-                    <div class="v-lang-top"><span class="v-lang-name">${isTr ? 'İspanyolca' : 'Spanish'}</span><span class="v-lang-level">${isTr ? 'Başlangıç' : 'Beginner'}</span></div>
-                    <div class="v-lang-bar"><div class="v-lang-fill" style="width: 30%"></div></div>
-                </div>
-            </div>
-
-            <div class="v-section">
-                <div class="v-sec-head">${isTr ? 'YETENEKLER' : 'SKILLS'}</div>
-                <div class="v-skills">
-                    ${d.skills.split(',').map(s => s.trim() ? `<span class="v-tag">${s.trim()}</span>` : '').join('')}
-                </div>
-            </div>
-            
-            <div class="v-section">
-                <div class="v-sec-head">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-                <div class="v-interests">${isTr ? 'Grup halinde ayrica uzun mesafeli bisiklet gezileri yapıyoruz. Bazı gitar ve bilüleme iki önemli tutkum olduğunu söyleyebilirim.' : 'We organize group bicycle tours and long-distance rides. Guitar and programming are two of my major passions.'}</div>
             </div>
         </div>
     `;
