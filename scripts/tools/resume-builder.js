@@ -297,19 +297,63 @@ class ResumeBuilderTool extends BaseTool {
             printStyle.id = 'print-styles';
             printStyle.textContent = `
                 @media print {
-                    @page { size: A4; margin: 0; }
-                    body * { visibility: hidden; }
-                    .a4-page, .a4-page * { visibility: visible; }
-                    .a4-page {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 210mm;
-                        height: 297mm;
+                    @page { 
+                        size: A4; 
+                        margin: 0; 
+                    }
+                    
+                    /* Hide everything first */
+                    body > :not(#res-content-area) {
+                        display: none !important;
+                    }
+                    
+                    /* Show only the CV */
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        background: white;
+                    }
+                    
+                    #res-content-area {
+                        display: block !important;
+                        visibility: visible !important;
+                    }
+                    
+                    #res-a4-page {
+                        display: block !important;
+                        visibility: visible !important;
+                        position: relative !important;
+                        width: 210mm !important;
+                        height: 297mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
                         box-shadow: none !important;
                         transform: none !important;
+                        page-break-after: avoid !important;
                     }
-                    .res-sticky-nav, #res-nav-bar, .nav-item { display: none !important; }
+                    
+                    .a4-page {
+                        display: block !important;
+                        visibility: visible !important;
+                        position: relative !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        margin: 0 !important;
+                        padding: 20mm !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    .a4-page * {
+                        visibility: visible !important;
+                    }
+                    
+                    /* Hide navigation */
+                    .res-sticky-nav,
+                    #res-nav-bar,
+                    .nav-item,
+                    .res-step {
+                        display: none !important;
+                    }
                 }
             `;
             document.head.appendChild(printStyle);
