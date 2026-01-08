@@ -523,7 +523,7 @@
                 }
                 else if (theme === 'wave') {
                     css += `
-                        .a4-page { display: grid; grid-template-columns: 32% 68%; min-height: 1123px; font-family: 'Poppins', sans-serif; overflow: hidden; }
+                        .a4-page { display: grid; grid-template-columns: 32% 68%; min-height: 1123px; font-family: 'Poppins', sans-serif; overflow: hidden; padding: 0 !important; margin: 0; }
                         .s-left { background: #1a3d4a; color: white; position: relative; overflow: hidden; text-align: center; padding: 60px 30px 40px; display: flex; flex-direction: column; align-items: center; }
                         .s-top-wave { position: absolute; top: 0; left: 0; width: 100%; height: 220px; background: linear-gradient(135deg, #c8b5d4 0%, #d4c5dd 100%); border-radius: 0 0 50% 50% / 0 0 40% 40%; z-index: 0; }
                         .s-photo-frame { position: relative; z-index: 2; width: 140px; height: 140px; border-radius: 50%; border: 4px solid white; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.2); margin-bottom: 20px; background: white; }
