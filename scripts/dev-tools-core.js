@@ -785,37 +785,27 @@
                 }
                 else if (theme === 'bloom') {
                     html = `
-        < div class="a-blob-1" ></div >
+                        <div class="a-blob-1"></div>
                     <div class="a-blob-2"></div>
                     <div class="a-container">
                         <div class="a-left">
                             ${d.photo ? `<img src="${d.photo}" class="a-photo">` : ''}
                             
-                            <div class="a-sec-title">${lbl.about.toUpperCase()}</div>
+                            ${d.summary ? `
+                            <div class="a-sec-title">${isTr ? 'HAKKINDA' : 'ABOUT'}</div>
                             <div class="a-text">
-                                ${d.experience[0] ? d.experience[0].desc.substring(0, 150) + '...' : (isTr ? 'Hedef odaklı, gelişime açık bir profesyonelim.' : 'Goal-oriented professional open to development.')}
-                            </div>
+                                ${d.summary}
+                            </div>` : ''}
                             
                             <div class="a-sec-title">${lbl.skills.toUpperCase()}</div>
                             <div style="margin-bottom: 30px;">
-                                ${d.skills.split(',').map(s => `
-                                    <div class="a-skill-row">
-                                        <span>${s.trim()}</span>
-                                        <div class="a-dots">
-                                            ${[1, 2, 3, 4, 5].map(i => `<span class="a-dot ${i <= 4 ? 'active' : ''}"></span>`).join('')}
-                                        </div>
-                                    </div>
-                                `).join('')}
+                                ${d.skills.split(',').map(s => s.trim() ? ` <div class="a-skill-row"><span>${s.trim()}</span></div>` : '').join('')}
                             </div>
 
                             ${d.languages ? `
-                            <div class="a-sec-title">${isTr ? 'DILLER' : 'LANGUAGES'}</div>
+                            <div class="a-sec-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
                              <div style="margin-bottom: 30px;">
-                                ${d.languages.split(',').map(s => `
-                                    <div class="a-skill-row">
-                                        <span>${s.trim()}</span>
-                                    </div>
-                                `).join('')}
+                                ${d.languages.split(',').map(s => s.trim() ? `<div class="a-skill-row"><span>${s.trim()}</span></div>` : '').join('')}
                             </div>
                             ` : ''}
                             
@@ -875,10 +865,10 @@
                         </div>
                     </div>
         <div class="s-right">
-            ${d.experience[0] && d.experience[0].desc ? `
-            <div class="s-section">
-                <div class="s-head">${lbl.profile.toUpperCase()}</div>
-                <div class="s-desc">${d.experience[0].desc.substring(0, 200)}...</div>
+            ${d.summary ? `
+            <div class="s-section" style="margin-bottom: 20px;">
+                <div class="s-head">${isTr ? 'ÖZET' : 'PROFILE'}</div>
+                <div class="s-desc">${d.summary}</div>
             </div>` : ''}
 
             <div class="s-section">
