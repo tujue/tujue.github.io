@@ -2313,3 +2313,11 @@ select option {
         font-size: 1.5rem !important;
     }
 }
+/* Force Hide Header for Resume Builder via Data Attribute (Fix Cache/JS Issues) */
+[data-tool="resume-builder"] .workspace-header {
+    display: none !important;
+}
+
+[data-tool="resume-builder"] .workspace-content {
+    padding: 0 !important;
+}

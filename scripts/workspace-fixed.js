@@ -96,6 +96,7 @@
 
         // Show workspace
         workspace.classList.add('active');
+        workspace.setAttribute('data-tool', toolId); // Add attribute for CSS targeting
         document.body.style.overflow = 'hidden';
 
         // Increment usage stats
@@ -139,6 +140,7 @@
 
         // Hide workspace
         workspace.classList.remove('active');
+        workspace.removeAttribute('data-tool'); // Clean up
         document.body.style.overflow = '';
 
         // Clear content after animation
