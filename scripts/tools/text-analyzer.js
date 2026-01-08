@@ -94,7 +94,7 @@ class TextAnalyzerTool extends BaseTool {
         const analyze = () => {
             const val = input.value.trim();
             if (!val) return;
-            const res = window.DevTools.textAnalyzer.analyze(val);
+            const res = this.analyze(val);
             if (res.success) {
                 document.getElementById('text-stats').style.display = 'grid';
                 document.getElementById('text-advanced-stats').style.display = 'grid';
@@ -120,6 +120,63 @@ class TextAnalyzerTool extends BaseTool {
         input.oninput = () => {
             clearTimeout(this.timeout);
             this.timeout = setTimeout(analyze, 500);
+        };
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools)
+
+    analyze(text) {
+        if (!text) return { success: false, message: 'Empty text' };
+
+        const chars = text.length;
+        const words = text.match(/\S+/g) || [];
+        // Improved sentence splitting
+        const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g) || text.split(/[\r\n]+/).filter(Boolean);
+        const paragraphs = text.split(/\n\s*\n/).filter(Boolean);
+
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+
+        // Reading Time (Words / 200)
+        const readingTime = Math.ceil(words.length / 200) + (isTr ? ' dk' : ' min');
+
+        // Longest Word
+        const longestWord = words.reduce((a, b) => a.length > b.length ? a : b, '');
+
+        // Top Keywords
+        const freq = {};
+        words.forEach(w => {
+            // Remove punctuation and lowercase
+            const clean = w.toLowerCase().replace(/[.,!?;:()""''`]/g, '');
+            if (clean.length > 3) {
+                freq[clean] = (freq[clean] || 0) + 1;
+            }
+        });
+        const topWords = Object.entries(freq)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10) // Top 10
+            .map(([word, count]) => ({ word, count }));
+
+        // Readability (Simple Flesch-Kincaid Proxy)
+        const avgSentenceLen = words.length / (sentences.length || 1);
+        let readability = 'Medium';
+        if (isTr) {
+            readability = avgSentenceLen > 25 ? 'Zor (Akademik)' : (avgSentenceLen > 15 ? 'Orta (Standart)' : 'Kolay (Temel)');
+        } else {
+            readability = avgSentenceLen > 25 ? 'Difficult' : (avgSentenceLen > 15 ? 'Moderate' : 'Easy');
+        }
+
+        return {
+            success: true,
+            stats: {
+                chars,
+                words: words.length,
+                sentences: Math.max(sentences.length, 1),
+                paragraphs: Math.max(paragraphs.length, 1),
+                readingTime,
+                readability,
+                longestWord,
+                topWords
+            }
         };
     }
 }
