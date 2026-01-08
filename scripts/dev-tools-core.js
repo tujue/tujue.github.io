@@ -301,21 +301,21 @@
                 let css = `
                     ${fontImport}
                     .a4-page { font-family: ${f}; color: #2d3748; line-height: 1.6; padding: 40px; background: white; box-sizing: border-box; font-size: 14px; }
-                    .res-photo { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; margin-bottom: 20px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+                    .res-photo { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; margin-bottom: 20px; border: 3px solid ${color}; box-shadow: 0 4px 10px ${color}20; }
                     .res-header { margin-bottom: 35px; }
                     .res-name { font-size: 2.2rem; font-weight: 700; color: ${color}; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.02em; }
-                    .res-title { font-size: 1.05rem; color: #718096; margin-bottom: 16px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+                    .res-title { font-size: 1.05rem; color: ${color}80; margin-bottom: 16px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
                     .res-contact { display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.9rem; color: #4a5568; align-items: center; }
-                    .res-section { margin-bottom: 30px; page-break-inside: avoid; }
-                    .res-sec-title { font-size: 1rem; font-weight: 700; color: ${color}; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid ${color}; padding-bottom: 6px; letter-spacing: 0.05em; }
-                    .res-item { margin-bottom: 20px; }
+                    .res-section { margin-bottom: 20px; page-break-inside: avoid; }
+                    .res-sec-title { font-size: 0.85rem; font-weight: 700; color: ${color}; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1.5px solid ${color}60; padding-bottom: 4px; letter-spacing: 0.08em; }
+                    .res-item { margin-bottom: 16px; }
                     .res-item-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; margin-bottom: 4px; font-size: 1.05rem; }
-                    .res-role { color: #1a202c; }
+                    .res-role { color: ${color}; }
                     .res-comp { font-weight: 500; color: #4a5568; font-size: 0.95rem; }
                     .res-date { font-size: 0.85rem; color: #718096; font-weight: 500; white-space: nowrap; margin-left:10px; }
                     .res-desc { font-size: 0.9rem; color: #4a5568; white-space: pre-line; line-height: 1.55; margin-top: 5px; }
                     .res-skills { display: flex; flex-wrap: wrap; gap: 8px; }
-                    .res-tag { background: #f7fafc; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; color: ${color}; border: 1px solid ${color}30; font-weight: 500; }
+                    .res-tag { background: ${color}10; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; color: ${color}; border: 1px solid ${color}40; font-weight: 600; }
                     `;
 
                 // --- THEME CSS OVERRIDES ---
@@ -335,16 +335,24 @@
                      `;
                 }
                 else if (theme === 'titan') {
-                    if (!d.color || d.color === '#2d3748') color = '#34495e';
-                    css += `.a4-page { background: white; color: ${color}; font-size: 0.85rem; } .res-header { text-align: center; border-bottom: 2px solid ${color}; padding-bottom: 15px; } .res-sec-title { background: ${color}; color: white; padding: 4px 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; } .res-item { border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 10px; }`;
+                    if (!d.color || d.color === '#2d3748') color = '#1a365d'; // Dark Blue default
+                    css += `.a4-page { background: white; color: #2d3748; font-size: 0.85rem; } 
+                           .res-header { text-align: center; border-bottom: 2px solid ${color}; padding-bottom: 15px; } 
+                           .res-name { color: ${color}; }
+                           .res-title { color: ${color}80; }
+                           .res-photo { border: 3px solid ${color}; box-shadow: 0 4px 10px ${color}20; }
+                           .res-sec-title { background: ${color}; color: white; padding: 4px 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; } 
+                           .res-item { border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 10px; } 
+                           .res-role { color: ${color}; font-weight: 700; }
+                           .res-tag { background: ${color}10; color: #2d3748; border: 1px solid ${color}30; }
+                           .res-skills { color: #2d3748; }`;
                 }
                 else if (theme === 'cyber') {
-                    const c = color || '#00ff41';
+                    const c = color || '#06b6d4'; // Cyan
                     css += `
                         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
                         .a4-page { background: #080808; color: #c0c0c0; font-family: 'Share Tech Mono', 'Courier New', monospace; font-size: 0.85rem; line-height: 1.5; }
                         .res-header { border-bottom: 1px solid ${c}40; padding-bottom: 20px; margin-bottom: 25px; position: relative; text-align: left; }
-                        .res-header::after { content: "SYS.READY"; position: absolute; right: 0; top: 0; color: ${c}; font-size: 0.7rem; opacity: 0.7; border: 1px solid ${c}; padding: 2px 6px; }
                         
                         .res-name { color: #fff; font-size: 3rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px ${c}; line-height: 1; }
                         .res-title { color: ${c}; background: ${c}10; display: inline-block; padding: 4px 12px; font-size: 1.1rem; border-left: 3px solid ${c}; letter-spacing: 1px; margin-bottom: 10px; }
@@ -376,7 +384,7 @@
 
                         .res-skills .res-tag { 
                             background: transparent; 
-                            color: ${c}; 
+                            color: #c0c0c0; 
                             border: 1px solid ${c}60; 
                             padding: 3px 8px; 
                             font-size: 0.8rem;
@@ -384,48 +392,52 @@
                             border-radius: 0;
                         }
                         .res-skills .res-tag::before { content: ""; position: absolute; top: -1px; left: -1px; width: 3px; height: 3px; background: ${c}; }
-                        .res-photo { border: 2px solid ${c}; filter: grayscale(100%) contrast(120%); }
+                        .res-photo { border: 2px solid ${c}; box-shadow: 0 0 15px ${c}40; }
                     `;
                 }
                 else if (theme === 'brutal') {
-                    if (!d.color || d.color === '#2d3748') color = 'black';
+                    if (!d.color || d.color === '#2d3748') color = '#ef4444'; // Red default
                     f = fonts.mono;
-                    css += `.a4-page { background: #fff; border: 10px solid black; font-size: 0.8rem; } 
-                            .res-header { border-bottom: 4px solid black; padding-bottom: 20px; margin-bottom: 20px; } 
-                            .res-name { text-transform: uppercase; font-weight: 900; font-size: 2.2rem; background: black; color: white; display: inline-block; padding: 5px 15px; } 
-                            .res-sec-title { background: black; color: white; display: inline-block; padding: 5px 10px; font-weight: bold; text-transform: uppercase; border: 2px solid black; margin-bottom: 10px; font-size: 0.9rem; } 
-                            .res-tag { border: 2px solid black; background: transparent; color: black; border-radius: 0; font-weight: bold; font-size: 0.75rem; }`;
+                    css += `.a4-page { background: #fff; border: 10px solid ${color}; font-size: 0.8rem; } 
+                            .res-header { border-bottom: 4px solid ${color}; padding-bottom: 20px; margin-bottom: 20px; } 
+                            .res-name { text-transform: uppercase; font-weight: 900; font-size: 2.2rem; background: white; color: ${color}; display: inline-block; padding: 5px 15px; border: 4px solid ${color}; box-shadow: 6px 6px 0 ${color}40; } 
+                            .res-title { color: ${color}; font-weight: 700; }
+                            .res-photo { border: 4px solid ${color}; box-shadow: 6px 6px 0 ${color}40; }
+                            .res-sec-title { background: ${color}; color: white; display: inline-block; padding: 5px 10px; font-weight: bold; text-transform: uppercase; border: 2px solid ${color}; margin-bottom: 10px; font-size: 0.9rem; box-shadow: 4px 4px 0 ${color}40; } 
+                            .res-role { color: ${color}; font-weight: 900; }
+                            .res-item { border-left: 3px solid ${color}; padding-left: 10px; }
+                            .res-tag { border: 2px solid ${color}; background: transparent; color: #1a1a1a; border-radius: 0; font-weight: bold; font-size: 0.75rem; }`
+                        ;
                 }
                 else if (theme === 'nova') {
                     if (!d.color || d.color === '#2d3748') color = '#be185d'; // Pink
                     css += `
                         .a4-page { display: grid; grid-template-columns: 200px 1fr; padding: 0; min-height: 1123px; font-family: 'Inter', sans-serif; overflow: hidden; }
-                        .v-sidebar { background: linear-gradient(135deg, #1e1b3d 0%, #2d1b3d 100%); color: white; padding: 40px 20px; display: flex; flex-direction: column; }
-                        .v-photo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid #3f3f46; margin: 0 auto 10px; display:block; object-fit: cover; }
-                        .v-name-side { text-align: center; color: white; margin-bottom: 35px; font-weight: 600; font-size: 0.95rem; }
+                        .v-sidebar { background: linear-gradient(135deg, ${color}15 0%, ${color}25 100%); color: white; padding: 40px 20px; display: flex; flex-direction: column; border-right: 3px solid ${color}; }
+                        .v-photo { width: 120px; height: 120px; border-radius: 50%; border: 4px solid ${color}; margin: 0 auto 15px; display:block; object-fit: cover; box-shadow: 0 4px 12px ${color}40; }
+                        .v-name-side { text-align: center; color: ${color}; margin-bottom: 8px; font-weight: 700; font-size: 1.1rem; line-height: 1.2; }
+                        .v-title-side { text-align: center; color: #fff; margin-bottom: 30px; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
                         
                         .v-side-sec { margin-bottom: 30px; }
-                        .v-side-title { font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid #3f3f46; padding-bottom: 8px; margin-bottom: 15px; font-weight: 700; color: white; letter-spacing:1px; }
+                        .v-side-title { font-size: 0.85rem; text-transform: uppercase; border-bottom: 2px solid ${color}60; padding-bottom: 8px; margin-bottom: 15px; font-weight: 700; color: ${color}; letter-spacing:1px; }
                         .v-info-group { margin-bottom: 12px; }
                         .v-label { color: #a1a1aa; font-size: 0.7rem; font-weight:600; display:block; margin-bottom:3px; }
                         .v-val { color: #fff; font-size: 0.75rem; word-break: break-word; line-height: 1.3; }
                         
                         .v-main { background: #fafafa; padding: 45px 35px; color: #333; }
-                        .v-name-main { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; color: #18181b; line-height: 1; letter-spacing: -1px; }
-                        .v-title-main { font-size: 1rem; text-transform: uppercase; color: #52525b; letter-spacing: 2px; margin-bottom: 35px; font-weight: 600; margin-top:5px; }
                         
                         .v-section { margin-bottom: 30px; }
-                        .v-sec-head { font-size: 1rem; text-transform: uppercase; border-bottom: 2px solid #e4e4e7; padding-bottom: 8px; margin-bottom: 20px; font-weight: 800; color: #27272a; letter-spacing:1px; }
+                        .v-sec-head { font-size: 1rem; text-transform: uppercase; border-bottom: 2px solid ${color}40; padding-bottom: 8px; margin-bottom: 20px; font-weight: 800; color: ${color}; letter-spacing:1px; }
                         
                         .v-item { position: relative; padding-left: 25px; margin-bottom: 25px; border-left: 2px solid #e4e4e7; }
                         .v-item:last-child { border-left-color: transparent; }
-                        .v-item::before { content: ''; position: absolute; left: -6px; top: 5px; width: 10px; height: 10px; background: #27272a; border-radius: 50%; }
+                        .v-item::before { content: ''; position: absolute; left: -6px; top: 5px; width: 10px; height: 10px; background: ${color}; border-radius: 50%; }
                         
                         .v-item-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
                         .v-comp { font-weight: 800; font-size: 0.9rem; text-transform: uppercase; color: #18181b; }
-                        .v-gpa { background: #27272a; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+                        .v-gpa { background: ${color}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
                         .v-date { font-weight: 600; font-size: 0.75rem; color: #71717a; }
-                        .v-role { font-weight: 600; font-size: 0.85rem; color: #52525b; margin-bottom:6px; }
+                        .v-role { font-weight: 600; font-size: 0.85rem; color: ${color}; margin-bottom:6px; }
                         .v-desc { font-size: 0.8rem; color: #71717a; line-height: 1.5; }
                         
                         .v-lang-item { margin-bottom: 12px; }
@@ -433,10 +445,10 @@
                         .v-lang-name { font-weight: 600; font-size: 0.85rem; color: #27272a; }
                         .v-lang-level { font-size: 0.75rem; color: #71717a; }
                         .v-lang-bar { width: 100%; height: 6px; background: #e4e4e7; border-radius: 3px; overflow: hidden; }
-                        .v-lang-fill { height: 100%; background: #27272a; }
+                        .v-lang-fill { height: 100%; background: ${color}; }
                         
                         .v-skills { display: flex; flex-wrap: wrap; gap: 8px; }
-                        .v-tag { background: #f4f4f5; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: #52525b; border: 1px solid #e4e4e7; text-transform: uppercase; }
+                        .v-tag { background: ${color}15; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: ${color}; border: 1px solid ${color}40; text-transform: uppercase; }
                         
                         .v-interests { font-size: 0.85rem; color: #52525b; line-height: 1.6; }
                      `;
@@ -495,150 +507,176 @@
                     if (!d.color || d.color === '#2d3748') color = '#e6b0aa';
                     css += `
                         .a4-page { position: relative; overflow: hidden; background: white; font-family: 'Montserrat', sans-serif; display: block; min-height: 1123px; }
-                        .a-blob-1 { position: absolute; top: -80px; left: -120px; width: 500px; height: 550px; background: #f5e6d3; border-radius: 40% 50% 50% 40%; z-index: 0; transform: rotate(-15deg); }
-                        .a-blob-2 { position: absolute; bottom: -80px; left: -80px; width: 420px; height: 420px; background: #e8ded0; border-radius: 50% 40% 30% 70%; z-index: 0; opacity: 0.8; }
+                        .a-blob-1 { position: absolute; top: -80px; left: -120px; width: 500px; height: 550px; background: ${color}20; border-radius: 40% 50% 50% 40%; z-index: 0; transform: rotate(-15deg); }
+                        .a-blob-2 { position: absolute; bottom: -80px; left: -80px; width: 420px; height: 420px; background: ${color}15; border-radius: 50% 40% 30% 70%; z-index: 0; opacity: 0.8; }
                         .a-container { position: relative; z-index: 1; display: grid; grid-template-columns: 30% 62%; gap: 8%; height: 100%; padding: 50px 35px; }
                         .a-left { text-align: left; padding-top: 15px; }
-                        .a-photo { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; margin-bottom: 40px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); filter: grayscale(100%); }
-                        .a-sec-title { font-family: 'Oswald', sans-serif; font-size: 1.1rem; text-transform: uppercase; font-weight: 700; color: #2c3e50; margin-bottom: 15px; letter-spacing: 0.5px; }
+                        .a-photo { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; margin-bottom: 40px; box-shadow: 12px 12px 0 ${color}30; border: 3px solid ${color}; }
+                        .a-sec-title { font-family: 'Oswald', sans-serif; font-size: 1.1rem; text-transform: uppercase; font-weight: 700; color: ${color}; margin-bottom: 15px; letter-spacing: 0.5px; }
                         .a-text { font-size: 0.75rem; line-height: 1.5; color: #555; margin-bottom: 35px; }
                         .a-skill-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.8rem; font-weight: 500; color: #555; }
                         .a-dots { display: flex; gap: 4px; }
                         .a-dot { width: 9px; height: 9px; border-radius: 50%; background: #d5d8dc; }
-                        .a-dot.active { background: #566573; }
+                        .a-dot.active { background: ${color}; }
                         .a-contact-row { margin-bottom: 10px; font-size: 0.75rem; color: #555; line-height: 1.3; }
-                        .a-label { display: block; font-weight: 700; color: #2c3e50; font-size: 0.7rem; margin-bottom: 2px; }
+                        .a-label { display: block; font-weight: 700; color: ${color}; font-size: 0.7rem; margin-bottom: 2px; }
                         .a-right { text-align: left; padding-top: 40px; }
-                        .a-name { font-family: 'Oswald', sans-serif; font-size: 3.2rem; text-transform: uppercase; line-height: 0.9; color: #2c3e50; text-align: right; margin-bottom: 5px; font-weight: 700; }
-                        .a-title { font-family: 'Montserrat', sans-serif; font-size: 1rem; text-transform: uppercase; letter-spacing: 4px; text-align: right; color: #c9a66b; margin-bottom: 60px; font-weight: 400; }
+                        .a-name { font-family: 'Oswald', sans-serif; font-size: 3.2rem; text-transform: uppercase; line-height: 0.9; color: ${color}; text-align: right; margin-bottom: 5px; font-weight: 700; }
+                        .a-title { font-family: 'Montserrat', sans-serif; font-size: 1rem; text-transform: uppercase; letter-spacing: 4px; text-align: right; color: ${color}80; margin-bottom: 60px; font-weight: 400; }
                         .a-right-sec { margin-bottom: 35px; }
                         .a-item { margin-bottom: 22px; }
                         .a-comp { font-weight: 700; font-size: 0.9rem; color: #2c3e50; margin-bottom: 2px; }
-                        .a-role-line { font-size: 0.8rem; color: #566573; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+                        .a-role-line { font-size: 0.8rem; color: ${color}; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
                         .a-desc { font-size: 0.75rem; color: #555; line-height: 1.4; margin-top: 5px; }
                         .a-date { font-size: 0.7rem; color: #aab7b8; margin-bottom: 5px; display:block; }
                         .a-bullet-item { display: flex; gap: 8px; font-size: 0.75rem; color: #555; margin-bottom: 3px; line-height: 1.4; }
-                        .a-bullet { min-width: 4px; height: 4px; background: #333; border-radius: 50%; margin-top: 7px; }
+                        .a-bullet { min-width: 4px; height: 4px; background: ${color}; border-radius: 50%; margin-top: 7px; }
+                        .a-cert-badge { display: inline-block; background: ${color}15; border: 1px solid ${color}40; border-radius: 4px; padding: 4px 10px; margin: 0 6px 6px 0; font-size: 0.7rem; color: ${color}; font-weight: 600; }
                     `;
                 }
                 else if (theme === 'wave') {
+                    if (!d.color || d.color === '#2d3748') color = '#1a3d4a';
                     css += `
                         .a4-page { display: grid; grid-template-columns: 32% 68%; min-height: 1123px; font-family: 'Poppins', sans-serif; overflow: hidden; padding: 0 !important; margin: 0; }
-                        .s-left { background: #1a3d4a; color: white; position: relative; overflow: hidden; text-align: center; padding: 60px 30px 40px; display: flex; flex-direction: column; align-items: center; }
-                        .s-top-wave { position: absolute; top: 0; left: 0; width: 100%; height: 220px; background: linear-gradient(135deg, #c8b5d4 0%, #d4c5dd 100%); border-radius: 0 0 50% 50% / 0 0 40% 40%; z-index: 0; }
-                        .s-photo-frame { position: relative; z-index: 2; width: 140px; height: 140px; border-radius: 50%; border: 4px solid white; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.2); margin-bottom: 20px; background: white; }
+                        .s-left { background: ${color}; color: white; position: relative; overflow: hidden; text-align: center; padding: 60px 30px 40px; display: flex; flex-direction: column; align-items: center; }
+                        .s-top-wave { position: absolute; top: 0; left: 0; width: 100%; height: 220px; background: linear-gradient(135deg, ${color}60 0%, ${color}80 100%); border-radius: 0 0 50% 50% / 0 0 40% 40%; z-index: 0; }
+                        .s-photo-frame { position: relative; z-index: 2; width: 140px; height: 140px; border-radius: 50%; border: 4px solid ${color}; overflow: hidden; box-shadow: 0 8px 16px rgba(255,255,255,0.2); margin-bottom: 20px; background: white; }
                         .s-photo { width: 100%; height: 100%; object-fit: cover; }
-                        .s-name-box { margin-bottom: auto; position: relative; z-index: 1; text-align: center; margin-top: 10px; }
+                        .s-name-box { position: relative; z-index: 1; text-align: center; margin-bottom: 25px; }
                         .s-name { font-size: 1.8rem; font-weight: 700; text-transform: uppercase; line-height: 1.1; margin-bottom: 8px; }
                         .s-title { font-size: 0.9rem; font-weight: 300; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase; }
+                        .s-skills-box { position: relative; z-index: 1; width: 100%; margin-bottom: 25px; }
+                        .s-skills-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; opacity: 0.9; }
+                        .s-skill-compact { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+                        .s-skill-badge { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.3); }
                         .s-contact-box { position: relative; z-index: 2; font-size: 0.85rem; width: 100%; margin-top: auto; }
                         .s-contact-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; text-align: left; }
                         .s-icon-circle { width: 45px; height: 45px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
                         .s-contact-text { flex: 1; font-size: 0.75rem; line-height: 1.3; }
-                        .s-bottom-wave { position: absolute; bottom: 0; left: 0; width: 120%; height: 180px; background: #ffd700; border-radius: 50% 50% 0 0 / 60% 60% 0 0; z-index: 1; margin-left: -10%; }
-                        .s-bottom-wave2 { position: absolute; bottom: 0; left: 0; width: 110%; height: 140px; background: #ffb6d9; border-radius: 50% 50% 0 0 / 50% 50% 0 0; z-index: 0; margin-left: -5%; }
+                        .s-bottom-wave { position: absolute; bottom: 0; left: 0; width: 120%; height: 180px; background: ${color}80; border-radius: 50% 50% 0 0 / 60% 60% 0 0; z-index: 1; margin-left: -10%; }
+                        .s-bottom-wave2 { position: absolute; bottom: 0; left: 0; width: 110%; height: 140px; background: ${color}60; border-radius: 50% 50% 0 0 / 50% 50% 0 0; z-index: 0; margin-left: -5%; }
                         .s-right { background: white; padding: 50px 40px; color: #333; }
                         .s-section { margin-bottom: 35px; }
-                        .s-head { font-size: 1.1rem; font-weight: 700; color: #1a3d4a; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0; text-transform: uppercase; }
+                        .s-head { font-size: 1.1rem; font-weight: 700; color: ${color}; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 2px solid ${color}40; text-transform: uppercase; }
                         .s-item { margin-bottom: 20px; }
-                        .s-role { font-weight: 700; font-size: 0.95rem; color: #1a3d4a; }
+                        .s-role { font-weight: 700; font-size: 0.95rem; color: ${color}; }
                         .s-info { font-size: 0.8rem; color: #888; margin-bottom: 6px; font-weight: 500; font-style: italic; }
                         .s-desc { font-size: 0.85rem; color: #555; line-height: 1.5; }
                         .s-skill-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-                        .s-tag { background: #f0f4f8; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: #1a3d4a; border-left: 3px solid #1a3d4a; }
+                        .s-tag { background: ${color}15; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: ${color}; border-left: 3px solid ${color}; }
                     `;
                 }
                 else if (theme === 'bold') {
+                    if (!d.color || d.color === '#2d3748') color = '#ffc107'; // Yellow default
                     css += `
                         .a4-page { display: grid; grid-template-columns: 32% 68%; height: 1123px; min-height: 1123px; overflow: hidden; font-family: 'Poppins', sans-serif; padding: 0 !important; margin: 0; }
                         .k-left { background: #2d3748; color: white; position: relative; display: flex; flex-direction: column; height: 100%; }
-                        .k-top-yellow { height: 140px; background: #ffc107; width: 100%; flex-shrink: 0; }
+                        .k-top-yellow { height: 140px; background: ${color}; width: 100%; flex-shrink: 0; }
                         .k-photo-container { margin: -70px auto 15px; position: relative; z-index: 1; width: 120px; height: 120px; border-radius: 50%; border: 5px solid white; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.3); background:white; }
                         .k-photo { width: 100%; height: 100%; object-fit: cover; }
                         .k-name-box { text-align: center; margin-bottom: 20px; padding: 0 15px; }
-                        .k-name { font-size: 1.5rem; font-weight: 700; color: #ffc107; margin-bottom: 4px; line-height: 1; letter-spacing: -0.5px; }
+                        .k-name { font-size: 1.5rem; font-weight: 700; color: ${color}; margin-bottom: 4px; line-height: 1; letter-spacing: -0.5px; }
                         .k-title { font-size: 0.8rem; color: #e0e0e0; font-weight: 300; }
                         .k-left-sec { padding: 0 18px; margin-bottom: 20px; }
                         .k-sec-icon-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-                        .k-sec-icon { width: 36px; height: 36px; background: #ffc107; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2d3748; font-size: 1.1rem; flex-shrink: 0; }
-                        .k-sec-name { color: #ffc107; font-size: 0.9rem; font-weight: 700; flex: 1; }
-                        .k-sec-line { height: 2.5px; background: #ffc107; width: 40px; margin-top: 2px; }
+                        .k-sec-icon { width: 36px; height: 36px; background: ${color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2d3748; font-size: 1.1rem; flex-shrink: 0; }
+                        .k-sec-name { color: ${color}; font-size: 0.9rem; font-weight: 700; flex: 1; }
+                        .k-sec-line { height: 2.5px; background: ${color}; width: 40px; margin-top: 2px; }
                         .k-contact-row { margin-bottom: 10px; font-size: 0.75rem; }
-                        .k-c-label { color: #ffc107; font-weight: 600; display: block; margin-bottom: 3px; }
+                        .k-c-label { color: ${color}; font-weight: 600; display: block; margin-bottom: 3px; }
                         .k-c-val { color: #e8e8e8; line-height: 1.2; }
                         .k-skill-row { margin-bottom: 12px; }
                         .k-skill-label { color: #e8e8e8; font-size: 0.78rem; margin-bottom: 5px; display: block; font-weight: 500; }
                         .k-skill-bar-bg { width: 100%; height: 5px; background: #1a202c; border-radius: 3px; }
-                        .k-skill-bar-fill { height: 100%; background: #ffc107; border-radius: 3px; }
+                        .k-skill-bar-fill { height: 100%; background: ${color}; border-radius: 3px; }
                         .k-interest-bullet { color: #e8e8e8; font-size: 0.75rem; margin-bottom: 6px; font-weight: 300; }
                         .k-right { background: #f7f7f7; padding: 30px 25px; color: #333; }
                         .k-r-section { margin-bottom: 25px; }
                         .k-r-head { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-                        .k-r-icon { width: 42px; height: 42px; background: #ffc107; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2d3748; font-size: 1.2rem; flex-shrink: 0; }
+                        .k-r-icon { width: 42px; height: 42px; background: ${color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2d3748; font-size: 1.2rem; flex-shrink: 0; }
                         .k-r-title { font-size: 1.1rem; font-weight: 700; color: #1a202c; position: relative; }
-                        .k-r-title::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 50px; height: 2.5px; background: #ffc107; }
+                        .k-r-title::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 50px; height: 2.5px; background: ${color}; }
                         .k-profile-text { font-size: 0.8rem; color: #4a5568; line-height: 1.5; text-align: justify; }
                         .k-timeline { position: relative; padding-left: 25px; border-left: 2px solid #e2e8f0; }
                         .k-exp-item { position: relative; margin-bottom: 20px; }
-                        .k-exp-dot { position: absolute; left: -32px; top: 4px; width: 12px; height: 12px; background: #ffc107; border-radius: 50%; border: 3px solid #f7f7f7; box-shadow: 0 0 0 2px #e2e8f0; }
+                        .k-exp-dot { position: absolute; left: -32px; top: 4px; width: 12px; height: 12px; background: ${color}; border-radius: 50%; border: 3px solid #f7f7f7; box-shadow: 0 0 0 2px #e2e8f0; }
                         .k-exp-title { font-size: 0.9rem; font-weight: 700; color: #1a202c; margin-bottom: 3px; line-height: 1.2; }
                         .k-exp-meta { font-size: 0.75rem; color: #718096; margin-bottom: 6px; font-weight: 600; }
                         .k-exp-desc { font-size: 0.75rem; color: #4a5568; line-height: 1.4; }
                         .k-edu-box { margin-bottom: 15px; }
                         .k-edu-title { font-weight: 700; font-size: 0.85rem; color: #1a202c; margin-bottom: 3px; }
                         .k-edu-meta { font-size: 0.75rem; color: #718096; }
+                        .k-cert-item { margin-bottom: 10px; background: ${color}15; border-left: 3px solid ${color}; padding: 8px 12px; border-radius: 4px; }
+                        .k-cert-name { font-weight: 700; font-size: 0.8rem; color: #1a202c; margin-bottom: 2px; }
+                        .k-cert-meta { font-size: 0.7rem; color: #718096; }
                         .k-portfolio-item { margin-bottom: 12px; }
                         .k-port-title { font-weight: 700; font-size: 0.82rem; color: #1a202c; margin-bottom: 3px; }
                         .k-port-desc { font-size: 0.75rem; color: #4a5568; line-height: 1.4; font-style: italic; }
                     `;
                 }
                 else if (theme === 'prime') {
+                    if (!d.color || d.color === '#2d3748') color = '#ffc107'; // Yellow default
                     css += `
                         .a4-page { background: #f5f5f5; padding: 40px 35px; font-family: 'Poppins', sans-serif; min-height: 1123px; overflow: hidden; }
                         .o-header { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; height: 260px; }
                         .o-circle-white { background: white; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); position: relative; }
                         .o-name { font-size: 2.2rem; font-weight: 700; color: #1a1a1a; text-align: center; line-height: 1; margin-bottom: 8px; }
-                        .o-title-badge { background: #ffc107; padding: 6px 16px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #1a1a1a; letter-spacing: 0.8px; margin-bottom: 15px; }
+                        .o-title-badge { background: ${color}; padding: 6px 16px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #1a1a1a; letter-spacing: 0.8px; margin-bottom: 15px; }
                         .o-company { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #555; font-weight: 600; }
-                        .o-company-icon { width: 24px; height: 24px; background: #ffc107; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
-                        .o-circle-yellow { background: #ffc107; border-radius: 50%; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; }
-                        .o-photo { width: 100%; height: 100%; object-fit: cover; }
+                        .o-company-icon { width: 24px; height: 24px; background: ${color}; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+                        .o-circle-yellow { background: ${color}; border-radius: 50%; overflow: hidden; box-shadow: 0 8px 25px ${color}40; display: flex; align-items: center; justify-content: center; padding: 5px; }
+                        .o-photo { width: 240px; height: 240px; border-radius: 50%; object-fit: cover; }
                         .o-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
                         .o-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
                         .o-box-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-                        .o-icon-box { width: 42px; height: 42px; background: #ffc107; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+                        .o-icon-box { width: 42px; height: 42px; background: ${color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
                         .o-box-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
                         .o-box-content { font-size: 0.78rem; color: #555; line-height: 1.5; }
                         .o-list { list-style: none; padding: 0; margin: 0; }
                         .o-list li { margin-bottom: 6px; padding-left: 18px; position: relative; font-size: 0.78rem; color: #555; line-height: 1.4; }
-                        .o-list li::before { content: '•'; position: absolute; left: 0; color: #ffc107; font-weight: 700; font-size: 1.1rem; }
-                        .o-quote { font-style: italic; color: #666; font-size: 0.75rem; margin-top: 8px; padding-left: 12px; border-left: 3px solid #ffc107; }
+                        .o-list li::before { content: '•'; position: absolute; left: 0; color: ${color}; font-weight: 700; font-size: 1.1rem; }
+                        .o-quote { font-style: italic; color: #666; font-size: 0.75rem; margin-top: 8px; padding-left: 12px; border-left: 3px solid ${color}; }
                         .o-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
                         .o-contact-item { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: #555; }
-                        .o-contact-icon { width: 36px; height: 36px; background: #ffc107; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+                        .o-contact-icon { width: 36px; height: 36px; background: ${color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+                        .o-cert-badge { display: inline-block; background: ${color}15; border: 1px solid ${color}40; border-radius: 6px; padding: 5px 12px; margin: 0 6px 6px 0; font-size: 0.7rem; color: ${color}; font-weight: 600; }
                     `;
                 }
                 else if (theme === 'modern') {
-                    // Refined Modern
-                    css += `.res-header { text-align: center; padding-bottom: 35px; border-bottom: 1px solid #e2e8f0; } 
+                    // Refined Modern with Grid Layout & Enhanced Color
+                    css += `.res-header { text-align: center; padding-bottom: 35px; border-bottom: 2px solid ${color}20; } 
                              .res-contact { justify-content: center; } 
-                             .res-photo { margin: 0 auto 20px; }
-                             .res-sec-title { border: none; font-size: 0.9rem; letter-spacing: 0.15em; color: #a0aec0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
-                             .res-name { font-family: 'Poppins', sans-serif; font-weight: 600; } `;
+                             .res-photo { margin: 0 auto 20px; border: 3px solid ${color}; }
+                             .res-name { font-family: 'Poppins', sans-serif; font-weight: 600; color: ${color}; } 
+                             .res-sec-title { border: none; font-size: 0.9rem; letter-spacing: 0.15em; color: ${color}; border-bottom: 2px solid ${color}40; padding-bottom: 10px; }
+                             .res-item { display: inline-block; width: 48%; vertical-align: top; margin-bottom: 12px; margin-right: 2%; }
+                             .res-item:nth-child(2n) { margin-right: 0; }
+                             .res-role { color: ${color}; font-weight: 700; }
+                             @media print { .res-item { page-break-inside: avoid; } } `;
                 }
                 else if (theme === 'executive') {
                     // Refined Executive
                     css += `.a4-page { font-family: 'Montserrat', sans-serif; background: #fdfdfd; }
-                             .res-header { display: flex; align-items: center; gap: 40px; background: #f1f5f9; margin: -40px-40px 30px; padding: 50px 40px; border-bottom: 4px solid ${color}; }
+                             .res-header { display: flex; align-items: center; gap: 40px; background: #f1f5f9; margin: -40px -40px 30px; padding: 50px 40px; border-bottom: 4px solid ${color}; }
                              .res-info { flex: 1; }
-                             .res-name { margin: 0; font-size: 2.5rem; }
-                             .res-photo { margin: 0; width: 140px; height: 140px; border: 5px solid white; box-shadow: 0 10px 15px-3px rgba(0, 0, 0, 0.1); }
-                             .res-sec-title { border: none; border-bottom: 2px solid ${color} 30; font-size: 1.2rem; color: ${color}; }
+                             .res-name { margin: 0; font-size: 2.5rem; color: ${color}; }
+                             .res-title { color: ${color}80; font-weight: 600; }
+                             .res-photo { margin: 0; width: 140px; height: 140px; border: 5px solid ${color}; box-shadow: 0 10px 15px -3px ${color}20; }
+                             .res-sec-title { border: none; border-bottom: 2px solid ${color}30; font-size: 1.2rem; color: ${color}; }
                              .res-item-head { align-items: center; }
-                             .res-role { font-weight: 700; font-size: 1.1rem; } `;
+                             .res-role { font-weight: 700; font-size: 1.1rem; color: ${color}; } 
+                             .res-tag { background: ${color}10; color: ${color}; border: 1px solid ${color}30; font-weight: 600; }`;
                 }
                 else if (theme === 'minimal') {
-                    css += `.a4-page { padding: 30px 40px; } .res-sec-title { border: none; letter-spacing: 0.2em; font-size: 0.85rem; color: #a0aec0; margin-bottom: 20px; text-align: right; margin-right: -20px; padding-right: 20px; border-right: 3px solid ${color}; } .res-name { font-weight: 300; letter-spacing: -1px; font-size: 3rem; } .res-item-head { flex-direction: column; gap: 2px; } .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; } .res-tag { background: white; border: 1px solid #e2e8f0; color: #718096; } `;
+                    css += `.a4-page { padding: 30px 40px; } 
+                           .res-name { font-weight: 300; letter-spacing: -1px; font-size: 3rem; color: ${color}; } 
+                           .res-title { color: ${color}80; font-weight: 500; }
+                           .res-photo { border: 3px solid ${color}; box-shadow: 0 4px 10px ${color}20; }
+                           .res-sec-title { border: none; letter-spacing: 0.2em; font-size: 0.85rem; color: ${color}; margin-bottom: 20px; text-align: right; margin-right: -20px; padding-right: 20px; border-right: 3px solid ${color}; } 
+                           .res-item-head { flex-direction: column; gap: 2px; } 
+                           .res-role { color: ${color}; font-weight: 600; }
+                           .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; } 
+                           .res-tag { background: ${color}10; border: 1px solid ${color}40; color: ${color}; font-weight: 500; } `;
                 }
                 else if (theme === 'skyline') {
                     css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; }`;
@@ -685,7 +723,8 @@
                     html = `
         <div class="v-sidebar">
             ${d.photo ? `<img src="${d.photo}" class="v-photo">` : ''}
-                        ${d.photo ? `<div class="v-name-side">${d.name}</div>` : ''}
+            <div class="v-name-side">${d.name}</div>
+            <div class="v-title-side">${d.title}</div>
 
     <div class="v-side-sec">
         <div class="v-side-title">${lbl.contact}</div>
@@ -715,8 +754,6 @@
 
     </div>
         <div class="v-main">
-            <div class="v-name-main">${d.name}</div>
-            <div class="v-title-main">${d.title}</div>
             
             ${d.summary ? `
             <div class="v-section">
@@ -896,6 +933,15 @@
                                 `).join('')}
                             </div>
                             
+                            ${d.certificates && d.certificates.length > 0 ? `
+                            <div class="a-right-sec">
+                                <div class="a-sec-title">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
+                                <div style="display: flex; flex-wrap: wrap;">
+                                    ${d.certificates.map(cert => `<span class="a-cert-badge">${cert.name} - ${cert.issuer} (${cert.date})</span>`).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                            
                             <div class="a-right-sec">
                                 <div class="a-sec-title">${lbl.exp.toUpperCase()}</div>
                                 ${d.experience.map(e => `
@@ -923,6 +969,16 @@
                             <div class="s-name">${d.name}</div>
                             <div class="s-title">${d.title}</div>
                         </div>
+                        
+                        ${d.skills ? `
+                        <div class="s-skills-box">
+                            <div class="s-skills-title">${isTr ? 'YETENEKLER' : 'SKILLS'}</div>
+                            <div class="s-skill-compact">
+                                ${d.skills.split(',').slice(0, 8).map(s => s.trim() ? `<span class="s-skill-badge">${s.trim()}</span>` : '').join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                        
                         <div class="s-contact-box">
                              <div class="s-contact-row"><div class="s-icon-circle">📍</div><div class="s-contact-text">${d.address || '-'}</div></div>
                             <div class="s-contact-row"><div class="s-icon-circle">📞</div><div class="s-contact-text">${d.phone || '-'}</div></div>
@@ -956,6 +1012,16 @@
                                 </div>
                             `).join('')}
             </div>
+            
+            ${d.certificates && d.certificates.length > 0 ? `
+            <div class="s-section">
+                <div class="s-head">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
+                <div class="s-skill-cloud">
+                    ${d.certificates.map(cert => `<span class="s-tag">${cert.name} - ${cert.issuer} (${cert.date})</span>`).join('')}
+                </div>
+            </div>
+            ` : ''}
+            
             <div class="s-section">
                 <div class="s-head">${lbl.skills || 'YETENEKLER'}</div>
                 <div class="s-skill-cloud">${d.skills.split(',').map(s => s.trim() ? `<span class="s-tag">${s.trim()}</span>` : '').join('')}</div>
@@ -1127,6 +1193,21 @@
                             `).join('')}
             </div>
             
+            ${d.certificates && d.certificates.length > 0 ? `
+            <div class="k-r-section">
+                <div class="k-r-head">
+                    <div class="k-r-icon">🏅</div>
+                    <div class="k-r-title">${isTr ? 'Sertifikalar' : 'Certificates'}</div>
+                </div>
+                ${d.certificates.map(cert => `
+                    <div class="k-cert-item">
+                        <div class="k-cert-name">${cert.name}</div>
+                        <div class="k-cert-meta">${cert.issuer} • ${cert.date}</div>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+            
             ${d.languages ? `
             <div class="k-r-section">
                 <div class="k-r-head">
@@ -1158,10 +1239,11 @@
             <div class="o-circle-white">
                 <div class="o-name">${d.name}</div>
                 <div class="o-title-badge">${d.title.toUpperCase()}</div>
-                <div class="o-company">
-                    <div class="o-company-icon"></div>
-                    <span>${d.address || (isTr ? 'Konum Girilmedi' : 'Location Not Set')}</span>
+                ${d.certificates && d.certificates.length > 0 ? `
+                <div style="margin-top: 15px; max-width: 100%;">
+                    ${d.certificates.slice(0, 3).map(cert => `<span class="o-cert-badge" style="font-size: 0.65rem;">${cert.name}</span>`).join('')}
                 </div>
+                ` : ''}
             </div>
             <div class="o-circle-yellow">
                 ${d.photo ? `<img src="${d.photo}" class="o-photo">` : ''}
@@ -1205,24 +1287,34 @@
                 </div>
             </div>
             
-            ${(d.languages || d.interests) ? `
-            <div class="o-box" style="grid-column: span 2;">
+            ${d.languages ? `
+            <div class="o-box">
                 <div class="o-box-head">
-                    <div class="o-icon-box">🌟</div>
-                    <div class="o-box-title">${isTr ? 'Diğer' : 'Other'}</div>
+                    <div class="o-icon-box">🌍</div>
+                    <div class="o-box-title">${isTr ? 'Diller' : 'Languages'}</div>
                 </div>
-                <div class="o-box-content" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    ${d.languages ? `<div><strong>${isTr ? 'Diller' : 'Languages'}:</strong> ${d.languages}</div>` : ''}
-                    ${d.interests ? `<div><strong>${isTr ? 'İlgi Alanları' : 'Interests'}:</strong> ${d.interests}</div>` : ''}
+                <div class="o-box-content">
+                    ${d.languages.split(',').map(lang => `<span style="background:#f0f0f0; padding:4px 10px; border-radius:4px; margin-right:6px; font-size:0.75rem; display:inline-block; margin-bottom:6px;">${lang.trim()}</span>`).join('')}
+                </div>
+            </div>` : ''}
+            
+            ${d.certificates && d.certificates.length > 3 ? `
+            <div class="o-box" ${!d.languages ? 'style="grid-column: span 2;"' : ''}>
+                <div class="o-box-head">
+                    <div class="o-icon-box">🏅</div>
+                    <div class="o-box-title">${isTr ? 'Diğer Sertifikalar' : 'More Certificates'}</div>
+                </div>
+                <div class="o-box-content">
+                    ${d.certificates.slice(3).map(cert => `<span class="o-cert-badge">${cert.name} - ${cert.issuer}</span>`).join('')}
                 </div>
             </div>` : ''}
         </div>
         
         <div class="o-footer">
             <div class="o-contact-item"><div class="o-contact-icon">✉️</div>${d.email}</div>
-            <div class="o-contact-item"><div class="o-contact-icon">🔗</div>linkedin.com/${d.name.toLowerCase().replace(' ', '')}</div>
             <div class="o-contact-item"><div class="o-contact-icon">📞</div>${d.phone}</div>
-            <div class="o-contact-item"><div class="o-contact-icon">🐦</div>@${d.name.toLowerCase().replace(' ', '')}</div>
+            ${d.website ? `<div class="o-contact-item"><div class="o-contact-icon">🔗</div>${d.website}</div>` : ''}
+            ${d.address ? `<div class="o-contact-item"><div class="o-contact-icon">📍</div>${d.address}</div>` : ''}
         </div>
     `;
                 }
@@ -1288,6 +1380,15 @@
                                 </div>
                             `).join('')}
             </div>
+            
+            ${d.certificates && d.certificates.length > 0 ? `
+            <div class="res-section">
+                <div class="res-sec-title">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
+                <div class="res-skills">
+                    ${d.certificates.map(cert => `<span class="res-tag">${cert.name} - ${cert.issuer} (${cert.date})</span>`).join('')}
+                </div>
+            </div>
+            ` : ''}
         </div>
     `;
                 }
