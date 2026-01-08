@@ -28,7 +28,7 @@ class JSONMasterTool extends BaseTool {
         return `
         <div class="tool-content jms-studio" style="height: 100%; min-height: 600px; display: flex; flex-direction: column; padding: 10px;">
             <!-- Studio Tabs -->
-            <div class="studio-tabs" style="display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+            <div class="studio-tabs" style="display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); overflow-x: auto;">
                 ${Object.entries(txt.tabs).map(([id, label]) => `
                     <button id="jms-tab-${id}" class="btn ${id === 'format' ? 'btn-primary' : 'btn-outline'} btn-sm jms-tab-btn" data-tab="${id}">${label}</button>
                 `).join('')}
@@ -59,7 +59,6 @@ class JSONMasterTool extends BaseTool {
                     <button id="js-btn-c2j" class="btn btn-primary" style="min-width: 200px;">⬅️ ${txt.convert.c2j}</button>
                 </div>
                 
-                <!-- CSV Options -->
                 <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 15px; font-size: 0.85rem; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 8px;">
                      <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
                         <input type="checkbox" id="js-opt-header" checked> Include Header
@@ -140,7 +139,6 @@ class JSONMasterTool extends BaseTool {
                             <option value="csharp">C# Class</option>
                             <option value="java">Java POJO</option>
                             <option value="python">Python Dataclass</option>
-                            <option value="kotlin">Kotlin Data Class</option>
                         </select>
                     </div>
                     <div style="flex: 1; min-width: 150px;">
@@ -170,6 +168,8 @@ class JSONMasterTool extends BaseTool {
             sql: document.getElementById('jms-view-sql'),
             typegen: document.getElementById('jms-view-typegen')
         };
+
+        const showNotification = window.showNotification || ((msg) => alert(msg));
 
         tabBtns.forEach(btn => {
             btn.onclick = () => {
@@ -219,14 +219,14 @@ class JSONMasterTool extends BaseTool {
             }
             try {
                 const parsed = JSON.parse(fmtInput.value);
-                fmtOutput.value = JSON.stringify(parsed, null, 2); // Also format and show in output
+                fmtOutput.value = JSON.stringify(parsed, null, 2);
                 fmtStatus.innerHTML = '✅ <b>Valid JSON</b>';
-                fmtStatus.style.color = '#10b981'; // Success Green
-                window.DevTools.showNotification('Valid JSON', 'success');
+                fmtStatus.style.color = '#10b981';
+                showNotification('Valid JSON', 'success');
             } catch (e) {
                 fmtStatus.innerHTML = `❌ <b>Invalid JSON:</b> ${e.message}`;
-                fmtStatus.style.color = '#ef4444'; // Error Red
-                window.DevTools.showNotification('Invalid JSON', 'error');
+                fmtStatus.style.color = '#ef4444';
+                showNotification('Invalid JSON', 'error');
             }
         };
 
@@ -245,9 +245,9 @@ class JSONMasterTool extends BaseTool {
                 header: document.getElementById('js-opt-header').checked,
                 delimiter: document.getElementById('js-opt-delim').value
             };
-            const res = window.DevTools.dataConverters.jsonToCsv(cvJson.value, opts);
+            const res = this.jsonToCsv(cvJson.value, opts);
             if (res.success) cvCsv.value = res.result;
-            else window.DevTools.showNotification(res.message, 'error');
+            else showNotification(res.message, 'error');
         };
 
         document.getElementById('js-btn-c2j').onclick = () => {
@@ -255,13 +255,12 @@ class JSONMasterTool extends BaseTool {
                 header: document.getElementById('js-opt-header').checked,
                 delimiter: document.getElementById('js-opt-delim').value
             };
-            const res = window.DevTools.dataConverters.csvToJson(cvCsv.value, opts);
+            const res = this.csvToJson(cvCsv.value, opts);
             if (res.success) cvJson.value = res.result;
-            else window.DevTools.showNotification(res.message, 'error');
+            else showNotification(res.message, 'error');
         };
 
         document.getElementById('js-csv-copy').onclick = () => this.copyToClipboard(cvCsv.value);
-
 
         // TypeGen Logic
         const tgInput = document.getElementById('js-tg-input');
@@ -271,11 +270,10 @@ class JSONMasterTool extends BaseTool {
 
         document.getElementById('js-tg-gen').onclick = () => {
             try {
-                // Now using centralized logic
-                const results = window.DevTools.jsonTools.generateTypes(tgInput.value, tgRoot.value || 'Root', tgLang.value);
+                const results = this.generateTypes(tgInput.value, tgRoot.value || 'Root', tgLang.value);
                 tgOutput.value = results;
             } catch (e) {
-                window.DevTools.showNotification('Error: ' + e.message, 'error');
+                showNotification('Error: ' + e.message, 'error');
                 tgOutput.value = '// Error generating types\n' + e.message;
             }
         };
@@ -287,37 +285,32 @@ class JSONMasterTool extends BaseTool {
         const xmlXml = document.getElementById('js-xml-xml');
 
         document.getElementById('js-btn-j2x').onclick = () => {
-            const res = window.DevTools.dataConverters.jsonToXml(xmlJson.value);
+            const res = this.jsonToXml(xmlJson.value);
             if (res.success) xmlXml.value = res.result;
-            else window.DevTools.showNotification(res.message || 'Error converting to XML', 'error');
+            else showNotification(res.message || 'Error converting to XML', 'error');
         };
 
         document.getElementById('js-btn-x2j').onclick = () => {
-            const res = window.DevTools.dataConverters.xmlToJson(xmlXml.value);
+            const res = this.xmlToJson(xmlXml.value);
             if (res.success) xmlJson.value = res.result;
-            else window.DevTools.showNotification(res.message || 'Error converting to JSON', 'error');
+            else showNotification(res.message || 'Error converting to JSON', 'error');
         };
 
         document.getElementById('js-xml-copy').onclick = () => this.copyToClipboard(xmlXml.value);
 
-
-        // SQL Convert Logic - SMART VERSION
+        // SQL Convert Logic (Already Implemented Self-Contained)
         const sqlJson = document.getElementById('js-sql-json');
         const sqlOutput = document.getElementById('js-sql-output');
         const sqlTable = document.getElementById('js-sql-table');
 
         document.getElementById('js-btn-j2s').onclick = () => {
             try {
-                console.log('🔍 JSON to SQL conversion started');
                 const jsonInput = sqlJson.value.trim();
                 if (!jsonInput) throw new Error('Please enter JSON data');
-
                 const data = JSON.parse(jsonInput);
-                console.log('✅ Parsed:', data);
-
                 const tableName = sqlTable.value.trim() || 'table_name';
 
-                // Helper: Flatten nested objects with dot notation
+                // Helper to flatten rows
                 const flatten = (obj, prefix = '') => {
                     const result = {};
                     for (const [key, value] of Object.entries(obj)) {
@@ -325,7 +318,6 @@ class JSONMasterTool extends BaseTool {
                         if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
                             Object.assign(result, flatten(value, newKey));
                         } else if (Array.isArray(value)) {
-                            // Arrays: stringify as JSON
                             result[newKey] = JSON.stringify(value);
                         } else {
                             result[newKey] = value;
@@ -334,39 +326,166 @@ class JSONMasterTool extends BaseTool {
                     return result;
                 };
 
-                // Convert to array if single object
                 let rows = Array.isArray(data) ? data : [data];
+                rows = rows.map(r => flatten(r));
+                const columns = [...new Set(rows.flatMap(r => Object.keys(r)))];
 
-                // Flatten each row
-                rows = rows.map(row => flatten(row));
-
-                // Get all unique columns
-                const columns = [...new Set(rows.flatMap(row => Object.keys(row)))];
-
-                // Generate SQL
                 const sql = rows.map(row => {
                     const values = columns.map(col => {
                         const val = row[col];
                         if (val === undefined || val === null) return 'NULL';
                         if (typeof val === 'string') return `'${val.replace(/'/g, "''")}'`;
-                        if (typeof val === 'boolean') return val;
-                        if (typeof val === 'number') return val;
                         return `'${String(val).replace(/'/g, "''")}'`;
                     }).join(', ');
                     return `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${values});`;
                 }).join('\n');
 
-                console.log('✅ SQL generated successfully');
                 sqlOutput.value = sql;
-                window.DevTools.showNotification(`Generated ${rows.length} INSERT statement(s)!`, 'success');
+                showNotification(`Generated ${rows.length} statements!`, 'success');
             } catch (e) {
-                console.error('❌ SQL Error:', e);
                 sqlOutput.value = '';
-                window.DevTools.showNotification('Error: ' + e.message, 'error');
+                showNotification('Error: ' + e.message, 'error');
             }
         };
 
         document.getElementById('js-sql-copy').onclick = () => this.copyToClipboard(sqlOutput.value);
+    }
+
+    // ========== HELPER METHODS (Replaced Window.DevTools dependencies) ==========
+
+    jsonToCsv(jsonStr, opts) {
+        try {
+            const arr = JSON.parse(jsonStr);
+            const data = Array.isArray(arr) ? arr : [arr];
+            if (data.length === 0) return { success: false, message: 'Empty JSON array' };
+            const delim = opts.delimiter || ',';
+            const keys = Object.keys(data[0]);
+            const header = opts.header ? keys.join(delim) + '\n' : '';
+            const rows = data.map(obj => keys.map(k => {
+                let val = obj[k] === undefined ? '' : obj[k];
+                if (typeof val === 'string' && (val.includes(delim) || val.includes('\n'))) {
+                    val = `"${val.replace(/"/g, '""')}"`;
+                }
+                return val;
+            }).join(delim));
+            return { success: true, result: header + rows.join('\n') };
+        } catch (e) { return { success: false, message: e.message }; }
+    }
+
+    csvToJson(csvStr, opts) {
+        try {
+            const delim = opts.delimiter || ',';
+            const lines = csvStr.trim().split('\n');
+            if (lines.length < 1) return { success: false, message: 'Empty CSV' };
+            const headers = opts.header ? lines[0].split(delim).map(h => h.trim()) : null;
+            const start = opts.header ? 1 : 0;
+            const result = [];
+            for (let i = start; i < lines.length; i++) {
+                const values = lines[i].split(delim);
+                if (headers) {
+                    const obj = {};
+                    headers.forEach((h, idx) => obj[h] = values[idx]?.trim());
+                    result.push(obj);
+                } else {
+                    result.push(values);
+                }
+            }
+            return { success: true, result: JSON.stringify(result, null, 2) };
+        } catch (e) { return { success: false, message: e.message }; }
+    }
+
+    jsonToXml(jsonStr) {
+        try {
+            const obj = JSON.parse(jsonStr);
+            const toXml = (o) => {
+                let xml = '';
+                for (let key in o) {
+                    if (o.hasOwnProperty(key)) {
+                        let val = o[key];
+                        xml += `<${key}>`;
+                        if (typeof val === 'object' && val !== null) {
+                            xml += toXml(val);
+                        } else {
+                            xml += String(val);
+                        }
+                        xml += `</${key}>`;
+                    }
+                }
+                return xml;
+            };
+            return { success: true, result: `<root>${toXml(obj)}</root>` };
+        } catch (e) { return { success: false, message: e.message }; }
+    }
+
+    xmlToJson(xmlStr) {
+        try {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+            const xmlToJson = (xml) => {
+                let obj = {};
+                if (xml.nodeType === 1) { // element
+                    if (xml.attributes.length > 0) {
+                        obj["@attributes"] = {};
+                        for (let j = 0; j < xml.attributes.length; j++) {
+                            let attribute = xml.attributes.item(j);
+                            obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                        }
+                    }
+                } else if (xml.nodeType === 3) { // text
+                    obj = xml.nodeValue;
+                }
+                if (xml.hasChildNodes()) {
+                    for (let i = 0; i < xml.childNodes.length; i++) {
+                        let item = xml.childNodes.item(i);
+                        let nodeName = item.nodeName;
+                        if (typeof (obj[nodeName]) == "undefined") {
+                            obj[nodeName] = xmlToJson(item);
+                        } else {
+                            if (typeof (obj[nodeName].push) == "undefined") {
+                                let old = obj[nodeName];
+                                obj[nodeName] = [];
+                                obj[nodeName].push(old);
+                            }
+                            obj[nodeName].push(xmlToJson(item));
+                        }
+                    }
+                }
+                return obj;
+            };
+            const json = xmlToJson(xmlDoc);
+            return { success: true, result: JSON.stringify(json, null, 2) };
+        } catch (e) { return { success: false, message: e.message }; }
+    }
+
+    generateTypes(jsonStr, rootName, lang) {
+        let obj;
+        try { obj = JSON.parse(jsonStr); } catch (e) { throw new Error('Invalid JSON'); }
+
+        if (lang === 'ts') {
+            const getType = (v) => {
+                if (v === null) return 'any';
+                if (Array.isArray(v)) return v.length ? `${getType(v[0])}[]` : 'any[]';
+                if (typeof v === 'object') return '{ [key: string]: any }'; // Simplified
+                return typeof v;
+            };
+            let code = `interface ${rootName} {\n`;
+            for (const [k, v] of Object.entries(obj)) {
+                code += `  ${k}: ${getType(v)};\n`;
+            }
+            code += '}';
+            return code;
+        }
+        else if (lang === 'go') {
+            let code = `type ${rootName} struct {\n`;
+            for (const [k, v] of Object.entries(obj)) {
+                const type = typeof v === 'number' ? 'float64' : typeof v === 'boolean' ? 'bool' : 'string';
+                const name = k.charAt(0).toUpperCase() + k.slice(1);
+                code += `  ${name} ${type} \`json:"${k}"\`\n`;
+            }
+            code += '}';
+            return code;
+        }
+        return `// Type generation for ${lang} not fully implemented yet.\n// Please use TypeScript for best results.`;
     }
 }
 
