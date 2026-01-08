@@ -308,7 +308,7 @@
                 // --- BASE CSS ---
                 let css = `
                     ${fontImport}
-                    .a4-page { font-family: ${f}; color: #2d3748; line-height: 1.6; padding: 40px; background: white; box-sizing: border-box; font-size: 14px; }
+                    .a4-page { font-family: ${bF}; color: #2d3748; line-height: 1.6; padding: 40px; background: white; box-sizing: border-box; font-size: 14px; }
                     .res-photo { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; margin-bottom: 20px; border: 3px solid ${color}; box-shadow: 0 4px 10px ${color}20; }
                     .res-header { margin-bottom: 35px; }
                     .res-name { font-size: 2.2rem; font-weight: 700; color: ${color}; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.02em; }
@@ -463,10 +463,11 @@
                 }
                 else if (theme === 'orbit') {
                     if (!d.color || d.color === '#2d3748') color = '#f39c12'; // Orange default
-                    if (!d.font || d.font === 'sans') f = fonts.condensed;
+                    if (!d.headerFont) hF = fonts.condensed;
+                    if (!d.bodyFont) bF = fonts.condensed;
 
                     css += `
-                        .a4-page { display: grid; grid-template-columns: 180px 1fr; padding: 0; min-height: 1123px; font-family: ${f}; background: white; color: #333; overflow: hidden; }
+                        .a4-page { display: grid; grid-template-columns: 180px 1fr; padding: 0; min-height: 1123px; font-family: ${bF}; background: white; color: #333; overflow: hidden; }
                         
                         /* Sidebar (Dark) */
                         .e-sidebar { background: #2e3e4f; padding: 35px 18px; display: flex; flex-direction: column; color: white; }
