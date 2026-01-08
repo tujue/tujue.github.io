@@ -98,11 +98,14 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 20px 0; width: 100%; scroll-behavior: smooth; }
+                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; }
                 
+                .res-sticky-nav { position: sticky; top: 0; z-index: 150; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 8px 15px; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                .res-sticky-nav.compact { padding: 5px 15px; min-height: 40px; }
+
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
-                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; padding-bottom: 60px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin: 30px auto; }
+                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin: 30px auto; }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
@@ -275,23 +278,23 @@ class ResumeBuilderTool extends BaseTool {
             design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' }
         };
 
-        const renderFormButtons = (extraStyle = '') => {
+        const renderStickyNav = (isCompact = false) => {
             const tabs = ['personal', 'exp', 'edu', 'skills', 'preview'];
             const currentIdx = tabs.indexOf(this.currentTab);
 
-            let nextButtonContent = '';
+            let nextBtn = '';
             if (this.currentTab === 'preview') {
-                nextButtonContent = `<button onclick="window._printPdf(this)" class="btn btn-success" style="min-width: 140px; font-weight: bold; padding: 10px 25px; font-size: 1rem; box-shadow: 0 4px 15px rgba(34,197,94,0.3);">${txt.btn.print}</button>`;
+                nextBtn = `<button onclick="window._printPdf(this)" class="btn btn-success btn-sm" style="font-weight: bold; min-width: 110px;">💾 ${txt.btn.print}</button>`;
             } else {
-                nextButtonContent = `<button onclick="window._resNav(1)" class="btn btn-primary" style="min-width: 120px; font-weight: bold; padding: 8px 20px; font-size: 0.9rem;">${txt.btn.next}</button>`;
+                nextBtn = `<button onclick="window._resNav(1)" class="btn btn-primary btn-sm" style="font-weight: bold; min-width: 100px;">${txt.btn.next}</button>`;
             }
 
             return `
-                <div style="display: flex; gap: 15px; margin: 0 auto; padding: 25px 30px; border-top: 1px solid var(--border-color); align-items: center; width: 100%; max-width: 900px; ${extraStyle}">
-                    ${this.currentTab !== 'personal' ? `<button onclick="window._resNav(-1)" class="btn btn-outline" style="min-width: 90px; padding: 7px 15px; font-size: 0.85rem; background: var(--surface);">${txt.btn.prev}</button>` : ''}
-                    <button onclick="window._resReset()" class="btn btn-text" style="color: #ef4444; padding: 7px 15px; font-size: 0.85rem;">${txt.btn.reset}</button>
+                <div class="res-sticky-nav ${isCompact ? 'compact' : ''}">
+                    ${this.currentTab !== 'personal' ? `<button onclick="window._resNav(-1)" class="btn btn-outline btn-sm" style="min-width: 70px; background: var(--surface);">${txt.btn.prev}</button>` : ''}
+                    <button onclick="window._resReset()" class="btn btn-text btn-sm" style="color: #ef4444; opacity: 0.8;">${txt.btn.reset}</button>
                     <div style="flex:1;"></div>
-                    ${nextButtonContent}
+                    ${nextBtn}
                 </div>
             `;
         };
@@ -306,7 +309,8 @@ class ResumeBuilderTool extends BaseTool {
 
         if (this.currentTab === 'personal') {
             div.innerHTML = `
-                <div class="res-card" style="max-width: 600px; margin: 0 auto;">
+                ${renderStickyNav()}
+                <div class="res-card" style="max-width: 600px;">
                     <h3 style="margin-bottom: 20px;">${txt.tabs.p}</h3>
                     
                     <div class="res-photo-upload" onclick="document.getElementById('res-upl').click()">
@@ -315,86 +319,63 @@ class ResumeBuilderTool extends BaseTool {
                     </div>
                     <input type="file" id="res-upl" hidden accept="image/*">
 
-                    <div class="res-form-grid">
+                    <div class="res-form-grid" style="margin-top: 20px;">
                         <div class="res-full-width">
                             <label class="form-label">${txt.lbl.name}</label>
-                            <input type="text" class="form-input" id="in-name" value="${d.name}">
+                            <input type="text" class="form-input" oninput="window._upField('name', this.value)" value="${d.name || ''}">
                         </div>
                         <div class="res-full-width">
                             <label class="form-label">${txt.lbl.title}</label>
-                            <input type="text" class="form-input" id="in-title" value="${d.title}">
+                            <input type="text" class="form-input" oninput="window._upField('title', this.value)" value="${d.title || ''}">
                         </div>
-                    </div>
-
-                    <div style="margin-top: 1rem;">
-                        <label class="form-label">${txt.lbl.summary}</label>
-                        <textarea class="form-input" id="in-summary" rows="3" placeholder="${isTr ? 'Kendinizi kısaca tanıtın...' : 'Briefly introduce yourself...'}">${d.summary || ''}</textarea>
-                    </div>
-                    
-                    <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 1rem;">
                         <div>
                             <label class="form-label">${txt.lbl.mail}</label>
-                            <input type="email" class="form-input" id="in-email" value="${d.email}">
+                            <input type="email" class="form-input" oninput="window._upField('email', this.value)" value="${d.email || ''}">
                         </div>
                         <div>
-                            <label class="form-label">Website / LinkedIn</label>
-                            <input type="text" class="form-input" id="in-web" value="${d.website}">
+                            <label class="form-label">Website</label>
+                            <input type="text" class="form-input" oninput="window._upField('website', this.value)" value="${d.website || ''}">
                         </div>
                         <div>
                             <label class="form-label">Telefon</label>
-                            <input type="text" class="form-input" id="in-phone" value="${d.phone || ''}">
+                            <input type="text" class="form-input" oninput="window._upField('phone', this.value)" value="${d.phone || ''}">
                         </div>
                         <div>
                              <label class="form-label">Adres / Konum</label>
-                            <input type="text" class="form-input" id="in-addr" value="${d.address || ''}">
+                            <input type="text" class="form-input" oninput="window._upField('address', this.value)" value="${d.address || ''}">
+                        </div>
+                        <div class="res-full-width">
+                            <label class="form-label">${txt.lbl.summary}</label>
+                            <textarea class="form-input" rows="3" oninput="window._upField('summary', this.value)" placeholder="${isTr ? 'Örn: 5+ yıl deneyimli kıdemli yazılım geliştirici...' : 'Ex: Senior developer with 5+ years of experience...'}">${d.summary || ''}</textarea>
+                        </div>
+                         <div class="res-full-width">
+                             <label class="form-label">${isTr ? 'Yetenekler & Uzmanlık (Örn: React, Node.js)' : 'Skills & Expertise'}</label>
+                            <textarea class="form-input" rows="2" oninput="window._upField('skills', this.value)" placeholder="React, Node.js, Python...">${d.skills || ''}</textarea>
                         </div>
                     </div>
-
-
-
-                    <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 1rem;">
-                        <div>
-                            <label class="form-label">Diller</label>
-                            <textarea class="form-input" id="in-languages" rows="2" placeholder="Türkçe (Anadil), İngilizce (C1)...">${d.languages || ''}</textarea>
-                        </div>
-                        <div>
-                            <label class="form-label">İlgi Alanları</label>
-                            <textarea class="form-input" id="in-interests" rows="2" placeholder="Fotoğrafçılık, Satranç...">${d.interests || ''}</textarea>
-                        </div>
-                    </div>
-
-                    ${renderFormButtons()}
                 </div>
             `;
             c.appendChild(div);
 
-            // Bindings
-            const ids = ['name', 'title', 'summary', 'email', 'web', 'phone', 'addr', 'languages', 'interests'];
-            ids.forEach(id => {
-                const el = document.getElementById(`in-${id}`);
-                el.oninput = () => {
-                    if (id === 'web') d.website = el.value;
-                    else if (id === 'addr') d.address = el.value;
-                    else d[id] = el.value;
-                    this._save();
+            const upl = document.getElementById('res-upl');
+            if (upl) {
+                upl.onchange = (e) => {
+                    const f = e.target.files[0];
+                    if (f) {
+                        const r = new FileReader();
+                        r.onload = (ye) => { this.data.photo = ye.target.result; this._save(); this.renderTabContent(); };
+                        r.readAsDataURL(f);
+                    }
                 };
-            });
-
-            document.getElementById('res-upl').onchange = (e) => {
-                const f = e.target.files[0];
-                if (f) {
-                    const r = new FileReader();
-                    r.onload = (ye) => { d.photo = ye.target.result; this._save(); this.renderTabContent(); };
-                    r.readAsDataURL(f);
-                }
-            };
+            }
         }
         else if (this.currentTab === 'exp') {
             div.innerHTML = `
-                <div class="res-card">
-                    <h3 style="margin-bottom: 20px;">${txt.exp.title}</h3>
-                    <div id="exp-list">
-                        ${d.experience.map((ex, i) => `
+                ${renderStickyNav()}
+            <div class="res-card">
+                <h3 style="margin-bottom: 20px;">${txt.exp.title}</h3>
+                <div id="exp-list">
+                    ${d.experience.map((ex, i) => `
                             <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative;">
                                 <button onclick="window._removeItem('experience', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
                                 <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -417,19 +398,19 @@ class ResumeBuilderTool extends BaseTool {
                                 </div>
                             </div>
                         `).join('')}
-                        <button onclick="window._addItem('exp')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.exp.add}</button>
-                    </div>
-                    ${renderFormButtons()}
+                    <button onclick="window._addItem('exp')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.exp.add}</button>
                 </div>
+            </div>
             `;
             c.appendChild(div);
         }
         else if (this.currentTab === 'edu') {
             div.innerHTML = `
-                <div class="res-card">
-                    <h3 style="margin-bottom: 20px;">${txt.edu.title}</h3>
-                    <div id="edu-list">
-                        ${d.education.map((ed, i) => `
+                ${renderStickyNav()}
+            <div class="res-card">
+                <h3 style="margin-bottom: 20px;">${txt.edu.title}</h3>
+                <div id="edu-list">
+                    ${d.education.map((ed, i) => `
                             <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative;">
                                 <button onclick="window._removeItem('education', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
                                 <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -448,23 +429,22 @@ class ResumeBuilderTool extends BaseTool {
                                 </div>
                             </div>
                         `).join('')}
-                        <button onclick="window._addItem('edu')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.edu.add}</button>
-                    </div>
-                    ${renderFormButtons()}
+                    <button onclick="window._addItem('edu')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.edu.add}</button>
                 </div>
+            </div>
             `;
             c.appendChild(div);
         }
         else if (this.currentTab === 'skills') {
             div.innerHTML = `
-                 <div class="res-card" style="max-width: 700px; margin: 0 auto;">
-                    <h3 style="margin-bottom: 5px;">${txt.lbl.skills}</h3>
-                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
-                        ${isTr ? 'Yeteneklerinizi virgül ile ayırarak yazın.' : 'Write your skills separated by commas.'}
-                    </p>
-                    <textarea oninput="window._upField('skills', this.value)" class="form-input" style="height: 150px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="Örn: Java, Python, Takım Çalışması, İngilizce...">${d.skills || ''}</textarea>
-                    ${renderFormButtons()}
-                 </div>
+                ${renderStickyNav()}
+            <div class="res-card" style="max-width: 700px;">
+                <h3 style="margin-bottom: 5px;">${txt.lbl.skills}</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
+                    ${isTr ? 'Yeteneklerinizi virgül ile ayırarak yazın.' : 'Write your skills separated by commas.'}
+                </p>
+                <textarea oninput="window._upField('skills', this.value)" class="form-input" style="height: 150px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="Örn: Java, Python, Takım Çalışması, İngilizce...">${d.skills || ''}</textarea>
+            </div>
             `;
             c.appendChild(div);
         }
@@ -490,7 +470,7 @@ class ResumeBuilderTool extends BaseTool {
             ];
 
             div.innerHTML = `
-                <div class="res-card">
+                < div class="res-card" >
                     <h3>Görünüm Ayarları</h3>
                     <div class="res-form-grid" style="margin-top:20px;">
                         <div>
@@ -523,8 +503,8 @@ class ResumeBuilderTool extends BaseTool {
                             </div>
                         `).join('')}
                     </div>
-                </div>
-            `;
+                </div >
+                `;
             c.appendChild(div);
 
             document.getElementById('in-color').oninput = (e) => { d.color = e.target.value; this._save(); };
@@ -539,29 +519,25 @@ class ResumeBuilderTool extends BaseTool {
         }
         else if (this.currentTab === 'preview') {
             div.innerHTML = `
-                <div id="res-preview-wrapper" class="res-fade-in" style="display: flex; flex-direction: column; height: 100%;">
-                    
-                    <!-- Buttons at TOP for Preview -->
-                    <div style="background: var(--surface); border-bottom: 1px solid var(--border-color); sticky: top; z-index: 100;">
-                        ${renderFormButtons('border-top: none; padding: 15px 30px;')}
-                    </div>
+                < div id = "res-preview-wrapper" class="res-fade-in" style = "display: flex; flex-direction: column; height: 100%;" >
+                    ${renderStickyNav(true)}
 
-                    <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 30px 0;">
-                        <div id="res-page-wrapper" style="display: flex; justify-content: center; min-height: min-content; width: 100%;">
-                            <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; flex-shrink: 0;"></div>
-                        </div>
-                        
-                        <!-- Zoom Controls -->
-                         <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 12px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); z-index: 100;">
-                            <button id="z-minus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">−</button>
-                            <span id="z-val" style="min-width: 45px; text-align: center; font-size: 0.85rem; font-variant-numeric: tabular-nums;">FIT</span>
-                            <button id="z-plus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">+</button>
-                            <div style="width:1px; height:15px; background:rgba(255,255,255,0.3);"></div>
-                            <button id="z-fit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.75rem; font-weight:bold; padding: 5px 2px;">${isTr ? 'SIĞDIR' : 'FIT SCREEN'}</button>
-                        </div>
-                    </div>
+            <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 20px 0;">
+                <div id="res-page-wrapper" style="display: flex; justify-content: center; min-height: min-content; width: 100%;">
+                    <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; flex-shrink: 0;"></div>
                 </div>
-            `;
+
+                <!-- Zoom Controls -->
+                <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 12px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); z-index: 100;">
+                    <button id="z-minus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">−</button>
+                    <span id="z-val" style="min-width: 45px; text-align: center; font-size: 0.85rem; font-variant-numeric: tabular-nums;">FIT</span>
+                    <button id="z-plus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">+</button>
+                    <div style="width:1px; height:15px; background:rgba(255,255,255,0.3);"></div>
+                    <button id="z-fit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.75rem; font-weight:bold; padding: 5px 2px;">${isTr ? 'SIĞDIR' : 'FIT SCREEN'}</button>
+                </div>
+            </div>
+                </div >
+                `;
             c.appendChild(div);
 
             // Render HTML using Core
@@ -593,11 +569,11 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     _renderList(container, type) {
-        const listDiv = container.querySelector(`#list-${type}`);
+        const listDiv = container.querySelector(`#list - ${type} `);
         const list = type === 'exp' ? this.data.experience : this.data.education;
 
         listDiv.innerHTML = list.map((it, i) => `
-            <div class="res-card" style="margin-bottom: 15px; position:relative; padding: 15px;">
+                < div class="res-card" style = "margin-bottom: 15px; position:relative; padding: 15px;" >
                 <button onclick="window._delItem('${type}', ${i})" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer;">🗑️</button>
                 <div class="res-form-grid">
                     ${type === 'exp' ? `
@@ -610,8 +586,8 @@ class ResumeBuilderTool extends BaseTool {
                     <div><input class="form-input" placeholder="Tarih Aralığı" value="${it.date}" oninput="window._upItem('${type}', ${i}, 'date', this.value)"></div>
                     ${type === 'exp' ? `<div class="res-full-width"><textarea class="form-input" placeholder="Açıklama" rows="2" oninput="window._upItem('${type}', ${i}, 'desc', this.value)">${it.desc}</textarea></div>` : ''}
                 </div>
-            </div>
-        `).join('');
+            </div >
+                `).join('');
 
         window._upItem = (t, idx, key, val) => {
             const l = t === 'exp' ? this.data.experience : this.data.education;
@@ -689,7 +665,7 @@ class ResumeBuilderTool extends BaseTool {
         const wrapper = document.getElementById('res-page-wrapper');
         if (wrapper) {
             const scaledH = pageH * this.scaleValue;
-            wrapper.style.height = `${scaledH + 80}px`; // page height + padding
+            wrapper.style.height = `${scaledH + 80} px`; // page height + padding
         }
 
         const lbl = document.getElementById('z-val');
