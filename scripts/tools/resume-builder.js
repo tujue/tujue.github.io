@@ -7,12 +7,16 @@ class ResumeBuilderTool extends BaseTool {
         // Force compact styles via JS to ensure immediate effect
         setTimeout(() => {
             const ws = document.querySelector('.workspace-content');
-            if (ws) ws.classList.add('full-width-workspace');
+            if (ws) {
+                ws.classList.add('full-width-workspace');
+                this._origWsPadding = ws.style.padding;
+                ws.style.padding = '0'; // Remove GAP between header and body completely
+            }
 
             const header = document.querySelector('.workspace-header');
             if (header) {
-                // Ultra compact mode
-                header.style.cssText = 'margin-bottom: 0px !important; padding: 2px 15px !important; min-height: 35px !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important;';
+                // Ultra compact mode, NO BORDER to merge with tabs
+                header.style.cssText = 'margin-bottom: 0px !important; padding: 5px 15px !important; min-height: 35px !important; border-bottom: none !important;';
 
                 const title = header.querySelector('.workspace-title');
                 if (title) title.style.cssText = 'font-size: 1.25rem !important; margin: 0; line-height: 1.2;';
@@ -402,7 +406,7 @@ class ResumeBuilderTool extends BaseTool {
                 { id: 'minimal', name: 'Minimal' },
                 { id: 'leftside', name: 'Sol Sütun' },
                 { id: 'skyline', name: 'Skyline' },
-                { id: 'tech', name: 'Tech' },
+                { id: 'tech', name: 'Teknoloji' },
                 { id: 'classic', name: 'Klasik' }
             ];
 
@@ -544,7 +548,10 @@ class ResumeBuilderTool extends BaseTool {
 
     onClose() {
         const ws = document.querySelector('.workspace-content');
-        if (ws) ws.classList.remove('full-width-workspace');
+        if (ws) {
+            ws.classList.remove('full-width-workspace');
+            ws.style.padding = this._origWsPadding || ''; // Restore original padding
+        }
 
         // Restore header styles
         const header = document.querySelector('.workspace-header');
