@@ -331,47 +331,63 @@ class ResumeBuilderTool extends BaseTool {
         };
 
         loadLibraries().then(async () => {
-            // Temporarily remove zoom for accurate PDF generation
+            // Temporarily remove zoom and prepare for capture
             const originalTransform = page.style.transform;
             page.style.transform = 'none';
             page.style.boxShadow = 'none';
+            document.body.classList.add('pdf-mode');
+            window.scrollTo(0, 0);
+
+            // Inject PDF Specific Fixes (Line Height & Gap Fallback)
+            let pdfStyle = document.createElement('style');
+            pdfStyle.id = 'res-pdf-fix';
+            pdfStyle.textContent = `
+                body.pdf-mode .a4-page * { line-height: 1.4 !important; }
+                body.pdf-mode .v-sidebar > div, body.pdf-mode .res-contact > div { margin-bottom: 10px !important; }
+                body.pdf-mode .res-skills { gap: 5px !important; }
+                body.pdf-mode .res-tag { margin: 2px !important; display: inline-block !important; }
+            `;
+            document.head.appendChild(pdfStyle);
 
             // Wait for layout reflow
-            await new Promise(r => setTimeout(r, 150));
+            await new Promise(r => setTimeout(r, 200));
 
-            setTimeout(() => {
-                window.html2canvas(page, {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true,
-                    backgroundColor: '#ffffff'
-                }).then(canvas => {
-                    page.style.transform = originalTransform;
-                    page.style.boxShadow = '';
+            html2canvas(document.querySelector('.a4-page'), {
+                scale: 2,
+                useCORS: true,
+                scrollY: 0,
+                scrollX: 0
+            }).then((canvas) => {
+                // Restore zoom and styles
+                page.style.transform = originalTransform;
+                page.style.boxShadow = 'var(--shadow-lg)';
+                document.body.classList.remove('pdf-mode');
+                if (pdfStyle) pdfStyle.remove();
 
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new window.jspdf.jsPDF({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4'
-                    });
-
-                    const imgWidth = 210; // A4 width in mm
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                    pdf.save(`CV_${this.data.name || 'Resume'}.pdf`);
-
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                }).catch(error => {
-                    console.error('Error generating PDF:', error);
-                    page.style.transform = originalTransform;
-                    page.style.boxShadow = '';
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                    alert('PDF oluşturulurken bir hata oluştu: ' + error.message);
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new window.jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
                 });
-            }, 100);
+
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`CV_${this.data.name || 'Resume'}.pdf`);
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }).catch(error => {
+                console.error('Error generating PDF:', error);
+                page.style.transform = originalTransform;
+                page.style.boxShadow = 'var(--shadow-lg)';
+                document.body.classList.remove('pdf-mode');
+                if (pdfStyle) pdfStyle.remove();
+                btn.textContent = originalText;
+                btn.disabled = false;
+                alert('PDF oluşturulurken bir hata oluştu: ' + error.message);
+            });
         }).catch(error => {
             console.error('Error loading PDF libraries:', error);
             btn.textContent = originalText;
