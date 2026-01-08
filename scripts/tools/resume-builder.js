@@ -362,7 +362,8 @@ class ResumeBuilderTool extends BaseTool {
             exp: { title: 'İş Deneyimi', add: 'Deneyim Ekle', company: 'Şirket Adı', position: 'Pozisyon', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
             edu: { title: 'Eğitim', add: 'Eğitim Ekle', school: 'Okul Adı', degree: 'Derece / Bölüm', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
             certs: { title: 'Sertifikalar', add: 'Sertifika Ekle', name: 'Sertifika Adı', issuer: 'Veren Kurum', date: 'Tarih' },
-            design: { title: 'Görünüm Ayarları', color: 'Renk Teması', font: 'Yazı Tipi', template: 'Şablon Seçimi' }
+            design: { title: 'Görünüm Ayarları', color: 'Renk Teması', font: 'Yazı Tipi', template: 'Şablon Seçimi' },
+            fonts: { sans: 'Standart', modern: 'Modern', display: 'Zarif', strong: 'Güçlü', serif: 'Serif', condensed: 'Sıkışık', mono: 'Kod', sweet: 'Tatlı (Nunito)' }
         } : {
             tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', l: 'Languages', s: 'Skills', d: 'Design', v: 'Preview' },
             btn: { next: 'Next Step >', prev: '< Back', reset: 'Reset', print: 'Print / PDF' },
@@ -370,7 +371,8 @@ class ResumeBuilderTool extends BaseTool {
             exp: { title: 'Work Experience', add: 'Add Experience', company: 'Company Name', position: 'Position', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
             edu: { title: 'Education', add: 'Add Education', school: 'School Name', degree: 'Degree / Field of Study', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
             certs: { title: 'Certificates', add: 'Add Certificate', name: 'Certificate Name', issuer: 'Issuer', date: 'Date' },
-            design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' }
+            design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' },
+            fonts: { sans: 'Standard', modern: 'Modern', display: 'Elegant', strong: 'Strong', serif: 'Serif', condensed: 'Condensed', mono: 'Code', sweet: 'Sweet (Nunito)' }
         };
 
         const renderStickyNav = (isCompact = false, warningBadge = '') => {
