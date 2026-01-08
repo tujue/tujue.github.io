@@ -117,9 +117,12 @@ class TextAnalyzerTool extends BaseTool {
         };
 
         analyzeBtn.onclick = analyze;
-        input.oninput = () => {
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(analyze, 500);
+
+        // Optional: Allow Enter key to trigger analysis
+        input.onkeydown = (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                analyze();
+            }
         };
     }
 
