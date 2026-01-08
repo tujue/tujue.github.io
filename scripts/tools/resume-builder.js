@@ -57,10 +57,7 @@ class ResumeBuilderTool extends BaseTool {
             
             <!-- Wizard Header -->
             <div class="res-wizard-nav" style="justify-content: space-between; padding-right: 10px;">
-                <!-- NEW: Integrated Title -->
-                <div style="font-weight:700; font-size:1.1rem; color:var(--text-primary); margin-right: 10px; display:flex; align-items:center; gap:8px; white-space:nowrap;">
-                    <span style="color:var(--primary);">CV</span>
-                </div>
+                <!-- Title removed as requested -->
 
                 <div style="display: flex; gap: 10px; overflow-x: auto; align-items: center; flex: 1;">
                     ${tabs.map(t => `
@@ -96,10 +93,10 @@ class ResumeBuilderTool extends BaseTool {
 
             <!-- Wizard Footer -->
             <div class="res-wizard-footer">
-                <button id="res-btn-prev" class="btn btn-outline" style="min-width: 120px;">${txt.btn.prev}</button>
-                <button id="res-btn-reset" class="btn btn-text" style="color: #ef4444;">${txt.btn.reset}</button>
+                <button id="res-btn-prev" class="btn btn-outline" style="min-width: 80px; padding: 4px 10px; font-size: 0.9rem;">${txt.btn.prev}</button>
+                <button id="res-btn-reset" class="btn btn-text" style="color: #ef4444; padding: 4px 10px; font-size: 0.9rem;">${txt.btn.reset}</button>
                 <div style="flex:1;"></div>
-                <button id="res-btn-next" class="btn btn-primary" style="min-width: 150px; font-weight: bold;">${txt.btn.next}</button>
+                <button id="res-btn-next" class="btn btn-primary" style="min-width: 100px; font-weight: bold; padding: 4px 15px; font-size: 0.9rem;">${txt.btn.next}</button>
             </div>
 
             <style>
@@ -110,7 +107,7 @@ class ResumeBuilderTool extends BaseTool {
                 .step-icon { font-size: 1.2rem; }
                 
                 .res-wizard-content { flex: 1; overflow: hidden; position: relative; padding: 5px; margin: 0 auto; width: 100%; }
-                .res-wizard-footer { padding: 10px 20px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
+                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 40px; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
