@@ -249,7 +249,7 @@ class ResumeBuilderTool extends BaseTool {
             if (field.includes('Font') || field === 'theme' || field === 'color') {
                 const res = window.DevTools.resumeGenerator.generateResumeHTML(this.data);
                 let style = document.getElementById('res-style-inj');
-                if (style) style.textContent = res.css + ' /* ' + Date.now() + ' */';
+                if (style) style.textContent = res.css;
             }
         };
 
@@ -783,9 +783,11 @@ class ResumeBuilderTool extends BaseTool {
                 // Inject Style
                 let style = document.getElementById('res-style-inj');
                 if (!style) { style = document.createElement('style'); style.id = 'res-style-inj'; document.head.appendChild(style); }
-                style.textContent = res.css + ' /* ' + Date.now() + ' */';
+                style.textContent = res.css;
 
-                page.innerHTML = res.html;
+
+                // Optimized Update
+                if (page.innerHTML !== res.html) page.innerHTML = res.html;
                 this.fitPreview();
             } else {
                 document.getElementById('res-a4-page').innerHTML = 'Core module update required.';
