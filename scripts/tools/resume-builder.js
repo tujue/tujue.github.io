@@ -306,7 +306,7 @@ class ResumeBuilderTool extends BaseTool {
             c.appendChild(div);
 
             // Bindings
-            const ids = ['name', 'title', 'summary', 'email', 'web', 'phone', 'addr', 'skills', 'languages', 'interests'];
+            const ids = ['name', 'title', 'summary', 'email', 'web', 'phone', 'addr', 'languages', 'interests'];
             ids.forEach(id => {
                 const el = document.getElementById(`in-${id}`);
                 el.oninput = () => {
