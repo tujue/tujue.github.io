@@ -106,12 +106,12 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow: hidden; position: relative; padding: 5px; margin: 0 auto; width: 100%; }
+                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 5px; margin: 0 auto; width: 100%; }
                 .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 40px; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
-                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 1000px; margin: 0 auto; }
+                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 1200px; margin: 0 auto; }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
@@ -135,7 +135,13 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     setupListeners() {
-        window._resTab = (id) => { this.currentTab = id; this.renderTabContent(); this.updateNav(); };
+        window._resTab = (id) => {
+            this.currentTab = id;
+            this.renderTabContent();
+            this.updateNav();
+            const area = document.getElementById('res-content-area');
+            if (area) area.scrollTop = 0; // Fix: Always scroll to top on tab change
+        };
         window._setTheme = (id) => {
             this.data.theme = id;
             this._save();
@@ -464,10 +470,12 @@ class ResumeBuilderTool extends BaseTool {
                     <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; transform-origin: top center;"></div>
                     
                     <!-- Zoom Controls -->
-                     <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 15px; color: white;">
-                        <button id="z-minus" style="background:none; border:none; color:white; cursor:pointer;">−</button>
-                        <span id="z-val">FIT</span>
-                        <button id="z-plus" style="background:none; border:none; color:white; cursor:pointer;">+</button>
+                     <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 12px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); z-index: 100;">
+                        <button id="z-minus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">−</button>
+                        <span id="z-val" style="min-width: 45px; text-align: center; font-size: 0.85rem; font-variant-numeric: tabular-nums;">FIT</span>
+                        <button id="z-plus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">+</button>
+                        <div style="width:1px; height:15px; background:rgba(255,255,255,0.3);"></div>
+                        <button id="z-fit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.75rem; font-weight:bold; padding: 5px 2px;">${isTr ? 'SIĞDIR' : 'FIT SCREEN'}</button>
                     </div>
                 </div>
             `;
@@ -490,7 +498,8 @@ class ResumeBuilderTool extends BaseTool {
 
             // Bind Zoom
             document.getElementById('z-plus').onclick = () => { this.zoom = 'manual'; this.scaleValue += 0.1; this.fitPreview(); };
-            document.getElementById('z-minus').onclick = () => { this.zoom = 'manual'; this.scaleValue = Math.max(0.2, this.scaleValue - 0.1); this.fitPreview(); };
+            document.getElementById('z-minus').onclick = () => { this.zoom = 'manual'; this.scaleValue = Math.max(0.1, this.scaleValue - 0.1); this.fitPreview(); };
+            document.getElementById('z-fit').onclick = () => { this.zoom = 'fit'; this.fitPreview(); };
 
             // Auto Fit
             this.zoom = 'fit';
@@ -575,10 +584,13 @@ class ResumeBuilderTool extends BaseTool {
 
         if (this.zoom === 'fit') {
             // Smart Fit Strategy:
-            // Fit to available width, but CAP at 0.85 (85%).
-            // User prefers ~80% view for better readability and layout overview.
+            // Consider both orientation (Width and Height)
+            const contH = container.clientHeight;
             const wScale = contW / pageW;
-            this.scaleValue = Math.min(wScale, 0.85);
+            const hScale = (contH - 40) / pageH; // Leave 40px breathing room for height
+
+            // Choose the smaller scale to ensure it fits entirely on screen
+            this.scaleValue = Math.min(wScale, hScale, 0.95);
         }
 
         page.style.transform = `scale(${this.scaleValue})`;
@@ -587,7 +599,7 @@ class ResumeBuilderTool extends BaseTool {
         page.style.marginTop = '0px'; // Add some breathing room at top
 
         const lbl = document.getElementById('z-val');
-        if (lbl) lbl.textContent = this.zoom === 'fit' ? 'FIT W' : Math.round(this.scaleValue * 100) + '%';
+        if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
 
         // Enable scroll behavior
         const effectiveH = pageH * this.scaleValue;
