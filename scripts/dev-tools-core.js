@@ -751,6 +751,14 @@
                             `).join('')}
             </div>
             
+            ${d.certificates && d.certificates.length > 0 ? `
+            <div class="v-section">
+                <div class="v-sec-head">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    ${d.certificates.map(cert => `<span class="v-tag" style="font-size: 0.7rem;">${cert.name} - ${cert.issuer} (${cert.date})</span>`).join('')}
+                </div>
+            </div>` : ''}
+            
             ${d.interests ? `
             <div class="v-section">
                 <div class="v-sec-head">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
@@ -1350,6 +1358,20 @@
                             </div>
                         `).join('')}
                     </div>
+
+                    ${d.certificates && d.certificates.length > 0 ? `
+                    <div class="res-section" style="margin-bottom: 10px;">
+                        <div class="res-sec-title" style="margin-bottom: 4px;">${isTr ? 'SERTİFİKALAR' : 'CERTIFICATES'}</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${d.certificates.map(cert => `
+                                <div style="background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px 12px; font-size: 0.75rem;">
+                                    <div style="font-weight: 600; color: #2d3748;">${cert.name}</div>
+                                    <div style="font-size: 0.7rem; color: #718096;">${cert.issuer} • ${cert.date}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
 
                     <div class="res-section" style="margin-bottom: 8px;">
                         <div class="res-sec-title" style="margin-bottom: 4px;">${lbl.skills}</div>
