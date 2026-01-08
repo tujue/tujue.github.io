@@ -99,7 +99,20 @@ class ResumeBuilderTool extends BaseTool {
                 .step-icon { font-size: 1.2rem; }
                 
                 .res-wizard-content { flex: 1; overflow: hidden !important; position: relative; width: 100%; display: flex; flex-direction: column; min-height: 0; }
-                .res-scroll-container { flex: 1; overflow-y: auto !important; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; align-items: center; position: relative; min-height: 0; -webkit-overflow-scrolling: touch; padding-top: 0; }
+                .res-scroll-container { 
+                    flex: 1; 
+                    overflow-y: auto !important; 
+                    width: 100%; 
+                    scroll-behavior: smooth; 
+                    display: flex; 
+                    flex-direction: column; 
+                    align-items: center; 
+                    position: relative; 
+                    min-height: 0;
+                    max-height: 100%;
+                    -webkit-overflow-scrolling: touch; 
+                    padding-top: 0; 
+                }
                 /* Padding to ensure bottom elements are reachable */
                 .res-content-scroll-fix { padding-bottom: 250px; width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
                 
