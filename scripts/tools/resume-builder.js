@@ -775,7 +775,7 @@ class ResumeBuilderTool extends BaseTool {
                 // Inject Style
                 let style = document.getElementById('res-style-inj');
                 if (!style) { style = document.createElement('style'); style.id = 'res-style-inj'; document.head.appendChild(style); }
-                style.textContent = res.css;
+                style.textContent = res.css + ' /* ' + Date.now() + ' */';
 
                 page.innerHTML = res.html;
                 this.fitPreview();
