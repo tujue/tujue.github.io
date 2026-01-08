@@ -24,13 +24,11 @@ class ResumeBuilderTool extends BaseTool {
             themes: { modern: 'Modern', nova: 'Nova (Modern)', orbit: 'Orbit (Dark)', bloom: 'Bloom (Pastel)', wave: 'Wave (Curve)', bold: 'Bold (Sharp)', prime: 'Prime (Corp)', elegant: 'Elegant (New)', titan: 'Titan (New)', cyber: 'Cyber (New)', brutal: 'Brutal (New)', executive: 'Executive', minimal: 'Minimal', leftside: 'Left Side', skyline: 'Skyline', tech: 'Tech' }
         };
 
-        const tabs = [
-            { id: 'personal', icon: '👤', label: txt.tabs.p },
-            { id: 'exp', icon: '💼', label: txt.tabs.x },
-            { id: 'edu', icon: '🎓', label: txt.tabs.e },
-            { id: 'skills', icon: '⚡', label: txt.tabs.s },
-            { id: 'design', icon: '🎨', label: txt.tabs.d },
-            { id: 'preview', icon: '👁️', label: txt.tabs.v }
+        { id: 'personal', icon: '👤', label: txt.tabs.p },
+        { id: 'exp', icon: '💼', label: txt.tabs.x },
+        { id: 'edu', icon: '🎓', label: txt.tabs.e },
+        { id: 'skills', icon: '⚡', label: txt.tabs.s },
+        { id: 'preview', icon: '👁️', label: txt.tabs.v }
         ];
 
         return `
@@ -48,6 +46,9 @@ class ResumeBuilderTool extends BaseTool {
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="position: relative; width: 34px; height: 34px; overflow: hidden; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--bg-primary);" title="${isTr ? 'Renk Teması' : 'Color Theme'}">
+                        <input type="color" oninput="window._setColor(this.value)" value="${this.data.color}" style="width: 150%; height: 150%; padding: 0; margin: 0; cursor: pointer; border: none; background: none;">
+                    </div>
                     <select onchange="window._setFont(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; outline: none;" title="${isTr ? 'Yazı Tipi' : 'Font'}">
                         <option value="" disabled selected>🔤 ${isTr ? 'Yazı Tipi' : 'Font'}</option>
                         ${Object.keys(txt.fonts).map(key => `<option value="${key}" ${this.data.font === key ? 'selected' : ''}>${txt.fonts[key]}</option>`).join('')}
@@ -288,11 +289,7 @@ class ResumeBuilderTool extends BaseTool {
                         </div>
                     </div>
 
-                    <div style="margin-top: 1.5rem;">
-                        <label class="form-label">Yetenekler (Skills)</label>
-                        <textarea class="form-input" id="in-skills" rows="2" placeholder="Java, Python, Leadership...">${d.skills || ''}</textarea>
-                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Virgül ile ayırarak yazınız.</p>
-                    </div>
+
 
                     <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 1rem;">
                         <div>
@@ -515,6 +512,11 @@ class ResumeBuilderTool extends BaseTool {
             l.splice(idx, 1);
             this._save();
             this.renderTabContent();
+        };
+        window._setColor = (val) => {
+            this.data.color = val;
+            this._save();
+            if (this.currentTab === 'preview') this.renderTabContent();
         };
     }
 
