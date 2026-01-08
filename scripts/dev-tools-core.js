@@ -994,48 +994,51 @@
                             <div class="k-sec-icon-head">
                                 <div class="k-sec-icon">📞</div>
                                 <div>
-                                    <div class="k-sec-name">Contact</div>
+                                    <div class="k-sec-name">${isTr ? 'İletişim' : 'Contact'}</div>
                                     <div class="k-sec-line"></div>
                                 </div>
                             </div>
-                            <div class="k-contact-row"><div class="k-c-label">Email</div><div class="k-c-val">${d.email}</div></div>
-                            <div class="k-contact-row"><div class="k-c-label">Phone</div><div class="k-c-val">${d.phone}</div></div>
-                            ${d.website ? `<div class="k-contact-row"><div class="k-c-label">Website</div><div class="k-c-val">${d.website}</div></div>` : ''}
+                            <div class="k-contact-row"><div class="k-c-label">${isTr ? 'E-posta' : 'Email'}</div><div class="k-c-val">${d.email}</div></div>
+                            <div class="k-contact-row"><div class="k-c-label">${isTr ? 'Telefon' : 'Phone'}</div><div class="k-c-val">${d.phone}</div></div>
+                            ${d.website ? `<div class="k-contact-row"><div class="k-c-label">${isTr ? 'Website' : 'Website'}</div><div class="k-c-val">${d.website}</div></div>` : ''}
                         </div>
                         <div class="k-left-sec">
                             <div class="k-sec-icon-head">
                                 <div class="k-sec-icon">💡</div>
                                 <div>
-                                    <div class="k-sec-name">Skills</div>
+                                    <div class="k-sec-name">${isTr ? 'Yetenekler' : 'Skills'}</div>
                                     <div class="k-sec-line"></div>
                                 </div>
                             </div>
-                            ${d.skills.split(',').slice(0, 3).map(s => `
+                            ${d.skills.split(',').slice(0, 10).map(s => `
                                 <div class="k-skill-row">
                                     <div class="k-skill-label">${s.trim()}</div>
                                     <div class="k-skill-bar-bg"><div class="k-skill-bar-fill" style="width: 85%"></div></div>
                                 </div>
                             `).join('')}
                         </div>
+                        
+                        ${d.interests ? `
                         <div class="k-left-sec">
                             <div class="k-sec-icon-head">
                                 <div class="k-sec-icon">❤️</div>
                                 <div>
-                                    <div class="k-sec-name">Interests</div>
+                                    <div class="k-sec-name">${isTr ? 'İlgi Alanları' : 'Interests'}</div>
                                     <div class="k-sec-line"></div>
                                 </div>
                             </div>
                             <div class="k-interest-container" style="display: flex; flex-wrap: wrap; gap: 8px;">
                                 ${(d.interests || '').split(',').map(i => `<div class="k-interest-bullet" style="margin:0;">${i.trim()}</div>`).join('')}
                             </div>
-                        </div>
+                        </div>` : ''}
+
                     </div>
         <div class="k-right">
             ${d.summary ? `
             <div class="k-r-section">
                 <div class="k-r-head">
                     <div class="k-r-icon">👤</div>
-                    <div class="k-r-title">Profile</div>
+                    <div class="k-r-title">${isTr ? 'Profil' : 'Profile'}</div>
                 </div>
                 <div class="k-profile-text">${d.summary}</div>
             </div>
@@ -1044,7 +1047,7 @@
             <div class="k-r-section">
                 <div class="k-r-head">
                     <div class="k-r-icon">💼</div>
-                    <div class="k-r-title">Experience</div>
+                    <div class="k-r-title">${isTr ? 'Deneyim' : 'Experience'}</div>
                 </div>
                 <div class="k-timeline">
                     ${d.experience.map(e => `
@@ -1060,7 +1063,7 @@
             <div class="k-r-section">
                 <div class="k-r-head">
                     <div class="k-r-icon">🎓</div>
-                    <div class="k-r-title">Education</div>
+                    <div class="k-r-title">${isTr ? 'Eğitim' : 'Education'}</div>
                 </div>
                 ${d.education.map(e => `
                                 <div class="k-edu-box">
@@ -1074,7 +1077,7 @@
             <div class="k-r-section">
                 <div class="k-r-head">
                     <div class="k-r-icon">🗣️</div>
-                    <div class="k-r-title">Languages</div>
+                    <div class="k-r-title">${isTr ? 'Diller' : 'Languages'}</div>
                 </div>
                 <div style="font-size: 0.9rem; color: #4b5563;">
                     ${d.languages}
@@ -1132,7 +1135,7 @@
                         ${d.education.map(e => `<li><strong>${e.sch}</strong> - ${e.deg} (${e.date})</li>`).join('')}
                     </ul>
                     <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
-                    <div style="font-weight:700; color:#555; margin-bottom:5px;">Skills:</div>
+                    <div style="font-weight:700; color:#555; margin-bottom:5px;">${isTr ? 'Yetenekler:' : 'Skills:'}</div>
                     <div>${(d.skills || '').split(',').map(s => `<span style="background:#f0f0f0; padding:2px 6px; border-radius:4px; margin-right:4px; font-size:0.7rem; display:inline-block; margin-bottom:4px;">${s.trim()}</span>`).join('')}</div>
                 </div>
             </div>
