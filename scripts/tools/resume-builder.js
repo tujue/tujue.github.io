@@ -98,11 +98,12 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; }
+                .res-wizard-content { flex: 1; overflow: hidden; position: relative; width: 100%; display: flex; flex-direction: column; }
+                .res-scroll-container { flex: 1; overflow-y: auto !important; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; align-items: center; }
                 /* Padding to ensure bottom elements are reachable */
                 .res-content-scroll-fix { padding-bottom: 120px; width: 100%; display: flex; flex-direction: column; align-items: center; }
                 
-                .res-sticky-nav { position: sticky; top: 0; z-index: 150; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 6px 15px; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(8px); }
+                .res-sticky-nav { position: sticky; top: 0; z-index: 150; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 6px 15px; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(8px); width: 100%; flex-shrink: 0; }
                 .res-sticky-nav.compact { padding: 4px 15px; min-height: 38px; }
 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
@@ -307,12 +308,14 @@ class ResumeBuilderTool extends BaseTool {
         const div = document.createElement('div');
         div.className = 'res-fade-in';
         div.style.height = '100%';
-        div.style.overflowY = 'auto'; // allow scroll within content
+        div.style.display = 'flex';
+        div.style.flexDirection = 'column';
+        div.style.overflow = 'hidden';
 
         if (this.currentTab === 'personal') {
             div.innerHTML = `
                 ${renderStickyNav()}
-                <div class="res-content-scroll-fix">
+                <div class="res-scroll-container">
                     <div class="res-card">
                         <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${txt.tabs.p}</h3>
                         
@@ -357,6 +360,7 @@ class ResumeBuilderTool extends BaseTool {
                             </div>
                         </div>
                     </div>
+                    <div style="height: 120px; flex-shrink: 0;"></div>
                 </div>
             `;
             c.appendChild(div);
@@ -376,7 +380,7 @@ class ResumeBuilderTool extends BaseTool {
         else if (this.currentTab === 'exp') {
             div.innerHTML = `
                 ${renderStickyNav()}
-                <div class="res-content-scroll-fix">
+                <div class="res-scroll-container">
                     <div class="res-card">
                         <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${txt.exp.title}</h3>
                         <div id="exp-list">
@@ -406,6 +410,7 @@ class ResumeBuilderTool extends BaseTool {
                             <button onclick="window._addItem('exp')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px; padding: 12px;">+ ${txt.exp.add}</button>
                         </div>
                     </div>
+                    <div style="height: 120px; flex-shrink: 0;"></div>
                 </div>
             `;
             c.appendChild(div);
@@ -413,7 +418,7 @@ class ResumeBuilderTool extends BaseTool {
         else if (this.currentTab === 'edu') {
             div.innerHTML = `
                 ${renderStickyNav()}
-                <div class="res-content-scroll-fix">
+                <div class="res-scroll-container">
                     <div class="res-card">
                         <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${txt.edu.title}</h3>
                         <div id="edu-list">
@@ -439,6 +444,7 @@ class ResumeBuilderTool extends BaseTool {
                             <button onclick="window._addItem('edu')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px; padding: 12px;">+ ${txt.edu.add}</button>
                         </div>
                     </div>
+                    <div style="height: 120px; flex-shrink: 0;"></div>
                 </div>
             `;
             c.appendChild(div);
@@ -446,7 +452,7 @@ class ResumeBuilderTool extends BaseTool {
         else if (this.currentTab === 'skills') {
             div.innerHTML = `
                 ${renderStickyNav()}
-                <div class="res-content-scroll-fix">
+                <div class="res-scroll-container">
                     <div class="res-card" style="max-width: 700px;">
                         <h3 style="margin-bottom: 5px; font-size: 1.2rem;">${txt.lbl.skills}</h3>
                         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
@@ -454,6 +460,7 @@ class ResumeBuilderTool extends BaseTool {
                         </p>
                         <textarea oninput="window._upField('skills', this.value)" class="form-input" style="height: 180px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="Örn: Java, Python, Takım Çalışması, İngilizce...">${d.skills || ''}</textarea>
                     </div>
+                    <div style="height: 120px; flex-shrink: 0;"></div>
                 </div>
             `;
             c.appendChild(div);
