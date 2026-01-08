@@ -290,90 +290,80 @@ class ResumeBuilderTool extends BaseTool {
         btn.textContent = 'PDF Oluşturuluyor...';
         btn.disabled = true;
 
-        // Use browser's native print instead of html2canvas
-        try {
-            // Add print-specific styles
-            const printStyle = document.createElement('style');
-            printStyle.id = 'print-styles';
-            printStyle.textContent = `
-                @media print {
-                    @page { 
-                        size: A4; 
-                        margin: 0; 
-                    }
-                    
-                    /* Hide everything first */
-                    body > :not(#res-content-area) {
-                        display: none !important;
-                    }
-                    
-                    /* Show only the CV */
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        background: white;
-                    }
-                    
-                    #res-content-area {
-                        display: block !important;
-                        visibility: visible !important;
-                    }
-                    
-                    #res-a4-page {
-                        display: block !important;
-                        visibility: visible !important;
-                        position: relative !important;
-                        width: 210mm !important;
-                        height: 297mm !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        box-shadow: none !important;
-                        transform: none !important;
-                        page-break-after: avoid !important;
-                    }
-                    
-                    .a4-page {
-                        display: block !important;
-                        visibility: visible !important;
-                        position: relative !important;
-                        width: 100% !important;
-                        height: 100% !important;
-                        margin: 0 !important;
-                        padding: 20mm !important;
-                        box-sizing: border-box !important;
-                    }
-                    
-                    .a4-page * {
-                        visibility: visible !important;
-                    }
-                    
-                    /* Hide navigation */
-                    .res-sticky-nav,
-                    #res-nav-bar,
-                    .nav-item,
-                    .res-step {
-                        display: none !important;
-                    }
+        const loadLibraries = () => {
+            return new Promise((resolve, reject) => {
+                if (window.html2canvas && window.jspdf) {
+                    resolve();
+                    return;
                 }
-            `;
-            document.head.appendChild(printStyle);
 
-            // Trigger print dialog
-            setTimeout(() => {
-                window.print();
+                const script1 = document.createElement('script');
+                script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script1.onload = () => {
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    script2.onload = () => resolve();
+                    script2.onerror = () => reject(new Error('jsPDF yüklenemedi'));
+                    document.head.appendChild(script2);
+                };
+                script1.onerror = () => reject(new Error('html2canvas yüklenemedi'));
+                document.head.appendChild(script1);
+            });
+        };
+
+        loadLibraries().then(async () => {
+            try {
+                const page = document.querySelector('.a4-page');
+                if (!page) {
+                    throw new Error('CV sayfası bulunamadı');
+                }
+
+                // Capture as-is
+                const canvas = await html2canvas(page, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new window.jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pdfWidth = 210;
+                const pdfHeight = 297;
+                const imgWidth = pdfWidth;
+                const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                // If content is taller than one page, scale it down
+                if (imgHeight > pdfHeight) {
+                    const scale = pdfHeight / imgHeight;
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth * scale, pdfHeight);
+                } else {
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                }
+
+                const fileName = `CV_${this.data.name || 'Resume'}.pdf`.replace(/\s+/g, '_');
+                pdf.save(fileName);
+
                 btn.textContent = originalText;
                 btn.disabled = false;
-                setTimeout(() => {
-                    if (printStyle) printStyle.remove();
-                }, 100);
-            }, 100);
 
-        } catch (error) {
-            console.error('Print error:', error);
-            alert('PDF oluşturulamadı. Lütfen tekrar deneyin.');
+            } catch (error) {
+                console.error('PDF oluşturma hatası:', error);
+                alert('PDF oluşturulamadı: ' + error.message);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }).catch(error => {
+            console.error('Kütüphane yükleme hatası:', error);
+            alert('PDF kütüphaneleri yüklenemedi. İnternet bağlantısını kontrol edin.');
             btn.textContent = originalText;
             btn.disabled = false;
-        }
+        });
     }
 
     renderTabContent() {
