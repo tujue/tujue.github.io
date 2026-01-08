@@ -1321,26 +1321,28 @@
                         `).join('')}
                     </div>
 
-                    <div class="res-section">
-                        <div class="res-sec-title">${lbl.skills}</div>
+                    <div class="res-section" style="margin-bottom: 15px;">
+                        <div class="res-sec-title" style="margin-bottom: 8px;">${lbl.skills}</div>
                         <div class="res-skills">
                             ${d.skills.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
                         </div>
                     </div>
 
-                    ${d.languages ? `
-                    <div class="res-section">
-                        <div class="res-sec-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                        <div class="res-skills">
-                             ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag" style="background:${d.color}15; color:${d.color}; border:1px solid ${d.color}40;">${s.trim()}</span>` : '').join('')}
-                        </div>
-                    </div>` : ''}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        ${d.languages ? `
+                        <div class="res-section" style="margin-bottom: 0;">
+                            <div class="res-sec-title" style="margin-bottom: 8px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+                            <div class="res-skills">
+                                 ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag" style="background:${d.color}15; color:${d.color}; border:1px solid ${d.color}40;">${s.trim()}</span>` : '').join('')}
+                            </div>
+                        </div>` : '<div></div>'}
 
-                    ${d.interests ? `
-                    <div class="res-section">
-                        <div class="res-sec-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-                        <div class="res-desc">${d.interests}</div>
-                    </div>` : ''}
+                        ${d.interests ? `
+                        <div class="res-section" style="margin-bottom: 0;">
+                            <div class="res-sec-title" style="margin-bottom: 8px;">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                            <div class="res-desc" style="margin-top:0;">${d.interests}</div>
+                        </div>` : ''}
+                    </div>
     `;
 
                     if (theme === 'executive') {
