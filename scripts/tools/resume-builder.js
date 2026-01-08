@@ -107,8 +107,8 @@ class ResumeBuilderTool extends BaseTool {
                 .step-icon { font-size: 1.2rem; }
                 
                 .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; }
-                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; transition: 0.2s; }
-                .res-wizard-footer.transparent { background: transparent !important; border-top: none !important; }
+                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: none; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; transition: 0.2s; }
+                .res-wizard-footer.active { display: flex !important; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
@@ -143,6 +143,14 @@ class ResumeBuilderTool extends BaseTool {
             const area = document.getElementById('res-content-area');
             if (area) area.scrollTop = 0; // Fix: Always scroll to top on tab change
         };
+        window._resNav = (dir) => this.navigate(dir);
+        window._resReset = () => {
+            if (confirm(window.i18n?.getCurrentLanguage() === 'tr' ? 'Verileri sıfırlamak istediğinize emin misiniz?' : 'Are you sure you want to reset all data?')) {
+                this.data = this._getDefaults();
+                this._save();
+                this.renderTabContent();
+            }
+        };
         window._setTheme = (id) => {
             this.data.theme = id;
             this._save();
@@ -150,28 +158,50 @@ class ResumeBuilderTool extends BaseTool {
             // Update dropdowns if exists
             document.querySelectorAll('select[onchange*="_setTheme"]').forEach(s => s.value = id);
         };
+        window._printPdf = () => {
+            const nextBtn = document.createElement('button'); // Temp button for context
+            this._runPdfExport(nextBtn);
+        };
         window._setFont = (id) => {
             this.data.font = id;
             this._save();
             this.renderTabContent();
             document.querySelectorAll('select[onchange*="_setFont"]').forEach(s => s.value = id);
         };
-
-        document.getElementById('res-btn-prev').onclick = () => this.navigate(-1);
-        document.getElementById('res-btn-next').onclick = () => this.navigate(1);
-        document.getElementById('res-btn-reset').onclick = () => {
-            if (confirm('Kayıtlı veriler silinsin mi?')) {
-                this.data = this._getDefaults();
+        window._setColor = (val) => {
+            this.data.color = val;
+            this._save();
+            this.renderTabContent();
+        };
+        window._addItem = (type) => {
+            if (type === 'exp') this.data.experience.push(this._getDefaultExperience());
+            else if (type === 'edu') this.data.education.push(this._getDefaultEducation());
+            this._save();
+            this.renderTabContent();
+        };
+        window._removeItem = (type, index) => {
+            if (confirm(window.i18n?.getCurrentLanguage() === 'tr' ? 'Bu öğeyi silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this item?')) {
+                this.data[type].splice(index, 1);
                 this._save();
                 this.renderTabContent();
             }
+        };
+        window._upField = (field, value, index = null, subField = null) => {
+            if (index !== null && subField !== null) {
+                this.data[field][index][subField] = value;
+            } else if (index !== null) {
+                this.data[field][index] = value;
+            } else {
+                this.data[field] = value;
+            }
+            this._save();
         };
 
         this.renderTabContent();
     }
 
     navigate(dir) {
-        const tabs = ['personal', 'exp', 'edu', 'skills', 'design', 'preview'];
+        const tabs = ['personal', 'exp', 'edu', 'skills', 'preview']; // 'design' tab is now integrated into the nav bar
         const idx = tabs.indexOf(this.currentTab);
         const newIdx = idx + dir;
         if (newIdx >= 0 && newIdx < tabs.length) {
@@ -186,99 +216,103 @@ class ResumeBuilderTool extends BaseTool {
         const active = document.querySelector(`.res-step[onclick="window._resTab('${this.currentTab}')"]`);
         if (active) active.classList.add('active');
 
-        // Button Logic
-        const nextBtn = document.getElementById('res-btn-next');
-        const prevBtn = document.getElementById('res-btn-prev');
-
-        if (this.currentTab === 'preview') {
-            document.title = 'TULPAR_CV'; // Force title for print dialogs
-            nextBtn.textContent = 'Yazdır / PDF'; // Keep or update if needed
-            nextBtn.onclick = () => {
-                const btn = nextBtn;
-                const originalText = btn.textContent;
-                btn.textContent = 'PDF Hazırlanıyor...';
-                btn.disabled = true;
-
-                const runPDF = () => {
-                    const element = document.getElementById('res-a4-page');
-
-                    // Reset transform to ensure full quality capture (remove zoom/fit scale)
-                    const oldTransform = element.style.transform;
-                    const oldMargin = element.style.marginBottom;
-                    const oldHeight = element.style.height;
-                    const oldOverflow = element.style.overflow;
-
-                    element.style.transform = 'none';
-                    element.style.marginBottom = '0';
-                    element.style.boxShadow = 'none'; // remove shadow for print
-                    // Force exact A4 pixel height to prevent overflow creating a 2nd page
-                    // 297mm @ 96dpi is approx 1123px. We set slightly less to be safe or exact.
-                    // Setting overflow hidden cuts off any micro-pixel bleed.
-                    element.style.height = '1122px';
-                    element.style.overflow = 'hidden';
-
-                    const opt = {
-                        margin: 0,
-                        filename: `TULPAR_CV_${Date.now()}.pdf`,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    };
-
-                    // Use global html2pdf
-                    html2pdf().set(opt).from(element).save().then(() => {
-                        // Restore preview state
-                        element.style.transform = oldTransform;
-                        element.style.marginBottom = oldMargin;
-                        element.style.height = oldHeight;
-                        element.style.overflow = oldOverflow;
-                        element.style.boxShadow = '';
-                        btn.textContent = originalText;
-                        btn.disabled = false;
-                    }).catch(err => {
-                        console.error(err);
-                        alert('PDF oluşturulurken hata oluştu.');
-                        element.style.transform = oldTransform; // restore anyway
-                        element.style.height = oldHeight;
-                        element.style.overflow = oldOverflow;
-                        btn.textContent = originalText;
-                        btn.disabled = false;
-                    });
-                };
-
-                if (window.html2pdf) {
-                    runPDF();
-                } else {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-                    script.onload = runPDF;
-                    script.onerror = () => { alert('PDF kütüphanesi yüklenemedi.'); btn.textContent = originalText; btn.disabled = false; };
-                    document.head.appendChild(script);
-                }
-            };
-            nextBtn.classList.replace('btn-primary', 'btn-success');
-        } else {
-            nextBtn.textContent = (window.i18n?.getCurrentLanguage() === 'tr' ? 'Sonraki >' : 'Next >');
-            nextBtn.onclick = () => this.navigate(1);
-            nextBtn.classList.replace('btn-success', 'btn-primary');
-            if (document.title === 'TULPAR_CV') document.title = 'TULPAR Dev Tools'; // Restore title
-        }
-
-        prevBtn.style.visibility = this.currentTab === 'personal' ? 'hidden' : 'visible';
-
-        // Toggle footer panel background
+        // Toggle global footer - only show in preview
         const footer = document.querySelector('.res-wizard-footer');
         if (footer) {
-            if (this.currentTab === 'preview') {
-                footer.classList.remove('transparent');
-            } else {
-                footer.classList.add('transparent');
-            }
+            if (this.currentTab === 'preview') footer.classList.add('active');
+            else footer.classList.remove('active');
         }
+    }
+
+    _runPdfExport(btn) {
+        const originalText = btn.textContent;
+        btn.textContent = 'PDF Oluşturuluyor...';
+        btn.disabled = true;
+
+        const page = document.getElementById('res-a4-page');
+        if (!page) {
+            console.error('A4 page not found for PDF export.');
+            btn.textContent = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        // Temporarily remove zoom for accurate PDF generation
+        const originalTransform = page.style.transform;
+        page.style.transform = 'scale(1)';
+        page.style.boxShadow = 'none'; // Remove shadow for PDF
+
+        // Use html2canvas and jspdf to generate PDF
+        import('html2canvas').then(html2canvasModule => {
+            const html2canvas = html2canvasModule.default;
+            return html2canvas(page, {
+                scale: 2, // Higher scale for better quality
+                useCORS: true, // Enable CORS for images
+                allowTaint: true // Allow tainting canvas
+            });
+        }).then(canvas => {
+            page.style.transform = originalTransform; // Restore original transform
+            page.style.boxShadow = ''; // Restore shadow
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new window.jspdf.jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [page.offsetWidth, page.offsetHeight]
+            });
+            pdf.addImage(imgData, 'PNG', 0, 0, page.offsetWidth, page.offsetHeight);
+            pdf.save('resume.pdf');
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }).catch(error => {
+            console.error('Error generating PDF:', error);
+            btn.textContent = originalText;
+            btn.disabled = false;
+            page.style.transform = originalTransform; // Restore original transform
+            page.style.boxShadow = ''; // Restore shadow
+            alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
+        });
     }
 
     renderTabContent() {
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+        const txt = isTr ? {
+            btn: { next: 'Sonraki Adım >', prev: '< Geri', reset: 'Sıfırla', print: 'Yazdır / PDF' },
+            lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle', summary: 'Özet / Hakkımda', languages: 'Diller', interests: 'İlgi Alanları', skills: 'Yetenekler' },
+            exp: { title: 'İş Deneyimi', add: 'Deneyim Ekle', company: 'Şirket Adı', position: 'Pozisyon', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
+            edu: { title: 'Eğitim', add: 'Eğitim Ekle', school: 'Okul Adı', degree: 'Derece / Bölüm', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
+            design: { title: 'Görünüm Ayarları', color: 'Renk Teması', font: 'Yazı Tipi', template: 'Şablon Seçimi' }
+        } : {
+            btn: { next: 'Next Step >', prev: '< Back', reset: 'Reset', print: 'Print / PDF' },
+            lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo', summary: 'Summary / About Me', languages: 'Languages', interests: 'Interests', skills: 'Skills' },
+            exp: { title: 'Work Experience', add: 'Add Experience', company: 'Company Name', position: 'Position', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
+            edu: { title: 'Education', add: 'Add Education', school: 'School Name', degree: 'Degree / Field of Study', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
+            design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' }
+        };
+
+        const renderFormButtons = () => {
+            const tabs = ['personal', 'exp', 'edu', 'skills', 'preview'];
+            const currentIdx = tabs.indexOf(this.currentTab);
+            const isLastTab = currentIdx === tabs.length - 1;
+
+            let nextButtonContent = '';
+            if (this.currentTab === 'preview') {
+                nextButtonContent = `<button onclick="window._printPdf()" class="btn btn-success" style="min-width: 120px; font-weight: bold; padding: 8px 20px; font-size: 0.9rem;">${txt.btn.print}</button>`;
+            } else {
+                nextButtonContent = `<button onclick="window._resNav(1)" class="btn btn-primary" style="min-width: 120px; font-weight: bold; padding: 8px 20px; font-size: 0.9rem;">${txt.btn.next}</button>`;
+            }
+
+            return `
+                <div style="display: flex; gap: 15px; margin-top: 35px; padding-top: 25px; border-top: 1px solid var(--border-color); align-items: center; width: 100%;">
+                    ${this.currentTab !== 'personal' ? `<button onclick="window._resNav(-1)" class="btn btn-outline" style="min-width: 90px; padding: 7px 15px; font-size: 0.85rem;">${txt.btn.prev}</button>` : ''}
+                    <button onclick="window._resReset()" class="btn btn-text" style="color: #ef4444; padding: 7px 15px; font-size: 0.85rem;">${txt.btn.reset}</button>
+                    <div style="flex:1;"></div>
+                    ${nextButtonContent}
+                </div>
+            `;
+        };
+
         const c = document.getElementById('res-content-area');
         c.innerHTML = '';
         const d = this.data;
@@ -290,33 +324,33 @@ class ResumeBuilderTool extends BaseTool {
         if (this.currentTab === 'personal') {
             div.innerHTML = `
                 <div class="res-card" style="max-width: 600px; margin: 0 auto;">
-                    <h3 style="margin-bottom: 20px;">Kişisel Bilgiler</h3>
+                    <h3 style="margin-bottom: 20px;">${txt.tabs.p}</h3>
                     
                     <div class="res-photo-upload" onclick="document.getElementById('res-upl').click()">
                         ${d.photo ? `<img src="${d.photo}">` : '<span style="font-size:2rem;color:#ccc;">📷</span>'}
-                        <div class="res-photo-label">Değiştir</div>
+                        <div class="res-photo-label">${txt.lbl.upload}</div>
                     </div>
                     <input type="file" id="res-upl" hidden accept="image/*">
 
                     <div class="res-form-grid">
                         <div class="res-full-width">
-                            <label class="form-label">Ad Soyad</label>
+                            <label class="form-label">${txt.lbl.name}</label>
                             <input type="text" class="form-input" id="in-name" value="${d.name}">
                         </div>
                         <div class="res-full-width">
-                            <label class="form-label">Ünvan (Örn. Yazılım Uzmanı)</label>
+                            <label class="form-label">${txt.lbl.title}</label>
                             <input type="text" class="form-input" id="in-title" value="${d.title}">
                         </div>
                     </div>
 
                     <div style="margin-top: 1rem;">
-                        <label class="form-label">Özet / Hakkımda</label>
-                        <textarea class="form-input" id="in-summary" rows="3" placeholder="Kendinizi kısaca tanıtın...">${d.summary || ''}</textarea>
+                        <label class="form-label">${txt.lbl.summary}</label>
+                        <textarea class="form-input" id="in-summary" rows="3" placeholder="${isTr ? 'Kendinizi kısaca tanıtın...' : 'Briefly introduce yourself...'}">${d.summary || ''}</textarea>
                     </div>
                     
                     <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 1rem;">
                         <div>
-                            <label class="form-label">E-Posta</label>
+                            <label class="form-label">${txt.lbl.mail}</label>
                             <input type="email" class="form-input" id="in-email" value="${d.email}">
                         </div>
                         <div>
@@ -345,6 +379,8 @@ class ResumeBuilderTool extends BaseTool {
                             <textarea class="form-input" id="in-interests" rows="2" placeholder="Fotoğrafçılık, Satranç...">${d.interests || ''}</textarea>
                         </div>
                     </div>
+
+                    ${renderFormButtons()}
                 </div>
             `;
             c.appendChild(div);
@@ -373,39 +409,81 @@ class ResumeBuilderTool extends BaseTool {
         else if (this.currentTab === 'exp') {
             div.innerHTML = `
                 <div class="res-card">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                        <h3>İş Deneyimi</h3>
-                        <button class="btn btn-sm btn-primary" onclick="window._addItem('exp')">+ Ekle</button>
+                    <h3 style="margin-bottom: 20px;">${txt.exp.title}</h3>
+                    <div id="exp-list">
+                        ${d.experience.map((ex, i) => `
+                            <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative;">
+                                <button onclick="window._removeItem('experience', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
+                                <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div>
+                                        <label class="form-label">${txt.exp.company}</label>
+                                        <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'comp')" value="${ex.comp}">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">${txt.exp.position}</label>
+                                        <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'role')" value="${ex.role}">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">${txt.exp.start} / ${txt.exp.end}</label>
+                                        <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'date')" value="${ex.date}">
+                                    </div>
+                                    <div class="res-full-width">
+                                        <label class="form-label">${txt.exp.desc}</label>
+                                        <textarea class="form-input" rows="3" oninput="window._upField('experience', this.value, ${i}, 'desc')">${ex.desc}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button onclick="window._addItem('exp')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.exp.add}</button>
                     </div>
-                    <div id="list-exp"></div>
+                    ${renderFormButtons()}
                 </div>
             `;
             c.appendChild(div);
-            this._renderList(div, 'exp');
         }
         else if (this.currentTab === 'edu') {
             div.innerHTML = `
                 <div class="res-card">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                        <h3>Eğitim</h3>
-                        <button class="btn btn-sm btn-primary" onclick="window._addItem('edu')">+ Ekle</button>
+                    <h3 style="margin-bottom: 20px;">${txt.edu.title}</h3>
+                    <div id="edu-list">
+                        ${d.education.map((ed, i) => `
+                            <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative;">
+                                <button onclick="window._removeItem('education', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
+                                <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div>
+                                        <label class="form-label">${txt.edu.school}</label>
+                                        <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'sch')" value="${ed.sch}">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">${txt.edu.degree}</label>
+                                        <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'deg')" value="${ed.deg}">
+                                    </div>
+                                    <div class="res-full-width">
+                                        <label class="form-label">${txt.edu.start} / ${txt.edu.end}</label>
+                                        <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'date')" value="${ed.date}">
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button onclick="window._addItem('edu')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.edu.add}</button>
                     </div>
-                    <div id="list-edu"></div>
+                    ${renderFormButtons()}
                 </div>
             `;
             c.appendChild(div);
-            this._renderList(div, 'edu');
         }
         else if (this.currentTab === 'skills') {
             div.innerHTML = `
-                 <div class="res-card">
-                    <h3>Yetenekler</h3>
-                    <p style="color:#666; font-size:0.9rem; margin-bottom:10px;">Yeteneklerinizi virgül ile ayırarak yazın.</p>
-                    <textarea class="form-input" id="in-skills" rows="6" placeholder="Örn: Java, Python, Takım Çalışması, İngilizce...">${d.skills}</textarea>
+                 <div class="res-card" style="max-width: 700px; margin: 0 auto;">
+                    <h3 style="margin-bottom: 5px;">${txt.lbl.skills}</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
+                        ${isTr ? 'Yeteneklerinizi virgül ile ayırarak yazın.' : 'Write your skills separated by commas.'}
+                    </p>
+                    <textarea oninput="window._upField('skills', this.value)" class="form-input" style="height: 150px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="Örn: Java, Python, Takım Çalışması, İngilizce...">${d.skills || ''}</textarea>
+                    ${renderFormButtons()}
                  </div>
             `;
             c.appendChild(div);
-            document.getElementById('in-skills').oninput = (e) => { d.skills = e.target.value; this._save(); };
         }
         else if (this.currentTab === 'design') {
             const themes = [
