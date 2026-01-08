@@ -440,10 +440,10 @@
                         .e-icon { color: ${color}; min-width: 18px; font-size: 0.9rem; }
                         .e-val { word-break: break-word; }
                         
-                        .e-skill-item { margin-bottom: 12px; }
-                        .e-skill-name { display: block; font-size: 0.75rem; margin-bottom: 4px; font-weight: 600; color: #ecf0f1; }
-                        .e-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; }
-                        .e-bar-fill { height: 100%; background: ${color}; border-radius: 3px; }
+                        .e-skill-item { margin-bottom: 8px; }
+                        .e-skill-name { display: block; font-size: 0.8rem; margin-bottom: 4px; font-weight: 500; color: #ecf0f1; border-left: 2px solid ${color}; padding-left: 8px; line-height: 1.4; }
+                        .e-bar-bg { display: none; } /* Bars Removed */
+                        .e-bar-fill { display: none; }
 
                         /* Main Content (Light) */
                         .e-main { padding: 40px 30px; background: white; }
@@ -454,21 +454,21 @@
                         .e-section { margin-bottom: 30px; }
                         .e-sec-title { color: #2c3e50; font-size: 0.95rem; text-transform: uppercase; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-bottom: 15px; font-weight: 700; letter-spacing: 0.5px; }
                         
-                        .e-summary { font-size: 0.8rem; color: #444; line-height: 1.5; }
+                        .e-summary { font-size: 0.85rem; color: #444; line-height: 1.5; }
                         
                         .e-item { margin-bottom: 18px; }
                         .e-item-head { margin-bottom: 4px; }
                         .e-comp { font-size: 0.9rem; font-weight: 700; color: #2c3e50; }
                         .e-role-hl { color: ${color}; font-weight: 600; font-size: 0.8rem; }
-                        .e-date { font-size: 0.7rem; color: #7f8c8d; font-weight: 500; display: block; margin-top: 2px; }
-                        .e-desc { font-size: 0.75rem; color: #444; line-height: 1.4; margin-top: 4px; font-weight: 400; }
+                        .e-date { font-size: 0.75rem; color: #7f8c8d; font-weight: 500; display: block; margin-top: 2px; }
+                        .e-desc { font-size: 0.8rem; color: #444; line-height: 1.4; margin-top: 4px; font-weight: 400; }
                         
                         .e-cert-item { margin-bottom: 12px; font-size: 0.75rem; color: #ecf0f1; }
                         .e-cert-name { font-weight: 600; color: white; }
                         
-                        .e-interests { display: flex; flex-wrap: wrap; gap: 10px; }
-                        .e-interest-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #ecf0f1; }
-                        .e-interest-icon { color: ${color}; font-size: 1rem; }
+                        .e-interests { display: flex; flex-direction: column; gap: 8px; }
+                        .e-interest-item { display: block; font-size: 0.8rem; font-weight: 500; color: #ecf0f1; border-left: 2px solid ${color}; padding-left: 8px; line-height: 1.4; }
+                        .e-interest-icon { display: none; }
                     `;
                 }
                 else if (theme === 'bloom') {
@@ -756,30 +756,29 @@
                         
                         <div class="e-side-sec">
                             <div class="e-side-title">${isTr ? 'YETENEKLER' : 'SKILLS'}</div>
-                            ${d.skills.split(',').slice(0, 6).map(s => `
+                            ${d.skills.split(',').map(s => s.trim() ? `
                                 <div class="e-skill-item">
                                     <span class="e-skill-name">${s.trim()}</span>
-                                    <div class="e-bar-bg"><div class="e-bar-fill" style="width: 85%"></div></div>
                                 </div>
-                            `).join('')}
+                            ` : '').join('')}
                         </div>
                         
                         ${d.languages ? `
                         <div class="e-side-sec">
                             <div class="e-side-title">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                             ${d.languages.split(',').map(s => `
+                             ${d.languages.split(',').map(s => s.trim() ? `
                                 <div class="e-skill-item">
-                                    <span class="e-skill-name" style="margin-bottom:0;">• ${s.trim()}</span>
+                                    <span class="e-skill-name">${s.trim()}</span>
                                 </div>
-                            `).join('')}
+                            ` : '').join('')}
                         </div>
                         ` : ''}
 
                         ${d.interests ? `
                         <div class="e-side-sec">
                             <div class="e-side-title">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-                             <div class="e-interests" style="flex-direction:column; gap:5px;">
-                                ${d.interests.split(',').map(i => `<div class="e-interest-item"><span>•</span> ${i.trim()}</div>`).join('')}
+                             <div class="e-interests">
+                                ${d.interests.split(',').map(i => i.trim() ? `<div class="e-interest-item">${i.trim()}</div>` : '').join('')}
                             </div>
                         </div>
                         ` : ''}
