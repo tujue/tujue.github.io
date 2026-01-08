@@ -110,9 +110,10 @@ class ResumeBuilderTool extends BaseTool {
                 .res-full-width { grid-column: span 2; }
                 .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 950px; margin: 15px auto; flex-shrink: 0; }
                 
-                /* Experience Grid for side-by-side cards */
-                .res-exp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; width: 100%; margin-bottom: 20px; }
-                @media (max-width: 900px) { .res-exp-grid { grid-template-columns: 1fr; } }
+                /* Experience Grid for multi-column side-by-side cards (4-5 per row) */
+                .res-exp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; width: 100%; margin-bottom: 20px; }
+                @media (max-width: 900px) { .res-exp-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); } }
+                @media (max-width: 600px) { .res-exp-grid { grid-template-columns: 1fr; } }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
@@ -551,16 +552,7 @@ class ResumeBuilderTool extends BaseTool {
 
             <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 20px 0;">
                 <div id="res-page-wrapper" style="display: flex; justify-content: center; min-height: min-content; width: 100%;">
-                    <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; flex-shrink: 0;"></div>
-                </div>
-
-                <!-- Zoom Controls -->
-                <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 12px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); z-index: 100;">
-                    <button id="z-minus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">−</button>
-                    <span id="z-val" style="min-width: 45px; text-align: center; font-size: 0.85rem; font-variant-numeric: tabular-nums;">FIT</span>
-                    <button id="z-plus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">+</button>
-                    <div style="width:1px; height:15px; background:rgba(255,255,255,0.3);"></div>
-                    <button id="z-fit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.75rem; font-weight:bold; padding: 5px 2px;">${isTr ? 'SIĞDIR' : 'FIT SCREEN'}</button>
+                    <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; flex-shrink: 0; transform: scale(0.8); transform-origin: top center;"></div>
                 </div>
             </div>
         </div>
@@ -581,17 +573,6 @@ class ResumeBuilderTool extends BaseTool {
             } else {
                 document.getElementById('res-a4-page').innerHTML = 'Core module update required.';
             }
-
-            // Bind Zoom
-            document.getElementById('z-plus').onclick = () => { this.zoom = 'manual'; this.scaleValue += 0.1; this.fitPreview(); };
-            document.getElementById('z-minus').onclick = () => { this.zoom = 'manual'; this.scaleValue = Math.max(0.1, this.scaleValue - 0.1); this.fitPreview(); };
-            document.getElementById('z-fit').onclick = () => { this.zoom = 'fit'; this.fitPreview(); };
-
-            // Auto Fit
-            this.zoom = 'fit';
-            // Wait for DOM
-            requestAnimationFrame(() => this.fitPreview());
-            window.addEventListener('resize', () => { if (this.currentTab === 'preview' && this.zoom === 'fit') this.fitPreview(); });
         }
     }
 
