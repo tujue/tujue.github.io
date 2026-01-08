@@ -258,8 +258,8 @@
                 // Language Support
                 const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
                 const lbl = isTr
-                    ? { skills: 'Yetenekler', exp: 'İş Deneyimi', edu: 'Eğitim', contact: 'İletişim', about: 'Hakkımda', phone: 'Telefon', email: 'E-Posta', address: 'Adres', website: 'Web', profile: 'Profil' }
-                    : { skills: 'Skills', exp: 'Experience', edu: 'Education', contact: 'Contact', about: 'About', phone: 'Phone', email: 'Email', address: 'Address', website: 'Website', profile: 'Profile' };
+                    ? { exp: 'İŞ DENEYİMİ', edu: 'EĞİTİM', skills: 'YETENEKLER', contact: 'İLETİŞİM', profile: 'ÖZET', phone: 'Telefon', email: 'E-posta', website: 'Website', address: 'Adres' }
+                    : { exp: 'WORK EXPERIENCE', edu: 'EDUCATION', skills: 'SKILLS', contact: 'CONTACT', profile: 'SUMMARY', phone: 'Phone', email: 'Email', website: 'Website', address: 'Address' };
 
                 // Font Mapping
                 const fonts = {
@@ -1079,7 +1079,7 @@
             <div class="k-r-section">
                 <div class="k-r-head">
                     <div class="k-r-icon">👤</div>
-                    <div class="k-r-title">${isTr ? 'Profil' : 'Profile'}</div>
+                    <div class="k-r-title">${isTr ? 'Özet' : 'Summary'}</div>
                 </div>
                 <div class="k-profile-text">${d.summary}</div>
             </div>
@@ -1180,7 +1180,7 @@
             <div class="o-box">
                 <div class="o-box-head">
                     <div class="o-icon-box">🎓</div>
-                    <div class="o-box-title">${isTr ? 'Eğitim & Yetenekler' : 'Education & Skills'}</div>
+                    <div class="o-box-title">${isTr ? 'Eğitim' : 'Education'}</div>
                 </div>
                 <div class="o-box-content">
                     <ul class="o-list">
