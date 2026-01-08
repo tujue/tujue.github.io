@@ -98,14 +98,16 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; }
+                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; display: flex; flex-direction: column; }
+                /* Padding to ensure bottom elements are reachable */
+                .res-content-scroll-fix { padding-bottom: 120px; width: 100%; display: flex; flex-direction: column; align-items: center; }
                 
-                .res-sticky-nav { position: sticky; top: 0; z-index: 150; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 8px 15px; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                .res-sticky-nav.compact { padding: 5px 15px; min-height: 40px; }
+                .res-sticky-nav { position: sticky; top: 0; z-index: 150; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 6px 15px; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(8px); }
+                .res-sticky-nav.compact { padding: 4px 15px; min-height: 38px; }
 
-                .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
                 .res-full-width { grid-column: span 2; }
-                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin: 30px auto; }
+                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 800px; margin: 20px auto; flex-shrink: 0; }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
@@ -310,47 +312,49 @@ class ResumeBuilderTool extends BaseTool {
         if (this.currentTab === 'personal') {
             div.innerHTML = `
                 ${renderStickyNav()}
-                <div class="res-card" style="max-width: 600px;">
-                    <h3 style="margin-bottom: 20px;">${txt.tabs.p}</h3>
-                    
-                    <div class="res-photo-upload" onclick="document.getElementById('res-upl').click()">
-                        ${d.photo ? `<img src="${d.photo}">` : '<span style="font-size:2rem;color:#ccc;">📷</span>'}
-                        <div class="res-photo-label">${txt.lbl.upload}</div>
-                    </div>
-                    <input type="file" id="res-upl" hidden accept="image/*">
+                <div class="res-content-scroll-fix">
+                    <div class="res-card">
+                        <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${txt.tabs.p}</h3>
+                        
+                        <div class="res-photo-upload" onclick="document.getElementById('res-upl').click()">
+                            ${d.photo ? `<img src="${d.photo}">` : '<span style="font-size:2rem;color:#ccc;">📷</span>'}
+                            <div class="res-photo-label">${txt.lbl.upload}</div>
+                        </div>
+                        <input type="file" id="res-upl" hidden accept="image/*">
 
-                    <div class="res-form-grid" style="margin-top: 20px;">
-                        <div class="res-full-width">
-                            <label class="form-label">${txt.lbl.name}</label>
-                            <input type="text" class="form-input" oninput="window._upField('name', this.value)" value="${d.name || ''}">
-                        </div>
-                        <div class="res-full-width">
-                            <label class="form-label">${txt.lbl.title}</label>
-                            <input type="text" class="form-input" oninput="window._upField('title', this.value)" value="${d.title || ''}">
-                        </div>
-                        <div>
-                            <label class="form-label">${txt.lbl.mail}</label>
-                            <input type="email" class="form-input" oninput="window._upField('email', this.value)" value="${d.email || ''}">
-                        </div>
-                        <div>
-                            <label class="form-label">Website</label>
-                            <input type="text" class="form-input" oninput="window._upField('website', this.value)" value="${d.website || ''}">
-                        </div>
-                        <div>
-                            <label class="form-label">Telefon</label>
-                            <input type="text" class="form-input" oninput="window._upField('phone', this.value)" value="${d.phone || ''}">
-                        </div>
-                        <div>
-                             <label class="form-label">Adres / Konum</label>
-                            <input type="text" class="form-input" oninput="window._upField('address', this.value)" value="${d.address || ''}">
-                        </div>
-                        <div class="res-full-width">
-                            <label class="form-label">${txt.lbl.summary}</label>
-                            <textarea class="form-input" rows="3" oninput="window._upField('summary', this.value)" placeholder="${isTr ? 'Örn: 5+ yıl deneyimli kıdemli yazılım geliştirici...' : 'Ex: Senior developer with 5+ years of experience...'}">${d.summary || ''}</textarea>
-                        </div>
-                         <div class="res-full-width">
-                             <label class="form-label">${isTr ? 'Yetenekler & Uzmanlık (Örn: React, Node.js)' : 'Skills & Expertise'}</label>
-                            <textarea class="form-input" rows="2" oninput="window._upField('skills', this.value)" placeholder="React, Node.js, Python...">${d.skills || ''}</textarea>
+                        <div class="res-form-grid">
+                            <div class="res-full-width">
+                                <label class="form-label">${txt.lbl.name}</label>
+                                <input type="text" class="form-input" oninput="window._upField('name', this.value)" value="${d.name || ''}" placeholder="${isTr ? 'Adınız Soyadınız' : 'Full Name'}">
+                            </div>
+                            <div class="res-full-width">
+                                <label class="form-label">${txt.lbl.title}</label>
+                                <input type="text" class="form-input" oninput="window._upField('title', this.value)" value="${d.title || ''}" placeholder="${isTr ? 'Ünvan (Örn: Web Geliştici)' : 'Job Title'}">
+                            </div>
+                            <div>
+                                <label class="form-label">${txt.lbl.mail}</label>
+                                <input type="email" class="form-input" oninput="window._upField('email', this.value)" value="${d.email || ''}">
+                            </div>
+                            <div>
+                                <label class="form-label">Website</label>
+                                <input type="text" class="form-input" oninput="window._upField('website', this.value)" value="${d.website || ''}">
+                            </div>
+                            <div>
+                                <label class="form-label">Telefon</label>
+                                <input type="text" class="form-input" oninput="window._upField('phone', this.value)" value="${d.phone || ''}">
+                            </div>
+                            <div>
+                                 <label class="form-label">Konum / Adres</label>
+                                <input type="text" class="form-input" oninput="window._upField('address', this.value)" value="${d.address || ''}">
+                            </div>
+                            <div class="res-full-width">
+                                <label class="form-label">${txt.lbl.summary}</label>
+                                <textarea class="form-input" rows="3" oninput="window._upField('summary', this.value)" style="resize: vertical; min-height: 80px;" placeholder="${isTr ? 'Özet / Hakkımda bilgisi...' : 'Summary / About me...'}">${d.summary || ''}</textarea>
+                            </div>
+                            <div class="res-full-width">
+                                 <label class="form-label">${isTr ? 'Yetenekler & Uzmanlık (React, Node.js...)' : 'Skills & Expertise (React, Node.js...)'}</label>
+                                <textarea class="form-input" rows="2" oninput="window._upField('skills', this.value)" style="resize: vertical; min-height: 60px;" placeholder="JavaScript, CSS, SQL...">${d.skills || ''}</textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -372,79 +376,85 @@ class ResumeBuilderTool extends BaseTool {
         else if (this.currentTab === 'exp') {
             div.innerHTML = `
                 ${renderStickyNav()}
-            <div class="res-card">
-                <h3 style="margin-bottom: 20px;">${txt.exp.title}</h3>
-                <div id="exp-list">
-                    ${d.experience.map((ex, i) => `
-                            <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative;">
-                                <button onclick="window._removeItem('experience', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
-                                <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                    <div>
-                                        <label class="form-label">${txt.exp.company}</label>
-                                        <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'comp')" value="${ex.comp}">
-                                    </div>
-                                    <div>
-                                        <label class="form-label">${txt.exp.position}</label>
-                                        <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'role')" value="${ex.role}">
-                                    </div>
-                                    <div>
-                                        <label class="form-label">${txt.exp.start} / ${txt.exp.end}</label>
-                                        <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'date')" value="${ex.date}">
-                                    </div>
-                                    <div class="res-full-width">
-                                        <label class="form-label">${txt.exp.desc}</label>
-                                        <textarea class="form-input" rows="3" oninput="window._upField('experience', this.value, ${i}, 'desc')">${ex.desc}</textarea>
+                <div class="res-content-scroll-fix">
+                    <div class="res-card">
+                        <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${txt.exp.title}</h3>
+                        <div id="exp-list">
+                            ${d.experience.map((ex, i) => `
+                                <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative; background: rgba(255,255,255,0.02);">
+                                    <button onclick="window._removeItem('experience', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;">✕</button>
+                                    <div class="res-form-grid">
+                                        <div>
+                                            <label class="form-label">${txt.exp.company}</label>
+                                            <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'comp')" value="${ex.comp || ''}">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">${txt.exp.position}</label>
+                                            <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'role')" value="${ex.role || ''}">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">${txt.exp.start} / ${txt.exp.end}</label>
+                                            <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'date')" value="${ex.date || ''}">
+                                        </div>
+                                        <div class="res-full-width">
+                                            <label class="form-label">${txt.exp.desc}</label>
+                                            <textarea class="form-input" rows="3" style="min-height: 80px;" oninput="window._upField('experience', this.value, ${i}, 'desc')">${ex.desc || ''}</textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `).join('')}
-                    <button onclick="window._addItem('exp')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.exp.add}</button>
+                            `).join('')}
+                            <button onclick="window._addItem('exp')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px; padding: 12px;">+ ${txt.exp.add}</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
             `;
             c.appendChild(div);
         }
         else if (this.currentTab === 'edu') {
             div.innerHTML = `
                 ${renderStickyNav()}
-            <div class="res-card">
-                <h3 style="margin-bottom: 20px;">${txt.edu.title}</h3>
-                <div id="edu-list">
-                    ${d.education.map((ed, i) => `
-                            <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative;">
-                                <button onclick="window._removeItem('education', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
-                                <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                    <div>
-                                        <label class="form-label">${txt.edu.school}</label>
-                                        <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'sch')" value="${ed.sch}">
-                                    </div>
-                                    <div>
-                                        <label class="form-label">${txt.edu.degree}</label>
-                                        <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'deg')" value="${ed.deg}">
-                                    </div>
-                                    <div class="res-full-width">
-                                        <label class="form-label">${txt.edu.start} / ${txt.edu.end}</label>
-                                        <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'date')" value="${ed.date}">
+                <div class="res-content-scroll-fix">
+                    <div class="res-card">
+                        <h3 style="margin-bottom: 20px; font-size: 1.2rem;">${txt.edu.title}</h3>
+                        <div id="edu-list">
+                            ${d.education.map((ed, i) => `
+                                <div class="res-item-card" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative; background: rgba(255,255,255,0.02);">
+                                    <button onclick="window._removeItem('education', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;">✕</button>
+                                    <div class="res-form-grid">
+                                        <div>
+                                            <label class="form-label">${txt.edu.school}</label>
+                                            <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'sch')" value="${ed.sch || ''}">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">${txt.edu.degree}</label>
+                                            <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'deg')" value="${ed.deg || ''}">
+                                        </div>
+                                        <div class="res-full-width">
+                                            <label class="form-label">${txt.edu.start} / ${txt.edu.end}</label>
+                                            <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'date')" value="${ed.date || ''}">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `).join('')}
-                    <button onclick="window._addItem('edu')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px;">+ ${txt.edu.add}</button>
+                            `).join('')}
+                            <button onclick="window._addItem('edu')" class="btn btn-outline" style="width: 100%; border-style: dashed; margin-top: 10px; padding: 12px;">+ ${txt.edu.add}</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
             `;
             c.appendChild(div);
         }
         else if (this.currentTab === 'skills') {
             div.innerHTML = `
                 ${renderStickyNav()}
-            <div class="res-card" style="max-width: 700px;">
-                <h3 style="margin-bottom: 5px;">${txt.lbl.skills}</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
-                    ${isTr ? 'Yeteneklerinizi virgül ile ayırarak yazın.' : 'Write your skills separated by commas.'}
-                </p>
-                <textarea oninput="window._upField('skills', this.value)" class="form-input" style="height: 150px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="Örn: Java, Python, Takım Çalışması, İngilizce...">${d.skills || ''}</textarea>
-            </div>
+                <div class="res-content-scroll-fix">
+                    <div class="res-card" style="max-width: 700px;">
+                        <h3 style="margin-bottom: 5px; font-size: 1.2rem;">${txt.lbl.skills}</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
+                            ${isTr ? 'Yeteneklerinizi virgül ile ayırarak yazın.' : 'Write your skills separated by commas.'}
+                        </p>
+                        <textarea oninput="window._upField('skills', this.value)" class="form-input" style="height: 180px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="Örn: Java, Python, Takım Çalışması, İngilizce...">${d.skills || ''}</textarea>
+                    </div>
+                </div>
             `;
             c.appendChild(div);
         }
