@@ -26,6 +26,26 @@ class ResumeBuilderTool extends BaseTool {
         this.currentTab = 'personal'; // personal, exp, edu, skills, design, preview
         this.scaleValue = 1;
         this.zoom = 'fit';
+
+        // Theme-specific experience limits (tested capacity)
+        this.THEME_LIMITS = {
+            'executive': 2,  // Yönetici
+            'tech': 3,       // Teknoloji
+            'skyline': 3,
+            'minimal': 3,
+            'modern': 3,
+            'elegant': 3,
+            'prime': 3,
+            'orbit': 4,
+            'bloom': 4,
+            'leftside': 4,   // Sol Sütun
+            'brutal': 4,
+            'cyber': 4,
+            'titan': 4,
+            'bold': 5,
+            'wave': 6,       // Safe default
+            'nova': 6        // Safe default
+        };
     }
 
     renderUI() {
@@ -445,6 +465,26 @@ class ResumeBuilderTool extends BaseTool {
             }
         }
         else if (this.currentTab === 'exp') {
+            const currentTheme = d.theme || 'modern';
+            const limit = this.THEME_LIMITS[currentTheme] || 99;
+            const expCount = d.experience.length;
+            const isOverLimit = expCount >= limit;
+            const isCritical = expCount > limit;
+
+            let warningHtml = '';
+            if (isOverLimit) {
+                const warningColor = isCritical ? '#ef4444' : '#f59e0b';
+                const warningBg = isCritical ? '#fef2f2' : '#fffbeb';
+                const warningIcon = isCritical ? '⚠️' : '💡';
+                const warningText = isTr
+                    ? `${warningIcon} Bu tema için önerilen: ${limit} deneyim (Şu an: ${expCount})`
+                    : `${warningIcon} Recommended for this theme: ${limit} experiences (Current: ${expCount})`;
+
+                warningHtml = `<div style="background: ${warningBg}; border: 1px solid ${warningColor}; border-radius: 6px; padding: 8px 12px; font-size: 0.8rem; color: ${warningColor}; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 600;">${warningText}</span>
+                </div>`;
+            }
+
             div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
@@ -453,6 +493,7 @@ class ResumeBuilderTool extends BaseTool {
                             <h3 style="margin: 0; font-size: 1.1rem;">${txt.exp.title}</h3>
                             <button onclick="window._addItem('exp')" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">+ ${txt.exp.add}</button>
                         </div>
+                        ${warningHtml}
                         <div class="res-exp-grid">
                             ${d.experience.map((ex, i) => `
                                 <div class="res-item-card" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; position: relative; background: rgba(255,255,255,0.02);">
