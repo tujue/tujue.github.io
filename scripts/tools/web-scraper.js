@@ -117,8 +117,13 @@ class WebScraperTool extends BaseTool {
             status.textContent = curTxt.conn;
 
             try {
-                const html = await window.DevTools.scraperTools.fetch(url.value);
-                this.data = window.DevTools.scraperTools.analyze(html);
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url.value)}`;
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Proxy connection failed');
+                const jsonData = await response.json();
+                const html = jsonData.contents;
+
+                this.data = this.analyze(html, url.value);
 
                 res.style.display = 'block';
                 document.getElementById('ws-stat-l').textContent = this.data.links.length;
@@ -138,8 +143,6 @@ class WebScraperTool extends BaseTool {
                 this.showNotification(err.message, 'error');
             } finally {
                 btn.disabled = false;
-                // txt is not in scope here. Use curTxt from closure or hardcode or re-derive.
-                // curTxt doesn't have 'run' property defined in previous block, let's fix that.
                 btn.textContent = isTr ? 'Süreci Başlat 🚀' : 'Execute Scraper 🚀';
             }
         };
@@ -169,6 +172,64 @@ class WebScraperTool extends BaseTool {
         } else if (t === 'meta') {
             cont.innerHTML = this.data.meta.map(m => `<div class="ws-row"><strong>${m.name}:</strong> ${m.content}</div>`).join('');
         }
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.scraperTools)
+
+    analyze(html, baseUrl) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Helper to resolve relative URLs
+        const resolveUrl = (currentUrl) => {
+            try {
+                return new URL(currentUrl, baseUrl).href;
+            } catch (e) { return currentUrl; }
+        };
+
+        const result = {
+            links: [],
+            images: [],
+            meta: [],
+            headings: { h1: [], h2: [] }
+        };
+
+        // Links
+        doc.querySelectorAll('a').forEach(a => {
+            const href = a.getAttribute('href');
+            if (href) {
+                result.links.push({
+                    text: a.textContent.trim().substring(0, 100),
+                    href: resolveUrl(href)
+                });
+            }
+        });
+
+        // Images
+        doc.querySelectorAll('img').forEach(img => {
+            const src = img.getAttribute('src');
+            if (src) {
+                result.images.push({
+                    src: resolveUrl(src),
+                    alt: img.getAttribute('alt') || ''
+                });
+            }
+        });
+
+        // Meta tags
+        doc.querySelectorAll('meta').forEach(meta => {
+            const name = meta.getAttribute('name') || meta.getAttribute('property');
+            const content = meta.getAttribute('content');
+            if (name && content) {
+                result.meta.push({ name, content });
+            }
+        });
+
+        // Headings
+        doc.querySelectorAll('h1').forEach(h => result.headings.h1.push(h.textContent.trim()));
+        doc.querySelectorAll('h2').forEach(h => result.headings.h2.push(h.textContent.trim()));
+
+        return result;
     }
 }
 

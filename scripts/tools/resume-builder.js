@@ -246,7 +246,7 @@ class ResumeBuilderTool extends BaseTool {
 
             // Special handling for Fonts (CSS Only - No Flash)
             if (field.includes('Font')) {
-                const res = window.DevTools.resumeGenerator.generateResumeHTML(this.data);
+                const res = this.generateResumeHTML(this.data);
                 let style = document.getElementById('res-style-inj');
                 if (style) style.textContent = res.css;
                 if (this.currentTab === 'preview') this.fitPreview();
@@ -259,7 +259,7 @@ class ResumeBuilderTool extends BaseTool {
             // Force Preview Update and Render for Global Settings
             if (field === 'theme' || field === 'color') {
                 this.renderTabContent(); // Render UI (Sticky Nav color etc)
-                const res = window.DevTools.resumeGenerator.generateResumeHTML(this.data);
+                const res = this.generateResumeHTML(this.data);
                 let style = document.getElementById('res-style-inj');
                 if (style) style.textContent = res.css; // Update Preview CSS
             }
@@ -808,16 +808,15 @@ class ResumeBuilderTool extends BaseTool {
                 `;
             c.appendChild(div);
 
-            // Render HTML using Core
-            if (window.DevTools.resumeGenerator && window.DevTools.resumeGenerator.generateResumeHTML) {
-                const res = window.DevTools.resumeGenerator.generateResumeHTML(d);
+            // Render HTML using Local Generator
+            if (this.generateResumeHTML) {
+                const res = this.generateResumeHTML(d);
                 const page = document.getElementById('res-a4-page');
 
                 // Inject Style
                 let style = document.getElementById('res-style-inj');
                 if (!style) { style = document.createElement('style'); style.id = 'res-style-inj'; document.head.appendChild(style); }
                 style.textContent = res.css;
-
 
                 // Optimized Update
                 if (page.innerHTML !== res.html) page.innerHTML = res.html;
@@ -828,11 +827,262 @@ class ResumeBuilderTool extends BaseTool {
         }
     }
 
-    _renderList(container, type) {
-        const listDiv = container.querySelector(`#list - ${type} `);
-        const list = type === 'exp' ? this.data.experience : this.data.education;
+    /* -------------------------------------------------------------------------- */
+    /*                        CORE RESUME GENERATOR ENGINE                        */
+    /* -------------------------------------------------------------------------- */
 
-        listDiv.innerHTML = list.map((it, i) => `
+    generateResumeHTML(data) {
+        const t = data.theme || 'modern';
+        const cols = this._getThemeColors(t, data.color);
+        const fontFam = this._getFontFamily(data.font || data.bodyFont);
+        const headFont = this._getFontFamily(data.headerFont || data.font);
+
+        // Core Layout Strategy: 'modern' (left/right split) or 'classic' (top/down)
+        const isSplit = ['modern', 'leftside', 'skyline', 'tech', 'orbit', 'cyber'].includes(t);
+        const isDark = ['orbit', 'cyber'].includes(t);
+
+        const css = `
+            /* Core Reset */
+            .res-container * { box-sizing: border-box; margin: 0; padding: 0; }
+            .res-container { 
+                width: 100%; height: 100%; 
+                font-family: ${fontFam}; 
+                color: ${isDark ? '#e2e8f0' : '#2d3748'}; 
+                background: ${isDark ? '#1a202c' : '#ffffff'};
+                line-height: 1.5; 
+                overflow: hidden; 
+                display: flex; 
+                flex-direction: ${isSplit ? 'row' : 'column'};
+            }
+            
+            /* Typography */
+            h1, h2, h3, h4, .res-name, .res-title { font-family: ${headFont}; }
+            
+            /* Helper Classes */
+            .res-section { margin-bottom: 20px; }
+            .res-section-title { 
+                font-size: 14px; 
+                text-transform: uppercase; 
+                font-weight: 800; 
+                letter-spacing: 1px; 
+                margin-bottom: 15px; 
+                padding-bottom: 5px; 
+                border-bottom: 2px solid ${cols.accent}; 
+                color: ${cols.primary}; 
+            }
+            .res-item { margin-bottom: 12px; }
+            .res-item-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 13px; }
+            .res-item-sub { font-size: 12px; font-style: italic; opacity: 0.8; margin-bottom: 4px; }
+            .res-item-desc { font-size: 11px; white-space: pre-line; opacity: 0.9; }
+            .res-contact-item { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 4px; }
+            
+            /* Split Layout Specifics */
+            .res-left { 
+                width: 32%; 
+                background: ${isSplit ? cols.bgSide : 'transparent'}; 
+                color: ${isSplit ? cols.textSide : 'inherit'}; 
+                padding: 30px 20px; 
+                flex-shrink: 0;
+            }
+            .res-right { 
+                flex: 1; 
+                padding: 30px; 
+            }
+
+            /* Theme Specific Overrides */
+            ${this._getThemeCSS(t, cols)}
+        `;
+
+        // HTML Construction
+        let leftContent = '', rightContent = '';
+
+        /* --- Personal Info Block --- */
+        const contactBlock = `
+            <div class="res-contact-list">
+                ${data.email ? `<div class="res-contact-item">📧 ${data.email}</div>` : ''}
+                ${data.phone ? `<div class="res-contact-item">📱 ${data.phone}</div>` : ''}
+                ${data.website ? `<div class="res-contact-item">🌐 ${data.website.replace('https://', '')}</div>` : ''}
+                ${data.address ? `<div class="res-contact-item">📍 ${data.address}</div>` : ''}
+            </div>
+        `;
+
+        const photoBlock = data.photo ? `<div class="res-photo"><img src="${data.photo}"></div>` : '';
+        const nameBlock = `<div class="res-header">
+            <h1 class="res-name">${data.name || 'Your Name'}</h1>
+            <div class="res-title">${data.title || 'Job Title'}</div>
+        </div>`;
+
+        /* --- Modules --- */
+        const skillsBlock = data.skills ? `
+            <div class="res-section">
+                <div class="res-section-title">Skills</div>
+                <div class="res-skills">
+                    ${data.skills.split(',').map(s => `<span class="res-skill-tag">${s.trim()}</span>`).join('')}
+                </div>
+            </div>` : '';
+
+        const expBlock = (data.experience && data.experience.length) ? `
+            <div class="res-section">
+                <div class="res-section-title">Experience</div>
+                ${data.experience.map(e => `
+                    <div class="res-item">
+                        <div class="res-item-head">
+                            <span>${e.role}</span>
+                            <span style="opacity:0.7">${e.date}</span>
+                        </div>
+                        <div class="res-item-sub">${e.comp}</div>
+                        <div class="res-item-desc">${e.desc}</div>
+                    </div>
+                `).join('')}
+            </div>` : '';
+
+        const eduBlock = (data.education && data.education.length) ? `
+            <div class="res-section">
+                <div class="res-section-title">Education</div>
+                ${data.education.map(e => `
+                    <div class="res-item">
+                        <div class="res-item-head">
+                            <span>${e.sch}</span>
+                            <span style="opacity:0.7">${e.date}</span>
+                        </div>
+                        <div class="res-item-sub">${e.deg}</div>
+                    </div>
+                `).join('')}
+            </div>` : '';
+
+        const summaryBlock = data.summary ? `
+            <div class="res-section">
+                 <div class="res-section-title">Summary</div>
+                 <div class="res-item-desc" style="font-size:12px;">${data.summary}</div>
+            </div>` : '';
+
+
+        // Distribute Content based on Layout
+        if (isSplit) {
+            // Sidebar: Photo, Contact, Skills, Languages
+            leftContent = `
+                ${photoBlock}
+                ${contactBlock}
+                <div style="margin-top:20px;"></div>
+                ${skillsBlock}
+                ${data.languages ? `
+                    <div class="res-section">
+                        <div class="res-section-title">Languages</div>
+                        <div class="res-item-desc">${data.languages}</div>
+                    </div>` : ''}
+            `;
+            // Main: Name, Summary, Exp, Edu
+            rightContent = `
+                ${nameBlock}
+                <div style="margin-top:20px;"></div>
+                ${summaryBlock}
+                ${expBlock}
+                ${eduBlock}
+                ${data.certificates && data.certificates.length ? `
+                    <div class="res-section">
+                         <div class="res-section-title">Certificates</div>
+                         ${data.certificates.map(c => `<div class="res-item-desc"><b>${c.name}</b> - ${c.issuer} (${c.date})</div>`).join('')}
+                    </div>`: ''}
+            `;
+
+            return {
+                css,
+                html: `
+                    <div class="res-container">
+                        <div class="res-left">${leftContent}</div>
+                        <div class="res-right">${rightContent}</div>
+                    </div>
+                `
+            };
+        } else {
+            // SINGLE COLUMN LAYOUT (Classic, Minimal, etc)
+            return {
+                css,
+                html: `
+                <div class="res-container">
+                    <div class="res-main" style="width:100%; padding: 40px;">
+                        <div style="display:flex; gap:20px; align-items:center; border-bottom:2px solid ${cols.accent}; padding-bottom:20px; margin-bottom:20px;">
+                             ${photoBlock}
+                             <div style="flex:1">
+                                <h1 class="res-name" style="font-size:28px; color:${cols.primary};">${data.name}</h1>
+                                <div class="res-title" style="font-size:16px; margin-bottom:10px;">${data.title}</div>
+                                <div style="display:flex; gap:15px; flex-wrap:wrap; font-size:12px;">
+                                    ${data.email ? `<span>📧 ${data.email}</span>` : ''}
+                                    ${data.phone ? `<span>📱 ${data.phone}</span>` : ''}
+                                    ${data.address ? `<span>📍 ${data.address}</span>` : ''}
+                                </div>
+                             </div>
+                        </div>
+                        
+                        ${summaryBlock}
+                        ${expBlock}
+                        ${eduBlock}
+                        
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                            ${skillsBlock}
+                            ${data.languages ? `<div class="res-section"><div class="res-section-title">Languages</div><div class="res-item-desc">${data.languages}</div></div>` : ''}
+                        </div>
+                    </div>
+                </div>`
+            };
+        }
+    }
+
+    _getThemeColors(theme, baseColor) {
+        // baseColor is user selected color
+        const c = baseColor || '#2d3748';
+        switch (theme) {
+            case 'modern': return { primary: c, accent: c, bgSide: '#f7fafc', textSide: '#2d3748' };
+            case 'orbit': return { primary: '#63b3ed', accent: '#4a5568', bgSide: '#1a202c', textSide: '#e2e8f0' };
+            case 'leftside': return { primary: c, accent: '#e2e8f0', bgSide: c, textSide: '#ffffff' };
+            case 'minimal': return { primary: '#000', accent: '#000', bgSide: '#fff', textSide: '#000' };
+            default: return { primary: c, accent: c, bgSide: '#f7fafc', textSide: '#333' };
+        }
+    }
+
+    _getFontFamily(fontKey) {
+        const fonts = {
+            'sans': "'Inter', sans-serif",
+            'modern': "'Poppins', sans-serif",
+            'serif': "'Lora', serif",
+            'mono': "'JetBrains Mono', monospace",
+            'strong': "'Oswald', sans-serif"
+        };
+        return fonts[fontKey] || fonts['sans'];
+    }
+
+    _getThemeCSS(theme, cols) {
+        if (theme === 'leftside') {
+            return `
+                .res-left { background: ${cols.primary} !important; color: white !important; }
+                .res-left .res-section-title { color: white; border-color: rgba(255,255,255,0.3); }
+                .res-name { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; color: ${cols.primary}; }
+                .res-photo { width: 140px; height: 140px; border-radius: 50%; border: 4px solid white; overflow:hidden; margin-bottom: 20px; margin-left: auto; margin-right: auto; }
+                .res-photo img { width: 100%; height: 100%; object-fit: cover; }
+                .res-skill-tag { display:inline-block; background:rgba(255,255,255,0.2); padding: 4px 8px; border-radius:4px; margin:0 4px 4px 0; font-size:11px; }
+            `;
+        }
+        if (theme === 'modern') {
+            return `
+                .res-name { font-size: 36px; font-weight: 800; letter-spacing: -1px; text-transform:uppercase; color: ${cols.primary}; }
+                .res-title { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; }
+                .res-photo { width: 100%; height: 200px; object-fit: cover; margin-bottom: 20px; border-radius: 8px; overflow:hidden; }
+                .res-photo img { width: 100%; height: 100%; object-fit: cover; }
+                .res-skill-tag { display:block; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size:12px; }
+            `;
+        }
+        // Classic / Default fallback CSS
+        return `
+            .res-photo { width: 120px; height: 120px; border-radius: 12px; overflow: hidden; }
+            .res-photo img { width: 100%; height: 100%; object-fit: cover; }
+            .res-skill-tag { display: inline-block; background: #edf2f7; color: #4a5568; padding: 4px 10px; border-radius: 100px; margin: 0 5px 5px 0; font-size: 11px; font-weight:600; }
+        `;
+
+        _renderList(container, type) {
+            const listDiv = container.querySelector(`#list - ${type} `);
+            const list = type === 'exp' ? this.data.experience : this.data.education;
+
+            listDiv.innerHTML = list.map((it, i) => `
                 < div class="res-card" style = "margin-bottom: 15px; position:relative; padding: 15px;" >
                 <button onclick="window._delItem('${type}', ${i})" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer;">🗑️</button>
                 <div class="res-form-grid">
@@ -849,138 +1099,138 @@ class ResumeBuilderTool extends BaseTool {
             </div >
                 `).join('');
 
-    }
-
-    onClose() {
-        const ws = document.querySelector('.workspace-content');
-        if (ws) {
-            ws.classList.remove('full-width-workspace');
-            ws.style.padding = this._origWsPadding || ''; // Restore original padding
         }
 
-        // Restore header styles
-        const header = document.querySelector('.workspace-header');
-        if (header) {
-            header.style.display = this._origHeaderDisplay || '';
-            header.style.cssText = '';
-        }
-
-        const title = document.querySelector('.workspace-header .workspace-title');
-        if (title) title.style.cssText = '';
-
-        // CLEANUP: Remove injected styles to prevent conflicts
-        const style = document.getElementById('res-style-inj');
-        if (style) style.remove();
-
-        // CLEANUP: Remove global handlers to prevent memory leaks and double-firing
-        [
-            '_resTab', '_resNav', '_resReset', '_setTheme',
-            '_printPdf', '_setFont', '_setColor', '_addItem',
-            '_removeItem', '_upField', '_delItem', '_upItem'
-        ].forEach(fn => {
-            if (window[fn]) delete window[fn];
-        });
-    }
-
-    fitPreview() {
-        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
-        const container = document.getElementById('res-preview-container');
-        const page = document.getElementById('res-a4-page');
-        if (!container || !page) return;
-
-        const contW = container.clientWidth - 40; // Subtract padding room
-        const pageW = 794;
-        const pageH = 1123;
-
-        if (this.zoom === 'fit') {
-            // Smart Fit Strategy:
-            // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
-            const availableH = window.innerHeight - 150;
-            const wScale = contW / pageW;
-            const hScale = availableH / pageH;
-
-            // Choose the smaller scale to ensure it fits entirely on screen
-            this.scaleValue = Math.min(wScale, hScale, 0.95);
-        }
-
-        // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
-        if ('zoom' in page.style) {
-            page.style.zoom = this.scaleValue;
-            page.style.transform = 'none';
-        } else {
-            page.style.transform = `scale(${this.scaleValue})`;
-        }
-
-        // Ensure wrapper height accounts for the scaled content to allow proper scrolling
-        const wrapper = document.getElementById('res-page-wrapper');
-        if (wrapper) {
-            const scaledH = pageH * this.scaleValue;
-            wrapper.style.height = `${scaledH + 80} px`; // page height + padding
-        }
-
-        const lbl = document.getElementById('z-val');
-        if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
-    }
-
-    _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
-    _load() {
-        const s = localStorage.getItem('dt_resume_v2');
-        if (!s) return null;
-        try {
-            const data = JSON.parse(s);
-            // Auto-migrate legacy randomuser images to new local default
-            if (data.photo && data.photo.includes('randomuser.me')) {
-                data.photo = 'assets/default-avatar.png';
+        onClose() {
+            const ws = document.querySelector('.workspace-content');
+            if (ws) {
+                ws.classList.remove('full-width-workspace');
+                ws.style.padding = this._origWsPadding || ''; // Restore original padding
             }
-            return data;
-        } catch (e) {
-            return null;
+
+            // Restore header styles
+            const header = document.querySelector('.workspace-header');
+            if (header) {
+                header.style.display = this._origHeaderDisplay || '';
+                header.style.cssText = '';
+            }
+
+            const title = document.querySelector('.workspace-header .workspace-title');
+            if (title) title.style.cssText = '';
+
+            // CLEANUP: Remove injected styles to prevent conflicts
+            const style = document.getElementById('res-style-inj');
+            if (style) style.remove();
+
+            // CLEANUP: Remove global handlers to prevent memory leaks and double-firing
+            [
+                '_resTab', '_resNav', '_resReset', '_setTheme',
+                '_printPdf', '_setFont', '_setColor', '_addItem',
+                '_removeItem', '_upField', '_delItem', '_upItem'
+            ].forEach(fn => {
+                if (window[fn]) delete window[fn];
+            });
+        }
+
+        fitPreview() {
+            const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+            const container = document.getElementById('res-preview-container');
+            const page = document.getElementById('res-a4-page');
+            if (!container || !page) return;
+
+            const contW = container.clientWidth - 40; // Subtract padding room
+            const pageW = 794;
+            const pageH = 1123;
+
+            if (this.zoom === 'fit') {
+                // Smart Fit Strategy:
+                // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
+                const availableH = window.innerHeight - 150;
+                const wScale = contW / pageW;
+                const hScale = availableH / pageH;
+
+                // Choose the smaller scale to ensure it fits entirely on screen
+                this.scaleValue = Math.min(wScale, hScale, 0.95);
+            }
+
+            // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
+            if ('zoom' in page.style) {
+                page.style.zoom = this.scaleValue;
+                page.style.transform = 'none';
+            } else {
+                page.style.transform = `scale(${this.scaleValue})`;
+            }
+
+            // Ensure wrapper height accounts for the scaled content to allow proper scrolling
+            const wrapper = document.getElementById('res-page-wrapper');
+            if (wrapper) {
+                const scaledH = pageH * this.scaleValue;
+                wrapper.style.height = `${scaledH + 80} px`; // page height + padding
+            }
+
+            const lbl = document.getElementById('z-val');
+            if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
+        }
+
+        _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
+        _load() {
+            const s = localStorage.getItem('dt_resume_v2');
+            if (!s) return null;
+            try {
+                const data = JSON.parse(s);
+                // Auto-migrate legacy randomuser images to new local default
+                if (data.photo && data.photo.includes('randomuser.me')) {
+                    data.photo = 'assets/default-avatar.png';
+                }
+                return data;
+            } catch (e) {
+                return null;
+            }
+        }
+        _getDefaults() {
+            // Check language for localized sample data
+            const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+
+            return {
+                name: isTr ? 'Demir Yılmaz' : 'Alex Morgan',
+                title: isTr ? 'Kıdemli Yazılım Mimarı' : 'Senior Software Architect',
+                email: 'hello@example.com',
+                website: 'linkedin.com/in/demo',
+                phone: '+90 555 012 34 56',
+                address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
+                summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
+                photo: 'assets/default-avatar.png', // Default local avatar
+                skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
+                theme: 'modern',
+                font: 'sans',
+                color: '#2d3748',
+                experience: [
+                    {
+                        role: isTr ? 'Kıdemli Takım Lideri' : 'Senior Team Lead',
+                        comp: 'TechGlobal Systems',
+                        date: '2021 - Günümüz',
+                        desc: isTr ? '• Dağıtık sistemlerin mimari tasarımı ve ölçeklendirilmesi.\n• 15 kişilik yazılım ekibinin yönetimi ve mentorluğu.\n• CI/CD süreçlerinin optimizasyonu ile deploy süresinin %40 azaltılması.'
+                            : '• Architectural design and scaling of distributed systems.\n• Management and mentorship of a 15-person software team.\n• Optimization of CI/CD processes reducing deploy time by 40%.'
+                    },
+                    {
+                        role: isTr ? 'Full Stack Geliştirici' : 'Full Stack Developer',
+                        comp: 'Innova Startups',
+                        date: '2018 - 2021',
+                        desc: isTr ? '• Modern web teknolojileri ile SaaS ürün geliştirme.\n• RESTful API tasarımı ve mikroservis entegrasyonları.\n• Kullanıcı deneyimini (UX) artırmaya yönelik performans iyileştirmeleri.'
+                            : '• SaaS product development with modern web technologies.\n• RESTful API design and microservices integration.\n• Performance improvements focused on enhancing user experience (UX).'
+                    }
+                ],
+                education: [
+                    {
+                        sch: isTr ? 'Orta Doğu Teknik Üniversitesi' : 'Stanford University',
+                        deg: isTr ? 'Bilgisayar Mühendisliği, B.S.' : 'B.S. Computer Science',
+                        date: '2014 - 2018'
+                    }
+                ],
+                languages: isTr ? 'Türkçe (Anadil), İngilizce (C1), Almanca (B1)' : 'English (Native), Spanish (C1), German (B1)',
+                interests: isTr ? 'Fotoğrafçılık, Açık Kaynak, Seyahat, Gitar' : 'Photography, Open Source, Travel, Guitar'
+            };
         }
     }
-    _getDefaults() {
-        // Check language for localized sample data
-        const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
-
-        return {
-            name: isTr ? 'Demir Yılmaz' : 'Alex Morgan',
-            title: isTr ? 'Kıdemli Yazılım Mimarı' : 'Senior Software Architect',
-            email: 'hello@example.com',
-            website: 'linkedin.com/in/demo',
-            phone: '+90 555 012 34 56',
-            address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
-            summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
-            photo: 'assets/default-avatar.png', // Default local avatar
-            skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
-            theme: 'modern',
-            font: 'sans',
-            color: '#2d3748',
-            experience: [
-                {
-                    role: isTr ? 'Kıdemli Takım Lideri' : 'Senior Team Lead',
-                    comp: 'TechGlobal Systems',
-                    date: '2021 - Günümüz',
-                    desc: isTr ? '• Dağıtık sistemlerin mimari tasarımı ve ölçeklendirilmesi.\n• 15 kişilik yazılım ekibinin yönetimi ve mentorluğu.\n• CI/CD süreçlerinin optimizasyonu ile deploy süresinin %40 azaltılması.'
-                        : '• Architectural design and scaling of distributed systems.\n• Management and mentorship of a 15-person software team.\n• Optimization of CI/CD processes reducing deploy time by 40%.'
-                },
-                {
-                    role: isTr ? 'Full Stack Geliştirici' : 'Full Stack Developer',
-                    comp: 'Innova Startups',
-                    date: '2018 - 2021',
-                    desc: isTr ? '• Modern web teknolojileri ile SaaS ürün geliştirme.\n• RESTful API tasarımı ve mikroservis entegrasyonları.\n• Kullanıcı deneyimini (UX) artırmaya yönelik performans iyileştirmeleri.'
-                        : '• SaaS product development with modern web technologies.\n• RESTful API design and microservices integration.\n• Performance improvements focused on enhancing user experience (UX).'
-                }
-            ],
-            education: [
-                {
-                    sch: isTr ? 'Orta Doğu Teknik Üniversitesi' : 'Stanford University',
-                    deg: isTr ? 'Bilgisayar Mühendisliği, B.S.' : 'B.S. Computer Science',
-                    date: '2014 - 2018'
-                }
-            ],
-            languages: isTr ? 'Türkçe (Anadil), İngilizce (C1), Almanca (B1)' : 'English (Native), Spanish (C1), German (B1)',
-            interests: isTr ? 'Fotoğrafçılık, Açık Kaynak, Seyahat, Gitar' : 'Photography, Open Source, Travel, Guitar'
-        };
-    }
-}
 
 window.initResumeBuilderLogic = ResumeBuilderTool;

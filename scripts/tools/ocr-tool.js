@@ -123,7 +123,7 @@ class OCRTool extends BaseTool {
 
       try {
         const lang = document.getElementById('ocr-lang').value;
-        const text = await window.DevTools.ocrTools.recognize(this.selectedFile, lang, (progress, status) => {
+        const text = await this.recognize(this.selectedFile, lang, (progress, status) => {
           const pct = Math.round(progress * 100);
           progressBar.style.width = pct + '%';
           statusMsg.textContent = `${status.charAt(0).toUpperCase() + status.slice(1)}... ${pct}%`;
@@ -148,6 +148,40 @@ class OCRTool extends BaseTool {
     };
 
     document.getElementById('ocr-btn-copy').onclick = () => this.copyToClipboard(output.value);
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.ocrTools)
+
+  async recognize(file, lang, progressCallback) {
+    if (!window.Tesseract) {
+      progressCallback(0, 'loading core (Tesseract.js)...');
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Failed to load Tesseract.js'));
+        document.head.appendChild(script);
+      });
+    }
+
+    progressCallback(0.1, 'processing image...');
+
+    const { data: { text } } = await window.Tesseract.recognize(
+      file,
+      lang,
+      {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            progressCallback(m.progress, m.status);
+          } else {
+            // Other statuses
+            progressCallback(0.5, m.status);
+          }
+        }
+      }
+    );
+
+    return text;
   }
 }
 
