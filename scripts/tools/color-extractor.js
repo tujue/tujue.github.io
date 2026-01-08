@@ -5,6 +5,7 @@ class ImageStudioTool extends BaseTool {
         this.currentImage = null;
         this.filters = { brightness: 100, contrast: 100, grayscale: 0, blur: 0, sepia: 0, hueRotate: 0, saturate: 100, invert: 0, opacity: 100 };
         this.transform = { rotate: 0, flipH: 1, flipV: 1 };
+        this.currentPalette = [];
     }
 
     renderUI() {
@@ -41,7 +42,7 @@ class ImageStudioTool extends BaseTool {
             { id: 'brightness', n: isTr ? 'Parlaklık' : 'Brightness', m: 0, x: 200, d: 100 },
             { id: 'contrast', n: isTr ? 'Kontrast' : 'Contrast', m: 0, x: 200, d: 100 },
             { id: 'saturate', n: isTr ? 'Doygunluk' : 'Saturate', m: 0, x: 200, d: 100 },
-            { id: 'blur', n: isTr ? 'Bulanıklık' : 'Blur', m: 0, x: 20, d: 0 },
+            { id: 'blur', n: isTr ? 'Bulanıklık' : 'Blur', m: 0, x: 50, d: 0 },
             { id: 'sepia', n: isTr ? 'Sepya' : 'Sepia', m: 0, x: 100, d: 0 },
             { id: 'grayscale', n: isTr ? 'Siyah Beyaz' : 'Grayscale', m: 0, x: 100, d: 0 }
         ];
@@ -206,9 +207,10 @@ class ImageStudioTool extends BaseTool {
                 format: document.getElementById('is-in-fmt').value,
                 quality: parseInt(document.getElementById('is-in-q').value)
             };
-            const result = await window.DevTools.colorExtractor.processImage(this.currentImage, ops);
+            const result = await this.processImage(this.currentImage, ops);
             if (ops.format === 'base64') {
                 this.copyToClipboard(result.result);
+                this.showNotification('Base64 copied to clipboard!', 'success');
             } else {
                 const a = document.createElement('a');
                 a.href = result.url;
@@ -244,14 +246,14 @@ class ImageStudioTool extends BaseTool {
     }
 
     _extractPalette() {
-        const palette = window.DevTools.colorExtractor.extractPalette(this.currentImage);
+        const palette = this.extractPalette(this.currentImage);
         this.currentPalette = palette;
         const grid = document.getElementById('is-palette-grid');
         grid.innerHTML = palette.map(c => `
             <div style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.1); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);">
                 <div style="width: 32px; height: 32px; background: ${c.hex}; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);"></div>
                 <div style="flex: 1; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;">${c.hex}</div>
-                <button class="btn btn-sm btn-outline" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.DevTools.copyToClipboard('${c.hex}', this)">Copy</button>
+                <button class="btn btn-sm btn-outline" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.activeToolInstance.copyToClipboard('${c.hex}')">Copy</button>
             </div>
         `).join('');
     }
@@ -262,6 +264,95 @@ class ImageStudioTool extends BaseTool {
         const f = this.filters;
         preview.style.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) grayscale(${f.grayscale}%) blur(${f.blur}px) sepia(${f.sepia}%)`;
         preview.style.transform = `rotate(${this.transform.rotate}deg) scale(${this.transform.flipH}, ${this.transform.flipV})`;
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.colorExtractor)
+
+    extractPalette(img) {
+        // Simple histogram-based palette extraction
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 100; // Resize to 100x100 for speed
+        canvas.width = size;
+        canvas.height = size;
+        ctx.drawImage(img, 0, 0, size, size);
+
+        const data = ctx.getImageData(0, 0, size, size).data;
+        const colorCounts = {};
+
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            // Skip fully transparent
+            if (data[i + 3] < 128) continue;
+
+            // Quantize to reduce color space (otherwise mostly unique colors)
+            // Round to nearest 32
+            const rQ = Math.round(r / 32) * 32;
+            const gQ = Math.round(g / 32) * 32;
+            const bQ = Math.round(b / 32) * 32;
+
+            const hex = "#" + ((1 << 24) + (rQ << 16) + (gQ << 8) + bQ).toString(16).slice(1);
+            colorCounts[hex] = (colorCounts[hex] || 0) + 1;
+        }
+
+        const sorted = Object.entries(colorCounts).sort((a, b) => b[1] - a[1]);
+        return sorted.slice(0, 6).map(entry => ({ hex: entry[0], count: entry[1] }));
+    }
+
+    processImage(img, ops) {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Calculate dimensions with rotation
+            const angle = Math.abs(ops.transform.rotate % 360);
+            const isVert = angle === 90 || angle === 270;
+
+            let w = img.width;
+            let h = img.height;
+
+            // If target width set, resize
+            if (ops.targetWidth && ops.targetWidth < w) {
+                const ratio = ops.targetWidth / w;
+                w = ops.targetWidth;
+                h = Math.round(h * ratio);
+            }
+
+            if (isVert) {
+                canvas.width = h;
+                canvas.height = w;
+            } else {
+                canvas.width = w;
+                canvas.height = h;
+            }
+
+            // Apply Filters via Context Filter (Modern browsers)
+            const f = ops.filters;
+            ctx.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) grayscale(${f.grayscale}%) blur(${f.blur}px) sepia(${f.sepia}%)`;
+
+            // Transforms
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(ops.transform.rotate * Math.PI / 180);
+            ctx.scale(ops.transform.flipH, ops.transform.flipV);
+
+            // Draw
+            ctx.drawImage(img, -w / 2, -h / 2, w, h);
+
+            // Fix blur edge not implemented here for simplicity as this is "process"
+            // If needed, same logic as PhotoEditor could be applied
+
+            if (ops.format === 'base64') {
+                resolve({ result: canvas.toDataURL('image/png') });
+            } else {
+                const mime = ops.format || 'image/png';
+                const q = ops.quality ? ops.quality / 100 : 0.9;
+                const url = canvas.toDataURL(mime, q);
+                const ext = mime.split('/')[1];
+                resolve({ url: url, download: `processed_${Date.now()}.${ext}` });
+            }
+        });
     }
 }
 
