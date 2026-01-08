@@ -123,9 +123,9 @@ class ResumeBuilderTool extends BaseTool {
                 .res-full-width { grid-column: span 2; }
                 .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 950px; margin: 15px auto; flex-shrink: 0; }
                 
-                /* Experience Grid for multi-column side-by-side cards (4-5 per row) */
-                .res-exp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; width: 100%; margin-bottom: 20px; }
-                @media (max-width: 900px) { .res-exp-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); } }
+                /* Experience Grid for ultra-compact multi-column (5-6 per row) */
+                .res-exp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; width: 100%; margin-bottom: 15px; }
+                @media (max-width: 900px) { .res-exp-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; } }
                 @media (max-width: 600px) { .res-exp-grid { grid-template-columns: 1fr; } }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
@@ -449,37 +449,37 @@ class ResumeBuilderTool extends BaseTool {
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h3 style="margin: 0; font-size: 1.15rem;">${txt.exp.title}</h3>
-                            <button onclick="window._addItem('exp')" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">+ ${txt.exp.add}</button>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">${txt.exp.title}</h3>
+                            <button onclick="window._addItem('exp')" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">+ ${txt.exp.add}</button>
                         </div>
                         <div class="res-exp-grid">
                             ${d.experience.map((ex, i) => `
-                                <div class="res-item-card" style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative; background: rgba(255,255,255,0.02);">
-                                    <button onclick="window._removeItem('experience', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px; z-index: 10;">✕</button>
-                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <div class="res-item-card" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; position: relative; background: rgba(255,255,255,0.02);">
+                                    <button onclick="window._removeItem('experience', ${i})" style="position: absolute; top: 6px; right: 6px; background: none; border: none; color: #ef4444; cursor: pointer; padding: 3px; z-index: 10; font-size: 0.9rem;">✕</button>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
                                         <div>
-                                            <label class="form-label" style="font-size: 0.85rem;">${txt.exp.company}</label>
-                                            <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'comp')" value="${ex.comp || ''}" placeholder="Şirket adı">
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.exp.company}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('experience', this.value, ${i}, 'comp')" value="${ex.comp || ''}" placeholder="Şirket">
                                         </div>
                                         <div>
-                                            <label class="form-label" style="font-size: 0.85rem;">${txt.exp.position}</label>
-                                            <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'role')" value="${ex.role || ''}" placeholder="Pozisyon">
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.exp.position}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('experience', this.value, ${i}, 'role')" value="${ex.role || ''}" placeholder="Pozisyon">
                                         </div>
                                         <div>
-                                            <label class="form-label" style="font-size: 0.85rem;">${txt.exp.start} / ${txt.exp.end}</label>
-                                            <input type="text" class="form-input" oninput="window._upField('experience', this.value, ${i}, 'date')" value="${ex.date || ''}" placeholder="2020 - 2023">
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.exp.start} / ${txt.exp.end}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('experience', this.value, ${i}, 'date')" value="${ex.date || ''}" placeholder="2020-2023">
                                         </div>
                                         <div>
-                                            <label class="form-label" style="font-size: 0.85rem;">${txt.exp.desc}</label>
-                                            <textarea class="form-input" rows="3" style="min-height: 70px; resize: vertical;" oninput="window._upField('experience', this.value, ${i}, 'desc')" placeholder="Görev ve sorumluluklar...">${ex.desc || ''}</textarea>
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.exp.desc}</label>
+                                            <textarea class="form-input" rows="2" style="min-height: 50px; resize: vertical; padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('experience', this.value, ${i}, 'desc')" placeholder="Görevler...">${ex.desc || ''}</textarea>
                                         </div>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
-                    <div style="height: 150px; flex-shrink: 0;"></div>
+                    <div style="height: 100px; flex-shrink: 0;"></div>
                 </div>
             `;
             c.appendChild(div);
@@ -489,33 +489,33 @@ class ResumeBuilderTool extends BaseTool {
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h3 style="margin: 0; font-size: 1.15rem;">${txt.edu.title}</h3>
-                            <button onclick="window._addItem('edu')" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">+ ${txt.edu.add}</button>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">${txt.edu.title}</h3>
+                            <button onclick="window._addItem('edu')" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">+ ${txt.edu.add}</button>
                         </div>
                         <div class="res-exp-grid">
                             ${d.education.map((ed, i) => `
-                                <div class="res-item-card" style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; position: relative; background: rgba(255,255,255,0.02);">
-                                    <button onclick="window._removeItem('education', ${i})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px; z-index: 10;">✕</button>
-                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <div class="res-item-card" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; position: relative; background: rgba(255,255,255,0.02);">
+                                    <button onclick="window._removeItem('education', ${i})" style="position: absolute; top: 6px; right: 6px; background: none; border: none; color: #ef4444; cursor: pointer; padding: 3px; z-index: 10; font-size: 0.9rem;">✕</button>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
                                         <div>
-                                            <label class="form-label" style="font-size: 0.85rem;">${txt.edu.school}</label>
-                                            <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'sch')" value="${ed.sch || ''}" placeholder="Okul adı">
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.edu.school}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('education', this.value, ${i}, 'sch')" value="${ed.sch || ''}" placeholder="Okul">
                                         </div>
                                         <div>
-                                            <label class="form-label" style="font-size: 0.85rem;">${txt.edu.degree}</label>
-                                            <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'deg')" value="${ed.deg || ''}" placeholder="Bölüm/Derece">
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.edu.degree}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('education', this.value, ${i}, 'deg')" value="${ed.deg || ''}" placeholder="Bölüm">
                                         </div>
                                         <div>
-                                            <label class="form-label" style="font-size: 0.85rem;">${txt.edu.start} / ${txt.edu.end}</label>
-                                            <input type="text" class="form-input" oninput="window._upField('education', this.value, ${i}, 'date')" value="${ed.date || ''}" placeholder="2018 - 2022">
+                                            <label class="form-label" style="font-size: 0.75rem; margin-bottom: 3px;">${txt.edu.start} / ${txt.edu.end}</label>
+                                            <input type="text" class="form-input" style="padding: 6px 8px; font-size: 0.85rem;" oninput="window._upField('education', this.value, ${i}, 'date')" value="${ed.date || ''}" placeholder="2018-2022">
                                         </div>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
-                    <div style="height: 150px; flex-shrink: 0;"></div>
+                    <div style="height: 100px; flex-shrink: 0;"></div>
                 </div>
             `;
             c.appendChild(div);
