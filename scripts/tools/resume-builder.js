@@ -54,13 +54,13 @@ class ResumeBuilderTool extends BaseTool {
             tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', l: 'Diller', v: 'Önizleme' },
             lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle' },
             btn: { next: 'Sonraki Adım >', prev: '< Geri', print: 'Yazdır / PDF', reset: 'Sıfırla' },
-            fonts: { sans: 'Standart', modern: 'Modern', display: 'Zarif', strong: 'Güçlü', serif: 'Serif', condensed: 'Sıkışık', mono: 'Kod' },
+            fonts: { sans: 'Standart', modern: 'Modern', display: 'Zarif', strong: 'Güçlü', serif: 'Serif', condensed: 'Sıkışık', mono: 'Kod', sweet: 'Tatlı (Nunito)', clean: 'Temiz (Open Sans)', elegant2: 'Zarif 2 (Raleway)', charismatic: 'Karizmatik (Merriweather)', modern2: 'Modern 2 (Lato)' },
             themes: { modern: 'Modern', nova: 'Nova (Modern)', orbit: 'Orbit (Koyu)', bloom: 'Bloom (Pastel)', wave: 'Wave (Dalga)', bold: 'Bold (Güçlü)', prime: 'Prime (Kurumsal)', elegant: 'Elegant (Yeni)', titan: 'Titan (Yeni)', cyber: 'Cyber (Yeni)', brutal: 'Brutal (Yeni)', executive: 'Yönetici', minimal: 'Minimal', leftside: 'Sol Sütun', skyline: 'Skyline', tech: 'Teknoloji' }
         } : {
             tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', l: 'Languages', v: 'Preview' },
             lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo' },
             btn: { next: 'Next Step >', prev: '< Back', print: 'Print / PDF', reset: 'Reset' },
-            fonts: { sans: 'Standard', modern: 'Modern', display: 'Elegant', strong: 'Strong', serif: 'Serif', condensed: 'Condensed', mono: 'Code' },
+            fonts: { sans: 'Standard', modern: 'Modern', display: 'Elegant', strong: 'Strong', serif: 'Serif', condensed: 'Condensed', mono: 'Code', sweet: 'Sweet (Nunito)', clean: 'Clean (Open Sans)', elegant2: 'Elegant 2 (Raleway)', charismatic: 'Charismatic (Merriweather)', modern2: 'Modern 2 (Lato)' },
             themes: { modern: 'Modern', nova: 'Nova (Modern)', orbit: 'Orbit (Dark)', bloom: 'Bloom (Pastel)', wave: 'Wave (Curve)', bold: 'Bold (Sharp)', prime: 'Prime (Corp)', elegant: 'Elegant (New)', titan: 'Titan (New)', cyber: 'Cyber (New)', brutal: 'Brutal (New)', executive: 'Executive', minimal: 'Minimal', leftside: 'Left Side', skyline: 'Skyline', tech: 'Tech' }
         };
 
@@ -312,11 +312,14 @@ class ResumeBuilderTool extends BaseTool {
             });
         };
 
-        loadLibraries().then(() => {
+        loadLibraries().then(async () => {
             // Temporarily remove zoom for accurate PDF generation
             const originalTransform = page.style.transform;
             page.style.transform = 'none';
             page.style.boxShadow = 'none';
+
+            // Wait for layout reflow
+            await new Promise(r => setTimeout(r, 150));
 
             setTimeout(() => {
                 window.html2canvas(page, {
