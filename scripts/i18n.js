@@ -129,10 +129,6 @@ const translations = {
         'notify.error': 'Bir hata oluştu',
         'notify.success': 'Başarılı!',
 
-        // Footer
-        'footer.madeWith': 'İle yapıldı',
-        'footer.by': 'tarafından',
-        'footer.allRights': 'Tüm hakları saklıdır',
 
         // Stats
         'stats.toolsUsed': 'Kullanılan Araçlar:',
