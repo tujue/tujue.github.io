@@ -65,6 +65,26 @@
             return;
         }
 
+        // Dynamically load tool script if it exists, with cache busting
+        // This assumes tool scripts are located at `scripts/tools/{toolId}.js`
+        const existingScript = document.getElementById(`script-${toolId}`);
+        if (!existingScript) {
+            const toolScript = document.createElement('script');
+            toolScript.id = `script-${toolId}`;
+            // Add timestamp/version to FORCE load fresh script (Bypass Cache)
+            // This solves "changes not showing up" issues across browsers
+            const cacheBuster = new Date().getTime();
+            toolScript.src = `scripts/tools/${tool.id}.js?v=${cacheBuster}`;
+            toolScript.async = true;
+            document.head.appendChild(toolScript);
+            // Wait for the script to load if necessary, though async usually means it runs when ready.
+            // For critical path, a Promise-based loader might be better.
+            await new Promise((resolve, reject) => {
+                toolScript.onload = resolve;
+                toolScript.onerror = reject;
+            });
+        }
+
         // Get current language
         const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'en';
         const toolName = getToolName(tool, currentLang);
