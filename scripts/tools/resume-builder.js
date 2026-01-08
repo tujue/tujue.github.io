@@ -867,6 +867,19 @@ class ResumeBuilderTool extends BaseTool {
 
         const title = document.querySelector('.workspace-header .workspace-title');
         if (title) title.style.cssText = '';
+
+        // CLEANUP: Remove injected styles to prevent conflicts
+        const style = document.getElementById('res-style-inj');
+        if (style) style.remove();
+
+        // CLEANUP: Remove global handlers to prevent memory leaks and double-firing
+        [
+            '_resTab', '_resNav', '_resReset', '_setTheme',
+            '_printPdf', '_setFont', '_setColor', '_addItem',
+            '_removeItem', '_upField', '_delItem', '_upItem'
+        ].forEach(fn => {
+            if (window[fn]) delete window[fn];
+        });
     }
 
     fitPreview() {
