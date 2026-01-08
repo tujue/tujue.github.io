@@ -542,10 +542,10 @@ class ResumeBuilderTool extends BaseTool {
 
         if (this.zoom === 'fit') {
             // Smart Fit Strategy:
-            // Fit to available width, but CAP at 1.0 (Original Size).
-            // This prevents the CV from looking huge on wide screens, keeping it readable and professional.
+            // Fit to available width, but CAP at 0.85 (85%).
+            // User prefers ~80% view for better readability and layout overview.
             const wScale = contW / pageW;
-            this.scaleValue = Math.min(wScale, 1.05); // Allow slight 5% magnification, but mostly 1:1
+            this.scaleValue = Math.min(wScale, 0.85);
         }
 
         page.style.transform = `scale(${this.scaleValue})`;
