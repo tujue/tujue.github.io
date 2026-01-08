@@ -117,11 +117,25 @@ class WebScraperTool extends BaseTool {
             status.textContent = curTxt.conn;
 
             try {
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url.value)}`;
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Proxy connection failed');
-                const jsonData = await response.json();
-                const html = jsonData.contents;
+                let html = '';
+                // Try AllOrigins first
+                try {
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url.value)}`;
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error('Primary proxy failed');
+                    const jsonData = await response.json();
+                    html = jsonData.contents;
+                } catch (e) {
+                    // Fallback to Corsproxy.io
+                    console.warn("Primary proxy failed, trying fallback...", e);
+                    status.textContent = "STATUS: SWITCHING TO FALLBACK PROXY...";
+                    const fallbackUrl = `https://corsproxy.io/?${encodeURIComponent(url.value)}`;
+                    const response = await fetch(fallbackUrl);
+                    if (!response.ok) throw new Error('All proxies failed. Please check URL or try again later.');
+                    html = await response.text();
+                }
+
+                if (!html) throw new Error('No content retrieved');
 
                 this.data = this.analyze(html, url.value);
 
@@ -165,13 +179,19 @@ class WebScraperTool extends BaseTool {
     _renderTab(t) {
         if (!this.data) return;
         const cont = document.getElementById('ws-cont');
+        let content = '';
+
         if (t === 'links') {
-            cont.innerHTML = this.data.links.map(l => `<div class="ws-row"><a href="${l.href}" target="_blank">${l.text || '[LINK]'}</a><br><small style="opacity:0.4;">${l.href}</small></div>`).join('');
+            if (this.data.links.length === 0) content = '<div class="ws-row">No links found.</div>';
+            else content = this.data.links.map(l => `<div class="ws-row"><a href="${l.href}" target="_blank">${l.text || '[LINK]'}</a><br><small style="opacity:0.4;">${l.href}</small></div>`).join('');
         } else if (t === 'images') {
-            cont.innerHTML = this.data.images.map(i => `<div class="ws-row" style="display:flex; gap:10px; align-items:center;"><img src="${i.src}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;"><small style="opacity:0.4;">${i.src}</small></div>`).join('');
+            if (this.data.images.length === 0) content = '<div class="ws-row">No images found.</div>';
+            else content = this.data.images.map(i => `<div class="ws-row" style="display:flex; gap:10px; align-items:center;"><img src="${i.src}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;"><small style="opacity:0.4;">${i.src}</small></div>`).join('');
         } else if (t === 'meta') {
-            cont.innerHTML = this.data.meta.map(m => `<div class="ws-row"><strong>${m.name}:</strong> ${m.content}</div>`).join('');
+            if (this.data.meta.length === 0) content = '<div class="ws-row">No metadata found.</div>';
+            else content = this.data.meta.map(m => `<div class="ws-row"><strong>${m.name}:</strong> ${m.content}</div>`).join('');
         }
+        cont.innerHTML = content;
     }
 
     // INTERNAL LOGIC (Formerly in DevTools.scraperTools)
