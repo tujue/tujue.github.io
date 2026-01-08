@@ -536,24 +536,31 @@ class ResumeBuilderTool extends BaseTool {
         const page = document.getElementById('res-a4-page');
         if (!container || !page) return;
 
-        const contW = container.clientWidth - 80;
-        const contH = container.clientHeight - 80;
+        const contW = container.clientWidth - 40; // Reduced padding for wider view
         const pageW = 794;
         const pageH = 1123;
 
         if (this.zoom === 'fit') {
-            const scale = Math.min(contW / pageW, contH / pageH);
-            this.scaleValue = Math.min(scale, 1.2);
+            // Fit to Width strategy: Ignore height constraint to keep text readable
+            // Cap at 1.4x zoom to prevent excessive pixelation on very large screens
+            const scale = Math.min(contW / pageW, 1.4);
+            this.scaleValue = scale;
         }
 
         page.style.transform = `scale(${this.scaleValue})`;
+        // Adjust layout space for scaled element
         page.style.marginBottom = `-${(1 - this.scaleValue) * pageH}px`;
+        page.style.marginTop = '20px'; // Add some breathing room at top
 
         const lbl = document.getElementById('z-val');
-        if (lbl) lbl.textContent = this.zoom === 'fit' ? 'FIT' : Math.round(this.scaleValue * 100) + '%';
+        if (lbl) lbl.textContent = this.zoom === 'fit' ? 'FIT W' : Math.round(this.scaleValue * 100) + '%';
 
-        container.style.overflowY = (this.scaleValue * pageH > contH) ? 'auto' : 'hidden';
-        container.style.alignItems = (this.scaleValue * pageH > contH) ? 'flex-start' : 'center'; // Center vertically if fits
+        // Enable scroll behavior
+        const effectiveH = pageH * this.scaleValue;
+        const contH = container.clientHeight;
+
+        container.style.overflowY = 'auto';
+        container.style.alignItems = (effectiveH > contH) ? 'flex-start' : 'center';
     }
 
     _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
