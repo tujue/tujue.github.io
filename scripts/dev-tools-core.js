@@ -550,7 +550,7 @@
                 }
                 else if (theme === 'bold') {
                     css += `
-                        .a4-page { display: grid; grid-template-columns: 32% 68%; height: 1123px; min-height: 1123px; overflow: hidden; font-family: 'Poppins', sans-serif; }
+                        .a4-page { display: grid; grid-template-columns: 32% 68%; height: 1123px; min-height: 1123px; overflow: hidden; font-family: 'Poppins', sans-serif; padding: 0 !important; margin: 0; }
                         .k-left { background: #2d3748; color: white; position: relative; display: flex; flex-direction: column; height: 100%; }
                         .k-top-yellow { height: 140px; background: #ffc107; width: 100%; flex-shrink: 0; }
                         .k-photo-container { margin: -70px auto 15px; position: relative; z-index: 1; width: 120px; height: 120px; border-radius: 50%; border: 5px solid white; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.3); background:white; }
@@ -1071,19 +1071,7 @@
                             `).join('')}
                         </div>
                         
-                        ${d.interests ? `
-                        <div class="k-left-sec">
-                            <div class="k-sec-icon-head">
-                                <div class="k-sec-icon">❤️</div>
-                                <div>
-                                    <div class="k-sec-name">${isTr ? 'İlgi Alanları' : 'Interests'}</div>
-                                    <div class="k-sec-line"></div>
-                                </div>
-                            </div>
-                            <div class="k-interest-container" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                ${(d.interests || '').split(',').map(i => `<div class="k-interest-bullet" style="margin:0;">${i.trim()}</div>`).join('')}
-                            </div>
-                        </div>` : ''}
+                        </div>
 
                     </div>
         <div class="k-right">
@@ -1137,6 +1125,17 @@
                 </div>
             </div>
             ` : ''}
+
+            ${d.interests ? `
+            <div class="k-r-section">
+                 <div class="k-r-head">
+                    <div class="k-r-icon">❤️</div>
+                    <div class="k-r-title">${isTr ? 'İlgi Alanları' : 'Interests'}</div>
+                </div>
+                <div class="k-interest-container" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    ${(d.interests || '').split(',').map(i => `<div class="k-interest-bullet" style="margin:0; color:#4b5563; font-weight:500;">${i.trim()}</div>`).join('')}
+                </div>
+            </div>` : ''}
         </div>
     `;
                 }
