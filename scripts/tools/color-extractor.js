@@ -269,36 +269,124 @@ class ImageStudioTool extends BaseTool {
     // INTERNAL LOGIC (Formerly in DevTools.colorExtractor)
 
     extractPalette(img) {
-        // Simple histogram-based palette extraction
+        // Professional K-means color palette extraction
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const size = 100; // Resize to 100x100 for speed
+        const size = 150; // Higher resolution for better sampling
         canvas.width = size;
         canvas.height = size;
         ctx.drawImage(img, 0, 0, size, size);
 
-        const data = ctx.getImageData(0, 0, size, size).data;
-        const colorCounts = {};
+        const imageData = ctx.getImageData(0, 0, size, size).data;
+        const pixels = [];
 
-        for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            // Skip fully transparent
-            if (data[i + 3] < 128) continue;
+        // Collect all pixels (skip transparent ones)
+        for (let i = 0; i < imageData.length; i += 4) {
+            const a = imageData[i + 3];
+            if (a < 128) continue; // Skip transparent pixels
 
-            // Quantize to reduce color space (otherwise mostly unique colors)
-            // Round to nearest 32
-            const rQ = Math.round(r / 32) * 32;
-            const gQ = Math.round(g / 32) * 32;
-            const bQ = Math.round(b / 32) * 32;
-
-            const hex = "#" + ((1 << 24) + (rQ << 16) + (gQ << 8) + bQ).toString(16).slice(1);
-            colorCounts[hex] = (colorCounts[hex] || 0) + 1;
+            pixels.push({
+                r: imageData[i],
+                g: imageData[i + 1],
+                b: imageData[i + 2]
+            });
         }
 
-        const sorted = Object.entries(colorCounts).sort((a, b) => b[1] - a[1]);
-        return sorted.slice(0, 6).map(entry => ({ hex: entry[0], count: entry[1] }));
+        if (pixels.length === 0) return [];
+
+        // K-means clustering to find dominant colors
+        const k = 8; // Number of colors to extract
+        const maxIterations = 20;
+
+        // Initialize centroids randomly
+        let centroids = [];
+        for (let i = 0; i < k; i++) {
+            const randomPixel = pixels[Math.floor(Math.random() * pixels.length)];
+            centroids.push({ ...randomPixel });
+        }
+
+        // K-means iterations
+        for (let iter = 0; iter < maxIterations; iter++) {
+            // Assign pixels to nearest centroid
+            const clusters = Array.from({ length: k }, () => []);
+
+            pixels.forEach(pixel => {
+                let minDist = Infinity;
+                let closestIdx = 0;
+
+                centroids.forEach((centroid, idx) => {
+                    const dist = Math.sqrt(
+                        Math.pow(pixel.r - centroid.r, 2) +
+                        Math.pow(pixel.g - centroid.g, 2) +
+                        Math.pow(pixel.b - centroid.b, 2)
+                    );
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestIdx = idx;
+                    }
+                });
+
+                clusters[closestIdx].push(pixel);
+            });
+
+            // Update centroids (average of cluster)
+            let converged = true;
+            centroids = centroids.map((centroid, idx) => {
+                const cluster = clusters[idx];
+                if (cluster.length === 0) return centroid;
+
+                const newCentroid = {
+                    r: Math.round(cluster.reduce((sum, p) => sum + p.r, 0) / cluster.length),
+                    g: Math.round(cluster.reduce((sum, p) => sum + p.g, 0) / cluster.length),
+                    b: Math.round(cluster.reduce((sum, p) => sum + p.b, 0) / cluster.length)
+                };
+
+                // Check convergence
+                if (Math.abs(newCentroid.r - centroid.r) > 1 ||
+                    Math.abs(newCentroid.g - centroid.g) > 1 ||
+                    Math.abs(newCentroid.b - centroid.b) > 1) {
+                    converged = false;
+                }
+
+                return newCentroid;
+            });
+
+            if (converged) break;
+        }
+
+        // Sort by cluster size (most dominant colors first)
+        const results = centroids.map((centroid, idx) => {
+            const cluster = pixels.filter(pixel => {
+                let minDist = Infinity;
+                let closestIdx = 0;
+
+                centroids.forEach((c, i) => {
+                    const dist = Math.sqrt(
+                        Math.pow(pixel.r - c.r, 2) +
+                        Math.pow(pixel.g - c.g, 2) +
+                        Math.pow(pixel.b - c.b, 2)
+                    );
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestIdx = i;
+                    }
+                });
+
+                return closestIdx === idx;
+            });
+
+            const hex = "#" + ((1 << 24) + (centroid.r << 16) + (centroid.g << 8) + centroid.b).toString(16).slice(1);
+
+            return {
+                hex: hex.toUpperCase(),
+                count: cluster.length,
+                rgb: `rgb(${centroid.r}, ${centroid.g}, ${centroid.b})`
+            };
+        });
+
+        return results
+            .filter(c => c.count > 0)
+            .sort((a, b) => b.count - a.count);
     }
 
     processImage(img, ops) {
