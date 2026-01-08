@@ -541,10 +541,11 @@ class ResumeBuilderTool extends BaseTool {
         const pageH = 1123;
 
         if (this.zoom === 'fit') {
-            // Fit to Width strategy: Ignore height constraint to keep text readable
-            // Cap at 1.4x zoom to prevent excessive pixelation on very large screens
-            const scale = Math.min(contW / pageW, 1.4);
-            this.scaleValue = scale;
+            // Smart Fit Strategy:
+            // Fit to available width, but CAP at 1.0 (Original Size).
+            // This prevents the CV from looking huge on wide screens, keeping it readable and professional.
+            const wScale = contW / pageW;
+            this.scaleValue = Math.min(wScale, 1.05); // Allow slight 5% magnification, but mostly 1:1
         }
 
         page.style.transform = `scale(${this.scaleValue})`;
