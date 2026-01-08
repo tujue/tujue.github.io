@@ -74,7 +74,7 @@
 - **Steganography** - Hide messages in images
 - **IP Lookup** - Get IP information & geolocation
 
-### 🎬 Media Tools (6)
+### 🎬 Media Tools (4)
 - **PDF Manager** - Merge, rotate, extract pages, images to PDF
 - **OCR Tool** - Extract text from images (Tesseract.js)
 - **Audio Waveform** - Visualize audio waveforms
