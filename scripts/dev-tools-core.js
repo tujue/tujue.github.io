@@ -1128,7 +1128,7 @@
             <div class="o-box">
                 <div class="o-box-head">
                     <div class="o-icon-box">🎓</div>
-                    <div class="o-box-title">${isTr ? 'Eğitim & Beceriler' : 'Education & Skills'}</div>
+                    <div class="o-box-title">${isTr ? 'Eğitim & Yetenekler' : 'Education & Skills'}</div>
                 </div>
                 <div class="o-box-content">
                     <ul class="o-list">
@@ -1262,40 +1262,40 @@
                     html = headerHtml + `
                     
                     ${d.summary ? `
-                    <div class="res-section">
-                        <div class="res-sec-title">${isTr ? 'ÖZET' : 'SUMMARY'}</div>
-                        <div class="res-desc" style="margin-bottom:20px;">${d.summary}</div>
+                    <div class="res-section" style="margin-bottom: 10px;">
+                        <div class="res-sec-title" style="margin-bottom: 4px;">${lbl.profile}</div>
+                        <div class="res-desc" style="margin-top:0;">${d.summary}</div>
                     </div>` : ''}
                     
-                    <div class="res-section">
-                        <div class="res-sec-title">${lbl.exp}</div>
+                    <div class="res-section" style="margin-bottom: 10px;">
+                        <div class="res-sec-title" style="margin-bottom: 4px;">${lbl.exp}</div>
                         ${d.experience.map(e => `
-                            <div class="res-item">
-                                <div class="res-item-head">
+                            <div class="res-item" style="margin-bottom: 8px;">
+                                <div class="res-item-head" style="margin-bottom: 1px;">
                                     <span class="res-role">${e.role}</span>
-                                    <span class="res-date">${e.date}</span>
+                                    <span class="res-date" style="font-size: 0.8em;">${e.date}</span>
                                 </div>
-                                <div class="res-comp">${e.comp}</div>
-                                ${e.desc ? `<div class="res-desc">${e.desc}</div>` : ''}
+                                <div class="res-comp" style="margin-bottom: 2px;">${e.comp}</div>
+                                ${e.desc ? `<div class="res-desc" style="margin-top:0;">${e.desc}</div>` : ''}
                             </div>
                         `).join('')}
                     </div>
 
-                    <div class="res-section">
-                        <div class="res-sec-title">${lbl.edu}</div>
+                    <div class="res-section" style="margin-bottom: 10px;">
+                        <div class="res-sec-title" style="margin-bottom: 4px;">${lbl.edu}</div>
                         ${d.education.map(e => `
-                            <div class="res-item">
-                                <div class="res-item-head">
+                            <div class="res-item" style="margin-bottom: 6px;">
+                                <div class="res-item-head" style="margin-bottom: 1px;">
                                     <span class="res-role">${e.deg}</span>
-                                    <span class="res-date">${e.date}</span>
+                                    <span class="res-date" style="font-size: 0.8em;">${e.date}</span>
                                 </div>
                                 <div class="res-comp">${e.sch}</div>
                             </div>
                         `).join('')}
                     </div>
 
-                    <div class="res-section" style="margin-bottom: 12px;">
-                        <div class="res-sec-title" style="margin-bottom: 6px;">${lbl.skills}</div>
+                    <div class="res-section" style="margin-bottom: 8px;">
+                        <div class="res-sec-title" style="margin-bottom: 4px;">${lbl.skills}</div>
                         <div class="res-skills" style="gap: 6px;">
                             ${d.skills.split(',').map(s => s.trim() ? `<span class="res-tag" style="padding: 3px 8px; font-size: 0.8rem;">${s.trim()}</span>` : '').join('')}
                         </div>
