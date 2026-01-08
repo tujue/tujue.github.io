@@ -335,46 +335,25 @@
                      `;
                 }
                 else if (theme === 'titan') {
-                    // NEW: Masculine / Strong
-                    css += `
-                        .res-header { border-bottom: 6px solid ${color}; padding-bottom: 30px; }
-                        .res-name { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 4rem; letter-spacing: 1px; line-height: 1; }
-                        .res-title { background: ${color}; color: white; display: inline-block; padding: 5px 15px; transform: skewX(-10deg); margin-left: 5px; font-weight: bold; }
-                        .res-sec-title { border: none; border-left: 10px solid ${color}; padding-left: 15px; font-family: 'Oswald', sans-serif; font-size: 1.5rem; background: #edf2f7; padding-top: 8px; padding-bottom: 8px; color: #2d3748; }
-                        .res-tag { background: ${color}; color: white; border-radius: 0; font-weight: bold; text-transform: uppercase; font-family: 'Oswald', sans-serif; border:none; letter-spacing: 0.05em; }
-                        .res-photo { border-radius: 4px; box-shadow: 10px 10px 0 ${color}; width: 140px; height: 140px; border: 4px solid white; object-fit: cover; }
-                        .res-item-head { font-family: 'Oswald', sans-serif; font-size: 1.2rem; }
-                        .res-role { font-weight: 500; }
-                    `;
+                    if (!d.color || d.color === '#2d3748') color = '#34495e';
+                    css += `.a4-page { background: white; color: ${color}; font-size: 0.85rem; } .res-header { text-align: center; border-bottom: 2px solid ${color}; padding-bottom: 15px; } .res-sec-title { background: ${color}; color: white; padding: 4px 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; } .res-item { border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 10px; }`;
                 }
                 else if (theme === 'cyber') {
-                    css += `
-                        .a4-page { background: #111827; color: #9ca3af; font-family: 'JetBrains Mono', monospace; }
-                        .res-header { border-bottom: 2px dashed ${color}; padding-bottom: 25px; }
-                        .res-name { color: ${color}; font-size: 2.5rem; text-shadow: 0 0 15px ${color}60; font-weight: 700; letter-spacing: -1px; }
-                        .res-title { color: #e5e7eb; background: ${color}20; padding: 5px 10px; display: inline-block; border: 1px solid ${color}40; margin-top: 10px; }
-                        .res-contact { color: #d1d5db; }
-                        .res-sec-title { color: #ffffff; border-left: 4px solid ${color}; padding-left: 15px; background: linear-gradient(90deg, ${color}40, transparent); padding-top:6px; padding-bottom:6px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.5); font-weight: 700; letter-spacing: 1px; }
-                        .res-role { color: #ffffff; font-weight: 700; font-size: 1.1rem; text-shadow: 0 0 8px ${color}; margin-bottom: 2px; }
-                        .res-comp { color: #e5e7eb; font-weight: 500; font-size: 0.9rem; }
-                        .res-date { color: #9ca3af; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
-                        .res-tag { background: #1f2937; color: ${color}; border: 1px solid ${color}40; border-radius: 4px; }
-                        .res-photo { border: 2px solid ${color}; border-radius: 10px; box-shadow: 0 0 20px ${color}30; width: 120px; height: 120px; object-fit: cover; }
-                    `;
+                    css += `.a4-page { background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; font-size: 0.8rem; } 
+                            .res-sec-title { border-bottom: 1px solid #00ff41; color: #00ff41; text-shadow: 0 0 5px #00ff41; font-size: 1rem; margin-bottom: 10px; } 
+                            .res-name { text-shadow: 2px 2px 0px #003300; font-size: 2.5rem; } 
+                            .res-role { color: white; text-shadow: 1px 1px 0 #000; font-size: 0.9rem; } 
+                            .res-comp { color: #008F11; font-size: 0.85rem; }
+                            .res-desc { color: #00ff41; opacity: 0.9; font-size: 0.8rem; }`;
                 }
                 else if (theme === 'brutal') {
-                    css += `
-                        .a4-page { background: #fff; font-family: 'Courier New', monospace; border: 8px solid #000; }
-                        .res-header { background: ${color}; color: #fff; margin: -40px -40px 40px; padding: 40px; border-bottom: 5px solid #000; }
-                        .res-name { font-size: 3.5rem; letter-spacing: -2px; text-shadow: 4px 4px 0 #000; margin-bottom: 5px; line-height:1; }
-                        .res-title { background: #000; color: #fff; padding: 5px 15px; font-weight: bold; font-size: 1.1rem; display:inline-block; margin-bottom: 15px; }
-                        .res-contact { color: rgba(255,255,255,0.9); font-weight:bold; }
-                        .res-sec-title { background: #000; color: #fff; padding: 10px 15px; font-size: 1.4rem; font-weight: 900; transform: rotate(-1deg); display: inline-block; box-shadow: 5px 5px 0 ${color}; border: 2px solid #fff; margin-bottom:25px; }
-                        .res-item { border-left: 5px solid #000; padding-left: 20px; }
-                        .res-role { font-weight: 900; font-size: 1.2rem; text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: ${color}; }
-                        .res-tag { background: #fff; color: #000; border: 3px solid #000; font-weight: bold; box-shadow: 3px 3px 0 #000; border-radius:0; }
-                        .res-photo { border: 5px solid #000; box-shadow: 8px 8px 0 #fff; border-radius: 0; width:130px; height: 130px; float:right; background:white; object-fit: cover; }
-                    `;
+                    if (!d.color || d.color === '#2d3748') color = 'black';
+                    f = fonts.mono;
+                    css += `.a4-page { background: #fff; border: 10px solid black; font-size: 0.8rem; } 
+                            .res-header { border-bottom: 4px solid black; padding-bottom: 20px; margin-bottom: 20px; } 
+                            .res-name { text-transform: uppercase; font-weight: 900; font-size: 2.2rem; background: black; color: white; display: inline-block; padding: 5px 15px; } 
+                            .res-sec-title { background: black; color: white; display: inline-block; padding: 5px 10px; font-weight: bold; text-transform: uppercase; border: 2px solid black; margin-bottom: 10px; font-size: 0.9rem; } 
+                            .res-tag { border: 2px solid black; background: transparent; color: black; border-radius: 0; font-weight: bold; font-size: 0.75rem; }`;
                 }
                 else if (theme === 'nova') {
                     if (!d.color || d.color === '#2d3748') color = '#be185d'; // Pink
@@ -618,7 +597,7 @@
                              .res-role { font-weight: 700; font-size: 1.1rem; } `;
                 }
                 else if (theme === 'minimal') {
-                    css += `.a4-page { padding: 50px 70px; } .res-sec-title { border: none; letter-spacing: 0.2em; font-size: 0.85rem; color: #a0aec0; margin-bottom: 20px; text-align: right; margin-right: -20px; padding-right: 20px; border-right: 3px solid ${color}; } .res-name { font-weight: 300; letter-spacing: -1px; font-size: 3rem; } .res-item-head { flex-direction: column; gap: 2px; } .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; } .res-tag { background: white; border: 1px solid #e2e8f0; color: #718096; } `;
+                    css += `.a4-page { padding: 30px 40px; } .res-sec-title { border: none; letter-spacing: 0.2em; font-size: 0.85rem; color: #a0aec0; margin-bottom: 20px; text-align: right; margin-right: -20px; padding-right: 20px; border-right: 3px solid ${color}; } .res-name { font-weight: 300; letter-spacing: -1px; font-size: 3rem; } .res-item-head { flex-direction: column; gap: 2px; } .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; } .res-tag { background: white; border: 1px solid #e2e8f0; color: #718096; } `;
                 }
                 else if (theme === 'skyline') {
                     css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; }`;
@@ -640,24 +619,11 @@
                 let html = '';
 
                 // Special layout for 'executive' to wrap photo correctly
-                if (theme === 'executive') {
-                    html = `
-        <div class="res-header">
-            <div class="res-info">
-                <div class="res-name">${d.name}</div>
-                <div class="res-title">${d.title}</div>
-                <div class="res-contact">
-                    <span>📧 ${d.email}</span>
-                    <span>🔗 ${d.website}</span>
-                    ${d.phone ? `<span>📱 ${d.phone}</span>` : ''}
-                    ${d.address ? `<span>📍 ${d.address}</span>` : ''}
-                </div>
-            </div>
-                         ${photoHtml}
-                    </div >
-        `;
-                }
-                else if (theme === 'nova') {
+                // Special layout for 'executive' merged into standard layout below
+                /*
+                if (theme === 'executive') { ... } 
+                */
+                if (theme === 'nova') {
                     html = `
         <div class="v-sidebar">
             ${d.photo ? `<img src="${d.photo}" class="v-photo">` : ''}
@@ -1269,18 +1235,38 @@
                 }
                 else {
                     // Standard Layout (Elegant, Titan, Modern, etc)
-                    html = `
-        <div class="res-header">
-            ${photoHtml}
-                        <div class="res-name">${d.name}</div>
-                        <div class="res-title">${d.title}</div>
-                        <div class="res-contact">
-                            <span>📧 ${d.email}</span>
-                            <span>🔗 ${d.website}</span>
-                           ${d.phone ? `<span>📱 ${d.phone}</span>` : ''}
-                            ${d.address ? `<span>📍 ${d.address}</span>` : ''}
-                        </div>
-                    </div >
+                    let headerHtml = '';
+                    if (theme === 'executive') {
+                        headerHtml = `
+                        <div class="res-header">
+                            <div class="res-info">
+                                <div class="res-name">${d.name}</div>
+                                <div class="res-title">${d.title}</div>
+                                <div class="res-contact">
+                                    <span>📧 ${d.email}</span>
+                                    <span>🔗 ${d.website}</span>
+                                    ${d.phone ? `<span>📱 ${d.phone}</span>` : ''}
+                                    ${d.address ? `<span>📍 ${d.address}</span>` : ''}
+                                </div>
+                            </div>
+                            ${photoHtml}
+                        </div>`;
+                    } else {
+                        headerHtml = `
+                        <div class="res-header">
+                            ${photoHtml}
+                            <div class="res-name">${d.name}</div>
+                            <div class="res-title">${d.title}</div>
+                            <div class="res-contact">
+                                <span>📧 ${d.email}</span>
+                                <span>🔗 ${d.website}</span>
+                                ${d.phone ? `<span>📱 ${d.phone}</span>` : ''}
+                                ${d.address ? `<span>📍 ${d.address}</span>` : ''}
+                            </div>
+                        </div>`;
+                    }
+
+                    html = headerHtml + `
                     
                     ${d.summary ? `
                     <div class="res-section">
@@ -1339,187 +1325,130 @@
                     </div>
     `;
 
-                    if (theme === 'executive') {
-                        // Append sections to predefined header html for executive
-                        html = html.replace('<div class="res-header">', '');
-                        // Executive logic handled completely separately above? 
-                        // No, I need to merge standard sections with executive header.
-                        // Let's re-do executive html block structure in standard flow.
-                        // Fix applied below:
-                    }
                 }
-
-                // --- FIX FOR EXECUTIVE LAYOUT MERGE ---
-                if (theme === 'executive') {
-                    html = `
-        <div class="res-header">
-            <div class="res-info">
-                <div class="res-name">${d.name}</div>
-                <div class="res-title">${d.title}</div>
-                <div class="res-contact">
-                    <span>📧 ${d.email}</span>
-                    <span>🔗 ${d.website}</span>
-                    ${d.phone ? `<span>📱 ${d.phone}</span>` : ''}
-                    ${d.address ? `<span>📍 ${d.address}</span>` : ''}
-                </div>
-            </div>
-                         ${photoHtml}
-                    </div >
-                    <div class="res-section">
-                        <div class="res-sec-title">${lbl.exp}</div>
-                        ${d.experience.map(e => `
-                            <div class="res-item">
-                                <div class="res-item-head">
-                                    <span class="res-role">${e.role}</span>
-                                    <span class="res-date">${e.date}</span>
-                                </div>
-                                <div class="res-comp">${e.comp}</div>
-                                ${e.desc ? `<div class="res-desc">${e.desc}</div>` : ''}
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="res-section">
-                        <div class="res-sec-title">${lbl.edu}</div>
-                        ${d.education.map(e => `
-                            <div class="res-item">
-                                <div class="res-item-head">
-                                    <span class="res-role">${e.deg}</span>
-                                    <span class="res-date">${e.date}</span>
-                                </div>
-                                <div class="res-comp">${e.sch}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="res-section">
-                         <div class="res-sec-title">${lbl.skills}</div>
-                        <div class="res-skills">
-                            ${d.skills.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
-                        </div>
-                    </div>
-    `;
-                }
-
-                return { html, css };
             }
-        },
+
+    return { html, css };
+        }
+    },
 
         // --- CONVERTERS ---
 
         dataConverters: {
-            jsonToCsv: function (json, options = {}) {
-                try {
-                    let arr = typeof json !== 'object' ? JSON.parse(json) : json;
-                    if (arr && typeof arr === 'object' && !Array.isArray(arr)) arr = [arr];
-                    if (!Array.isArray(arr) || arr.length === 0) return { success: false, message: "Valid JSON Array Required" };
-                    const flatten = (obj, prefix = '', res = {}) => {
-                        for (let key in obj) {
-                            if (!obj.hasOwnProperty(key)) continue;
-                            const val = obj[key];
-                            const newKey = prefix ? `${prefix}.${key} ` : key;
-                            if (val && typeof val === 'object' && !Array.isArray(val)) flatten(val, newKey, res);
-                            else res[newKey] = val;
-                        }
-                        return res;
-                    };
-                    const flatArr = arr.map(item => flatten(item));
-                    const headers = [...new Set(flatArr.flatMap(Object.keys))];
-                    const delim = options.delimiter || ',';
-                    const includeHeader = options.header !== false;
-
-                    const rows = flatArr.map(obj => headers.map(header => {
-                        let val = obj[header];
-                        if (val === null || val === undefined) return '';
-                        let strVal = (typeof val === 'object') ? JSON.stringify(val) : String(val);
-                        if (strVal.includes(delim) || strVal.includes('"') || strVal.includes('\n')) strVal = `"${strVal.replace(/\"/g, '""')}"`;
-                        return strVal;
-                    }).join(delim));
-
-                    const csvContent = (includeHeader ? [headers.join(delim)] : []).concat(rows).join('\n');
-                    return { success: true, result: csvContent, message: "OK" };
-                } catch (e) { return { success: false, message: "JSON Error: " + e.message }; }
-            },
-            csvToJson: function (csv, options = {}) {
-                try {
-                    if (!csv || !csv.trim()) return { success: false, message: "Empty CSV" };
-                    const delim = options.delimiter || ',';
-                    const hasHeader = options.header !== false;
-                    const lines = [];
-                    let currentRow = [], currentVal = '', inQuotes = false;
-                    for (let i = 0; i < csv.length; i++) {
-                        const char = csv[i];
-                        if (char === '"') { if (inQuotes && csv[i + 1] === '"') { currentVal += '"'; i++; } else { inQuotes = !inQuotes; } }
-                        else if (char === delim && !inQuotes) { currentRow.push(currentVal); currentVal = ''; }
-                        else if ((char === '\r' || char === '\n') && !inQuotes) { currentRow.push(currentVal); lines.push(currentRow); currentRow = []; currentVal = ''; if (char === '\r' && csv[i + 1] === '\n') i++; }
-                        else { currentVal += char; }
+        jsonToCsv: function (json, options = {}) {
+            try {
+                let arr = typeof json !== 'object' ? JSON.parse(json) : json;
+                if (arr && typeof arr === 'object' && !Array.isArray(arr)) arr = [arr];
+                if (!Array.isArray(arr) || arr.length === 0) return { success: false, message: "Valid JSON Array Required" };
+                const flatten = (obj, prefix = '', res = {}) => {
+                    for (let key in obj) {
+                        if (!obj.hasOwnProperty(key)) continue;
+                        const val = obj[key];
+                        const newKey = prefix ? `${prefix}.${key} ` : key;
+                        if (val && typeof val === 'object' && !Array.isArray(val)) flatten(val, newKey, res);
+                        else res[newKey] = val;
                     }
-                    if (currentVal || currentRow.length) { currentRow.push(currentVal); lines.push(currentRow); }
-                    if (lines.length > 0 && lines[lines.length - 1].length === 1 && lines[lines.length - 1][0] === '') lines.pop(); // Remove empty last line
-                    if (lines.length < 1) return { success: false, message: "Empty Data" };
+                    return res;
+                };
+                const flatArr = arr.map(item => flatten(item));
+                const headers = [...new Set(flatArr.flatMap(Object.keys))];
+                const delim = options.delimiter || ',';
+                const includeHeader = options.header !== false;
 
-                    let headers;
-                    let dataLines;
-                    if (hasHeader) { headers = lines[0].map(h => h.trim()); dataLines = lines.slice(1); }
-                    else { headers = lines[0].map((_, i) => `field${i + 1}`); dataLines = lines; }
+                const rows = flatArr.map(obj => headers.map(header => {
+                    let val = obj[header];
+                    if (val === null || val === undefined) return '';
+                    let strVal = (typeof val === 'object') ? JSON.stringify(val) : String(val);
+                    if (strVal.includes(delim) || strVal.includes('"') || strVal.includes('\n')) strVal = `"${strVal.replace(/\"/g, '""')}"`;
+                    return strVal;
+                }).join(delim));
 
-                    const result = dataLines.map(row => {
-                        const flatObj = {};
-                        headers.forEach((header, idx) => {
-                            let val = row[idx] !== undefined ? row[idx] : "";
-                            if (val !== "" && !isNaN(Number(val)) && !val.startsWith("0")) val = Number(val);
-                            else if (val === "true") val = true;
-                            else if (val === "false") val = false;
-                            else if (val.startsWith("[") || val.startsWith("{")) { try { val = JSON.parse(val); } catch (e) { } }
-
-                            // Rehydrate
-                            const keys = header.split('.');
-                            let current = flatObj;
-                            for (let i = 0; i < keys.length; i++) {
-                                const k = keys[i];
-                                if (i === keys.length - 1) current[k] = val;
-                                else { current[k] = current[k] || {}; current = current[k]; }
-                            }
-                        });
-                        return flatObj;
-                    });
-                    return { success: true, result: JSON.stringify(result, null, 2), message: "OK" };
-                } catch (e) { return { success: false, message: "CSV Error: " + e.message }; }
-            },
-            jsonToXml: (jsonStr) => {
-                try {
-                    const obj = JSON.parse(jsonStr);
-
-                    const toXml = (o, tagName = 'root') => {
-                        if (o === null || o === undefined) return tagName ? `<${tagName}></${tagName}>` : '';
-
-                        // Primitive types
-                        if (typeof o !== 'object') {
-                            return tagName ? `<${tagName}>${String(o)}</${tagName}>` : String(o);
-                        }
-
-                        // Array
-                        if (Array.isArray(o)) {
-                            return o.map(item => toXml(item, tagName || 'item')).join('');
-                        }
-
-                        // Object
-                        const content = Object.entries(o).map(([k, v]) => {
-                            const safeKey = k.replace(/[^a-zA-Z0-9_-]/g, '_');
-                            // Recurse without a default tagName wrapper, pass the key as the tag name
-                            // If v is an array, we handle it specifically to match standard XML conventions
-                            if (Array.isArray(v)) {
-                                return v.map(item => toXml(item, safeKey)).join('');
-                            }
-                            return toXml(v, safeKey);
-                        }).join('');
-
-                        return tagName ? `<${tagName}>${content}</${tagName}>` : content;
-                    };
-
-                    return { success: true, result: toXml(obj, 'root') };
-                } catch (e) {
-                    return { success: false, result: '', message: e.message };
+                const csvContent = (includeHeader ? [headers.join(delim)] : []).concat(rows).join('\n');
+                return { success: true, result: csvContent, message: "OK" };
+            } catch (e) { return { success: false, message: "JSON Error: " + e.message }; }
+        },
+        csvToJson: function (csv, options = {}) {
+            try {
+                if (!csv || !csv.trim()) return { success: false, message: "Empty CSV" };
+                const delim = options.delimiter || ',';
+                const hasHeader = options.header !== false;
+                const lines = [];
+                let currentRow = [], currentVal = '', inQuotes = false;
+                for (let i = 0; i < csv.length; i++) {
+                    const char = csv[i];
+                    if (char === '"') { if (inQuotes && csv[i + 1] === '"') { currentVal += '"'; i++; } else { inQuotes = !inQuotes; } }
+                    else if (char === delim && !inQuotes) { currentRow.push(currentVal); currentVal = ''; }
+                    else if ((char === '\r' || char === '\n') && !inQuotes) { currentRow.push(currentVal); lines.push(currentRow); currentRow = []; currentVal = ''; if (char === '\r' && csv[i + 1] === '\n') i++; }
+                    else { currentVal += char; }
                 }
-            },
+                if (currentVal || currentRow.length) { currentRow.push(currentVal); lines.push(currentRow); }
+                if (lines.length > 0 && lines[lines.length - 1].length === 1 && lines[lines.length - 1][0] === '') lines.pop(); // Remove empty last line
+                if (lines.length < 1) return { success: false, message: "Empty Data" };
+
+                let headers;
+                let dataLines;
+                if (hasHeader) { headers = lines[0].map(h => h.trim()); dataLines = lines.slice(1); }
+                else { headers = lines[0].map((_, i) => `field${i + 1}`); dataLines = lines; }
+
+                const result = dataLines.map(row => {
+                    const flatObj = {};
+                    headers.forEach((header, idx) => {
+                        let val = row[idx] !== undefined ? row[idx] : "";
+                        if (val !== "" && !isNaN(Number(val)) && !val.startsWith("0")) val = Number(val);
+                        else if (val === "true") val = true;
+                        else if (val === "false") val = false;
+                        else if (val.startsWith("[") || val.startsWith("{")) { try { val = JSON.parse(val); } catch (e) { } }
+
+                        // Rehydrate
+                        const keys = header.split('.');
+                        let current = flatObj;
+                        for (let i = 0; i < keys.length; i++) {
+                            const k = keys[i];
+                            if (i === keys.length - 1) current[k] = val;
+                            else { current[k] = current[k] || {}; current = current[k]; }
+                        }
+                    });
+                    return flatObj;
+                });
+                return { success: true, result: JSON.stringify(result, null, 2), message: "OK" };
+            } catch (e) { return { success: false, message: "CSV Error: " + e.message }; }
+        },
+        jsonToXml: (jsonStr) => {
+            try {
+                const obj = JSON.parse(jsonStr);
+
+                const toXml = (o, tagName = 'root') => {
+                    if (o === null || o === undefined) return tagName ? `<${tagName}></${tagName}>` : '';
+
+                    // Primitive types
+                    if (typeof o !== 'object') {
+                        return tagName ? `<${tagName}>${String(o)}</${tagName}>` : String(o);
+                    }
+
+                    // Array
+                    if (Array.isArray(o)) {
+                        return o.map(item => toXml(item, tagName || 'item')).join('');
+                    }
+
+                    // Object
+                    const content = Object.entries(o).map(([k, v]) => {
+                        const safeKey = k.replace(/[^a-zA-Z0-9_-]/g, '_');
+                        // Recurse without a default tagName wrapper, pass the key as the tag name
+                        // If v is an array, we handle it specifically to match standard XML conventions
+                        if (Array.isArray(v)) {
+                            return v.map(item => toXml(item, safeKey)).join('');
+                        }
+                        return toXml(v, safeKey);
+                    }).join('');
+
+                    return tagName ? `<${tagName}>${content}</${tagName}>` : content;
+                };
+
+                return { success: true, result: toXml(obj, 'root') };
+            } catch (e) {
+                return { success: false, result: '', message: e.message };
+            }
+        },
             xmlToJson: (xmlStr) => {
                 try {
                     const parser = new DOMParser();
@@ -1615,42 +1544,42 @@
                     return { success: false, result: '', message: 'XML Parse Error: ' + e.message };
                 }
             },
-            jsonToSql: (jsonStr) => {
-                try {
-                    const arr = JSON.parse(jsonStr);
-                    if (!Array.isArray(arr)) throw new Error("Input must be JSON Array");
-                    const headers = Object.keys(arr[0]);
-                    const sql = arr.map(obj => `INSERT INTO table_name (${headers.join(', ')}) VALUES (${headers.map(h => typeof obj[h] === 'string' ? `'${obj[h].replace(/'/g, "''")}'` : obj[h]).join(', ')});`).join('\n');
-                    return { success: true, result: sql };
-                } catch (e) { return { success: false, message: e.message }; }
-            },
-            timestampToDate: (ts) => { const d = new Date(Number(ts)); return { success: true, result: { local: d.toLocaleString(), utc: d.toUTCString(), iso: d.toISOString() } }; },
-            getCurrentTimestamp: () => ({ success: true, result: { seconds: Math.floor(Date.now() / 1000), milliseconds: Date.now(), iso: new Date().toISOString() } })
-        },
+                jsonToSql: (jsonStr) => {
+                    try {
+                        const arr = JSON.parse(jsonStr);
+                        if (!Array.isArray(arr)) throw new Error("Input must be JSON Array");
+                        const headers = Object.keys(arr[0]);
+                        const sql = arr.map(obj => `INSERT INTO table_name (${headers.join(', ')}) VALUES (${headers.map(h => typeof obj[h] === 'string' ? `'${obj[h].replace(/'/g, "''")}'` : obj[h]).join(', ')});`).join('\n');
+                        return { success: true, result: sql };
+                    } catch (e) { return { success: false, message: e.message }; }
+                },
+                    timestampToDate: (ts) => { const d = new Date(Number(ts)); return { success: true, result: { local: d.toLocaleString(), utc: d.toUTCString(), iso: d.toISOString() } }; },
+                        getCurrentTimestamp: () => ({ success: true, result: { seconds: Math.floor(Date.now() / 1000), milliseconds: Date.now(), iso: new Date().toISOString() } })
+    },
 
-        unitConverter: {
-            convert: (val, from, to, type) => {
-                const rates = {
-                    length: { mk: 1, mm: 0.001, cm: 0.01, m: 1, km: 1000, inch: 0.0254, foot: 0.3048, yard: 0.9144, mile: 1609.34 },
-                    weight: { mk: 1, mg: 0.000001, g: 0.001, kg: 1, ton: 1000, oz: 0.0283495, lb: 0.453592 },
-                    data: { mk: 1, B: 1, KB: 1024, MB: 1048576, GB: 1073741824, TB: 1099511627776 },
-                    area: { mk: 1, sqm: 1, sqkm: 1000000, sqfoot: 0.092903, acre: 4046.86, hectare: 10000 },
-                    volume: { mk: 1, ml: 0.001, l: 1, gallon: 3.78541, cup: 0.236588, pint: 0.473176, quart: 0.946353 },
-                    speed: { mk: 1, mps: 1, kph: 0.277778, mph: 0.44704, knot: 0.514444 },
-                    kitchen: { mk: 1, ml: 1, tsp: 4.92892, tbsp: 14.7868, cup: 236.588 }
-                };
-                let result;
-                if (type === 'temperature') {
-                    let cUrl;
-                    if (from === 'C') cUrl = val; else if (from === 'F') cUrl = (val - 32) * 5 / 9; else if (from === 'K') cUrl = val - 273.15;
-                    if (to === 'C') result = cUrl; else if (to === 'F') result = (cUrl * 9 / 5) + 32; else if (to === 'K') result = cUrl + 273.15;
-                } else {
-                    const cat = rates[type];
-                    if (!cat) return { success: false, message: "Invalid Category" };
-                    result = (val * cat[from]) / cat[to];
-                }
-                return { success: true, result: Number(result.toPrecision(6)) };
-            },
+    unitConverter: {
+        convert: (val, from, to, type) => {
+            const rates = {
+                length: { mk: 1, mm: 0.001, cm: 0.01, m: 1, km: 1000, inch: 0.0254, foot: 0.3048, yard: 0.9144, mile: 1609.34 },
+                weight: { mk: 1, mg: 0.000001, g: 0.001, kg: 1, ton: 1000, oz: 0.0283495, lb: 0.453592 },
+                data: { mk: 1, B: 1, KB: 1024, MB: 1048576, GB: 1073741824, TB: 1099511627776 },
+                area: { mk: 1, sqm: 1, sqkm: 1000000, sqfoot: 0.092903, acre: 4046.86, hectare: 10000 },
+                volume: { mk: 1, ml: 0.001, l: 1, gallon: 3.78541, cup: 0.236588, pint: 0.473176, quart: 0.946353 },
+                speed: { mk: 1, mps: 1, kph: 0.277778, mph: 0.44704, knot: 0.514444 },
+                kitchen: { mk: 1, ml: 1, tsp: 4.92892, tbsp: 14.7868, cup: 236.588 }
+            };
+            let result;
+            if (type === 'temperature') {
+                let cUrl;
+                if (from === 'C') cUrl = val; else if (from === 'F') cUrl = (val - 32) * 5 / 9; else if (from === 'K') cUrl = val - 273.15;
+                if (to === 'C') result = cUrl; else if (to === 'F') result = (cUrl * 9 / 5) + 32; else if (to === 'K') result = cUrl + 273.15;
+            } else {
+                const cat = rates[type];
+                if (!cat) return { success: false, message: "Invalid Category" };
+                result = (val * cat[from]) / cat[to];
+            }
+            return { success: true, result: Number(result.toPrecision(6)) };
+        },
             convertCurrency: async (val, from, to) => {
                 // Fixed rates updated for 2026 demo (approximate)
                 const rates = { USD: 1, EUR: 0.92, TRY: 43.15, GBP: 0.78, JPY: 155.5, CNY: 7.30 };
@@ -1658,151 +1587,151 @@
                 await new Promise(r => setTimeout(r, 300));
                 return { success: true, result: Number(((val / rates[from]) * rates[to]).toFixed(2)), message: "Based on estimated rates" };
             }
+    },
+
+    codeBeautifier: {
+        beautifyJSON: function (code) { try { return { success: true, result: JSON.stringify(JSON.parse(code), null, 4) }; } catch (e) { return { success: false, message: e.message }; } },
+        beautifyJS: function (code) { return this._indent(code); },
+        beautifyTypeScript: function (code) { return this._indent(code); },
+        beautifyHTML: function (code) { return this._indentXML(code); },
+        beautifyCSS: function (code) {
+            let formatted = '', indent = 0;
+            code.replace(/\{/g, '{\n').replace(/\}/g, '\n}\n').replace(/;/g, ';\n').split('\n').forEach(line => {
+                line = line.trim(); if (!line) return;
+                if (line.includes('}')) indent--;
+                formatted += '    '.repeat(Math.max(0, indent)) + line + '\n';
+                if (line.includes('{')) indent++;
+            });
+            return { success: true, result: formatted };
         },
-
-        codeBeautifier: {
-            beautifyJSON: function (code) { try { return { success: true, result: JSON.stringify(JSON.parse(code), null, 4) }; } catch (e) { return { success: false, message: e.message }; } },
-            beautifyJS: function (code) { return this._indent(code); },
-            beautifyTypeScript: function (code) { return this._indent(code); },
-            beautifyHTML: function (code) { return this._indentXML(code); },
-            beautifyCSS: function (code) {
-                let formatted = '', indent = 0;
-                code.replace(/\{/g, '{\n').replace(/\}/g, '\n}\n').replace(/;/g, ';\n').split('\n').forEach(line => {
-                    line = line.trim(); if (!line) return;
-                    if (line.includes('}')) indent--;
-                    formatted += '    '.repeat(Math.max(0, indent)) + line + '\n';
-                    if (line.includes('{')) indent++;
-                });
-                return { success: true, result: formatted };
-            },
-            beautifySQL: function (code) {
-                const keywords = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'ORDER BY', 'GROUP BY', 'INSERT INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'JOIN', 'LEFT JOIN', 'INNER JOIN', 'LIMIT'];
-                let formatted = code;
-                keywords.forEach(kw => { formatted = formatted.replace(new RegExp(`\\b${kw}\\b`, 'gi'), `\n${kw.toUpperCase()} `); });
-                return { success: true, result: formatted.replace(/^\s+/, '') };
-            },
-            beautifyXML: function (code) { return this._indentXML(code); },
-            beautifyPython: function (code) { return { success: true, result: code }; },
-            beautifyPHP: function (code) { return this._indent(code); },
-            beautifyC: function (code) { return this._indent(code); },
-            _indent: function (code) {
-                try {
-                    let pad = 0;
-                    return {
-                        success: true, result: code.replace(/([\{\[])/g, '$1\n').replace(/([\}\]])/g, '\n$1').replace(/;/g, ';\n').split('\n').map(line => {
-                            line = line.trim(); if (!line) return null;
-                            if (line.match(/[\]\}]/)) pad--;
-                            const str = '    '.repeat(Math.max(0, pad)) + line;
-                            if (line.match(/[\[\{]/)) pad++;
-                            return str;
-                        }).filter(x => x).join('\n')
-                    };
-                } catch (e) { return { success: false, message: e.message }; }
-            },
-            _indentXML: function (xml) {
-                let formatted = '', pad = 0;
-                xml.replace(/(>)(<)(\/*)/g, '$1\r\n$2$3').split('\r\n').forEach(node => {
-                    let indent = 0;
-                    if (node.match(/.+<\/\w[^>]*>$/)) indent = 0; else if (node.match(/^<\/\w/)) { if (pad != 0) pad -= 1; } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) indent = 1;
-                    formatted += '    '.repeat(pad) + node + '\r\n'; pad += indent;
-                });
-                return { success: true, result: formatted };
-            }
+        beautifySQL: function (code) {
+            const keywords = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'ORDER BY', 'GROUP BY', 'INSERT INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'JOIN', 'LEFT JOIN', 'INNER JOIN', 'LIMIT'];
+            let formatted = code;
+            keywords.forEach(kw => { formatted = formatted.replace(new RegExp(`\\b${kw}\\b`, 'gi'), `\n${kw.toUpperCase()} `); });
+            return { success: true, result: formatted.replace(/^\s+/, '') };
         },
-
-        // --- ANALYZERS ---
-
-        textAnalyzer: {
-            analyze: function (text, lang = 'en') {
-                if (!text) return { success: false };
-
-                // Get current language from global context if not provided, fallback to 'en'
-                const currentLang = (typeof window !== 'undefined' && window.i18n) ? window.i18n.getCurrentLanguage() : lang;
-                const isTr = currentLang === 'tr';
-
-                // Basic counts
-                const words = text.trim().split(/\s+/);
-                const wordCount = words.length;
-                const chars = text.length;
-                const sentences = text.match(/[.!?]+/g) ? text.match(/[.!?]+/g).length : 1;
-                const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim()).length;
-
-                // Reading Time
-                const wpm = 200;
-                const minutes = Math.ceil(wordCount / wpm);
-                const readingTime = isTr ? `${minutes} dk` : `${minutes} min`;
-
-                // Readability (Flesch-Kincaid)
-                // Note: Valid mostly for English, but we adapt labels for TR
-                const syllables = text.toLowerCase().match(/[aeiouyüöıəğşçñ]/g) ? text.toLowerCase().match(/[aeiouyüöıəğşçñ]/g).length : 1;
-                let score = 206.835 - (1.015 * (wordCount / sentences)) - (84.6 * (syllables / wordCount));
-
-                let readability = "Unknown";
-                if (isTr) {
-                    if (score >= 90) readability = "Çok Kolay";
-                    else if (score >= 60) readability = "Standart";
-                    else if (score >= 30) readability = "Zor";
-                    else readability = "Çok Zor";
-                } else {
-                    if (score >= 90) readability = "Very Easy";
-                    else if (score >= 60) readability = "Standard";
-                    else if (score >= 30) readability = "Difficult";
-                    else readability = "Very Difficult";
-                }
-
-                // Longest word
-                const longestWord = words.reduce((longest, word) => {
-                    const cleaned = word.replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]/g, '');
-                    return cleaned.length > longest.length ? cleaned : longest;
-                }, '');
-
-                // Stop Words (EN & TR)
-                const enStop = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'can', 'this', 'that', 'it', 'he', 'she', 'they', 'we', 'you', 'i'];
-                const trStop = ['ve', 'veya', 'ile', 'için', 'bir', 'bu', 'şu', 'o', 'ama', 'fakat', 'ancak', 'lakin', 'da', 'de', 'ki', 'mi', 'mu', 'mı', 'mü', 'ben', 'sen', 'biz', 'siz', 'onlar', 'ne', 'nasıl', 'neden', 'niçin', 'gibi', 'kadar', 'olarak', 'olan', 'var', 'yok', 'çok', 'daha', 'en', 'ise'];
-
-                const stopWords = new Set(isTr ? trStop : enStop);
-
-                const wordFreq = {};
-                words.forEach(word => {
-                    const cleaned = word.toLowerCase().replace(/[^a-z0-9çğıöşü]/g, '');
-                    if (cleaned.length > 2 && !stopWords.has(cleaned)) {
-                        wordFreq[cleaned] = (wordFreq[cleaned] || 0) + 1;
-                    }
-                });
-
-                const topWords = Object.entries(wordFreq)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 10)
-                    .map(([word, count]) => ({ word, count }));
-
+        beautifyXML: function (code) { return this._indentXML(code); },
+        beautifyPython: function (code) { return { success: true, result: code }; },
+        beautifyPHP: function (code) { return this._indent(code); },
+        beautifyC: function (code) { return this._indent(code); },
+        _indent: function (code) {
+            try {
+                let pad = 0;
                 return {
-                    success: true,
-                    stats: {
-                        fleschScore: score.toFixed(1),
-                        readability,
-                        readingTime,
-                        words: wordCount,
-                        chars,
-                        sentences,
-                        paragraphs,
-                        longestWord,
-                        topWords
-                    }
+                    success: true, result: code.replace(/([\{\[])/g, '$1\n').replace(/([\}\]])/g, '\n$1').replace(/;/g, ';\n').split('\n').map(line => {
+                        line = line.trim(); if (!line) return null;
+                        if (line.match(/[\]\}]/)) pad--;
+                        const str = '    '.repeat(Math.max(0, pad)) + line;
+                        if (line.match(/[\[\{]/)) pad++;
+                        return str;
+                    }).filter(x => x).join('\n')
                 };
-            },
+            } catch (e) { return { success: false, message: e.message }; }
+        },
+        _indentXML: function (xml) {
+            let formatted = '', pad = 0;
+            xml.replace(/(>)(<)(\/*)/g, '$1\r\n$2$3').split('\r\n').forEach(node => {
+                let indent = 0;
+                if (node.match(/.+<\/\w[^>]*>$/)) indent = 0; else if (node.match(/^<\/\w/)) { if (pad != 0) pad -= 1; } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) indent = 1;
+                formatted += '    '.repeat(pad) + node + '\r\n'; pad += indent;
+            });
+            return { success: true, result: formatted };
+        }
+    },
 
+    // --- ANALYZERS ---
+
+    textAnalyzer: {
+        analyze: function (text, lang = 'en') {
+            if (!text) return { success: false };
+
+            // Get current language from global context if not provided, fallback to 'en'
+            const currentLang = (typeof window !== 'undefined' && window.i18n) ? window.i18n.getCurrentLanguage() : lang;
+            const isTr = currentLang === 'tr';
+
+            // Basic counts
+            const words = text.trim().split(/\s+/);
+            const wordCount = words.length;
+            const chars = text.length;
+            const sentences = text.match(/[.!?]+/g) ? text.match(/[.!?]+/g).length : 1;
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim()).length;
+
+            // Reading Time
+            const wpm = 200;
+            const minutes = Math.ceil(wordCount / wpm);
+            const readingTime = isTr ? `${minutes} dk` : `${minutes} min`;
+
+            // Readability (Flesch-Kincaid)
+            // Note: Valid mostly for English, but we adapt labels for TR
+            const syllables = text.toLowerCase().match(/[aeiouyüöıəğşçñ]/g) ? text.toLowerCase().match(/[aeiouyüöıəğşçñ]/g).length : 1;
+            let score = 206.835 - (1.015 * (wordCount / sentences)) - (84.6 * (syllables / wordCount));
+
+            let readability = "Unknown";
+            if (isTr) {
+                if (score >= 90) readability = "Çok Kolay";
+                else if (score >= 60) readability = "Standart";
+                else if (score >= 30) readability = "Zor";
+                else readability = "Çok Zor";
+            } else {
+                if (score >= 90) readability = "Very Easy";
+                else if (score >= 60) readability = "Standard";
+                else if (score >= 30) readability = "Difficult";
+                else readability = "Very Difficult";
+            }
+
+            // Longest word
+            const longestWord = words.reduce((longest, word) => {
+                const cleaned = word.replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]/g, '');
+                return cleaned.length > longest.length ? cleaned : longest;
+            }, '');
+
+            // Stop Words (EN & TR)
+            const enStop = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'can', 'this', 'that', 'it', 'he', 'she', 'they', 'we', 'you', 'i'];
+            const trStop = ['ve', 'veya', 'ile', 'için', 'bir', 'bu', 'şu', 'o', 'ama', 'fakat', 'ancak', 'lakin', 'da', 'de', 'ki', 'mi', 'mu', 'mı', 'mü', 'ben', 'sen', 'biz', 'siz', 'onlar', 'ne', 'nasıl', 'neden', 'niçin', 'gibi', 'kadar', 'olarak', 'olan', 'var', 'yok', 'çok', 'daha', 'en', 'ise'];
+
+            const stopWords = new Set(isTr ? trStop : enStop);
+
+            const wordFreq = {};
+            words.forEach(word => {
+                const cleaned = word.toLowerCase().replace(/[^a-z0-9çğıöşü]/g, '');
+                if (cleaned.length > 2 && !stopWords.has(cleaned)) {
+                    wordFreq[cleaned] = (wordFreq[cleaned] || 0) + 1;
+                }
+            });
+
+            const topWords = Object.entries(wordFreq)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([word, count]) => ({ word, count }));
+
+            return {
+                success: true,
+                stats: {
+                    fleschScore: score.toFixed(1),
+                    readability,
+                    readingTime,
+                    words: wordCount,
+                    chars,
+                    sentences,
+                    paragraphs,
+                    longestWord,
+                    topWords
+                }
+            };
         },
 
-        advancedTextTools: {
-            formatText: (t, action) => {
-                if (action === 'uppercase') return t.toUpperCase();
-                if (action === 'lowercase') return t.toLowerCase();
-                if (action === 'titlecase') return t.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-                if (action === 'reverse') return t.split('').reverse().join('');
-                if (action === 'trim') return t.split('\n').map(l => l.trim()).filter(l => l).join('\n');
-                if (action === 'remove-extra-spaces') return t.replace(/\s+/g, ' ').trim();
-                return t;
-            },
+    },
+
+    advancedTextTools: {
+        formatText: (t, action) => {
+            if (action === 'uppercase') return t.toUpperCase();
+            if (action === 'lowercase') return t.toLowerCase();
+            if (action === 'titlecase') return t.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+            if (action === 'reverse') return t.split('').reverse().join('');
+            if (action === 'trim') return t.split('\n').map(l => l.trim()).filter(l => l).join('\n');
+            if (action === 'remove-extra-spaces') return t.replace(/\s+/g, ' ').trim();
+            return t;
+        },
             findReplace: (t, f, r, isRegex, flags) => {
                 if (!f) return t;
                 try {
@@ -1810,17 +1739,17 @@
                     return t.replace(pattern, r);
                 } catch (e) { return "Regex Error: " + e.message; }
             },
-            checkGrammar: (t) => {
-                const issues = [];
-                if (t.length < 5) issues.push("Text is too short.");
-                if (/[.!?]\s+[a-z]/.test(t)) issues.push("Lowercase letter after sentence.");
-                return issues.length ? issues.join('\n') : "No obvious issues.";
-            }
-        },
+                checkGrammar: (t) => {
+                    const issues = [];
+                    if (t.length < 5) issues.push("Text is too short.");
+                    if (/[.!?]\s+[a-z]/.test(t)) issues.push("Lowercase letter after sentence.");
+                    return issues.length ? issues.join('\n') : "No obvious issues.";
+                }
+    },
 
-        metaTagsTools: {
-            generate: (d) => {
-                let tags = `<!-- Primary Meta Tags -->
+    metaTagsTools: {
+        generate: (d) => {
+            let tags = `<!-- Primary Meta Tags -->
 <title>${d.title || ''}</title>
 <meta name="title" content="${d.title || ''}">
 <meta name="description" content="${d.description || ''}">
@@ -1845,59 +1774,59 @@ ${d.siteName ? `<meta property="og:site_name" content="${d.siteName}">` : ''}
 <meta property="twitter:image" content="${d.image || ''}">
 ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">` : ''}`;
 
-                return tags.replace(/^\s*[\r\n]/gm, ''); // Remove empty lines
-            },
+            return tags.replace(/^\s*[\r\n]/gm, ''); // Remove empty lines
+        },
             getTemplates: () => ({
                 blog: { title: 'My Amazing Blog Post', description: 'Read about the latest trends in tech.', keywords: 'blog, tech, news' },
                 saas: { title: 'Product Name-Best Solution', description: 'Boost your productivity with our new tool.', keywords: 'saas, productivity, tool' }
             })
+    },
+
+    cronTools: {
+        parse: function (expr) {
+            const parts = expr.trim().split(/\s+/);
+            if (parts.length < 5) return { success: false, message: "Invalid Format" };
+            return { success: true, description: `Runs at ${parts[1]} past ${parts[0]}...` };
         },
+        getNextRuns: (expr, count = 5) => {
+            const runs = []; let now = new Date();
+            for (let i = 0; i < count; i++) { now = new Date(now.getTime() + 5 * 60 * 1000); runs.push(now.toLocaleString()); }
+            return runs;
+        }
+    },
 
-        cronTools: {
-            parse: function (expr) {
-                const parts = expr.trim().split(/\s+/);
-                if (parts.length < 5) return { success: false, message: "Invalid Format" };
-                return { success: true, description: `Runs at ${parts[1]} past ${parts[0]}...` };
-            },
-            getNextRuns: (expr, count = 5) => {
-                const runs = []; let now = new Date();
-                for (let i = 0; i < count; i++) { now = new Date(now.getTime() + 5 * 60 * 1000); runs.push(now.toLocaleString()); }
-                return runs;
-            }
+    healthCalculator: {
+        calculateAge: (dobStr) => {
+            const dob = new Date(dobStr), now = new Date();
+            const totalDays = Math.floor((now - dob) / (86400000));
+            const years = now.getFullYear() - dob.getFullYear();
+
+            // Zodiac
+            const d = dob.getDate();
+            const m = dob.getMonth() + 1;
+            let zodiac = '';
+            if ((m == 3 && d >= 21) || (m == 4 && d <= 19)) zodiac = "Aries";
+            else if ((m == 4 && d >= 20) || (m == 5 && d <= 20)) zodiac = "Taurus";
+            else if ((m == 5 && d >= 21) || (m == 6 && d <= 20)) zodiac = "Gemini";
+            else if ((m == 6 && d >= 21) || (m == 7 && d <= 22)) zodiac = "Cancer";
+            else if ((m == 7 && d >= 23) || (m == 8 && d <= 22)) zodiac = "Leo";
+            else if ((m == 8 && d >= 23) || (m == 9 && d <= 22)) zodiac = "Virgo";
+            else if ((m == 9 && d >= 23) || (m == 10 && d <= 22)) zodiac = "Libra";
+            else if ((m == 10 && d >= 23) || (m == 11 && d <= 21)) zodiac = "Scorpio";
+            else if ((m == 11 && d >= 22) || (m == 12 && d <= 21)) zodiac = "Sagittarius";
+            else if ((m == 12 && d >= 22) || (m == 1 && d <= 19)) zodiac = "Capricorn";
+            else if ((m == 1 && d >= 20) || (m == 2 && d <= 18)) zodiac = "Aquarius";
+            else zodiac = "Pisces";
+
+            // Next Bday
+            const currentYear = now.getFullYear();
+            const bdayThisYear = new Date(currentYear, dob.getMonth(), dob.getDate());
+            let nextBday = bdayThisYear;
+            if (now > bdayThisYear) nextBday = new Date(currentYear + 1, dob.getMonth(), dob.getDate());
+            const daysToBday = Math.ceil((nextBday - now) / (1000 * 60 * 60 * 24));
+
+            return { success: true, years, totalDays, zodiac, nextBirthday: daysToBday };
         },
-
-        healthCalculator: {
-            calculateAge: (dobStr) => {
-                const dob = new Date(dobStr), now = new Date();
-                const totalDays = Math.floor((now - dob) / (86400000));
-                const years = now.getFullYear() - dob.getFullYear();
-
-                // Zodiac
-                const d = dob.getDate();
-                const m = dob.getMonth() + 1;
-                let zodiac = '';
-                if ((m == 3 && d >= 21) || (m == 4 && d <= 19)) zodiac = "Aries";
-                else if ((m == 4 && d >= 20) || (m == 5 && d <= 20)) zodiac = "Taurus";
-                else if ((m == 5 && d >= 21) || (m == 6 && d <= 20)) zodiac = "Gemini";
-                else if ((m == 6 && d >= 21) || (m == 7 && d <= 22)) zodiac = "Cancer";
-                else if ((m == 7 && d >= 23) || (m == 8 && d <= 22)) zodiac = "Leo";
-                else if ((m == 8 && d >= 23) || (m == 9 && d <= 22)) zodiac = "Virgo";
-                else if ((m == 9 && d >= 23) || (m == 10 && d <= 22)) zodiac = "Libra";
-                else if ((m == 10 && d >= 23) || (m == 11 && d <= 21)) zodiac = "Scorpio";
-                else if ((m == 11 && d >= 22) || (m == 12 && d <= 21)) zodiac = "Sagittarius";
-                else if ((m == 12 && d >= 22) || (m == 1 && d <= 19)) zodiac = "Capricorn";
-                else if ((m == 1 && d >= 20) || (m == 2 && d <= 18)) zodiac = "Aquarius";
-                else zodiac = "Pisces";
-
-                // Next Bday
-                const currentYear = now.getFullYear();
-                const bdayThisYear = new Date(currentYear, dob.getMonth(), dob.getDate());
-                let nextBday = bdayThisYear;
-                if (now > bdayThisYear) nextBday = new Date(currentYear + 1, dob.getMonth(), dob.getDate());
-                const daysToBday = Math.ceil((nextBday - now) / (1000 * 60 * 60 * 24));
-
-                return { success: true, years, totalDays, zodiac, nextBirthday: daysToBday };
-            },
             calculateBMI: (w, h, gender = 'male') => {
                 const hM = h / 100;
                 const bmi = w / (hM ** 2);
@@ -1931,210 +1860,210 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
                     idealWeightTarget: idealTarget.toFixed(1)
                 };
             },
-            calculateCalories: (w, h, age, gender, act) => {
-                const bmr = 10 * w + 6.25 * h - 5 * age + (gender === 'male' ? 5 : -161);
-                const tdee = Math.round(bmr * act);
-                return {
-                    success: true,
-                    tdee,
-                    bmr: Math.round(bmr),
-                    weightLoss: tdee - 500,
-                    weightGain: tdee + 500,
-                    macros: {
-                        protein: Math.round((tdee * 0.3) / 4), // 30%
-                        carbs: Math.round((tdee * 0.35) / 4), // 35%
-                        fat: Math.round((tdee * 0.35) / 9) // 35%
-                    }
-                };
-            },
-            calculateWaterIntake: (w) => {
-                const ml = Math.round(w * 35);
-                return {
-                    success: true,
-                    ml,
-                    liters: (ml / 1000).toFixed(1),
-                    glasses: Math.ceil(ml / 250)
-                };
-            },
-            calculateBodyFat: (g, w, h, n, waist, hip) => {
-                // US Navy Method approximation
-                let bf = 0;
-                if (g === 'male') {
-                    // 495 / (1.0324-0.19077 * log10(waist-neck) + 0.15456 * log10(height))-450
-                    // Simplified fallback for now
-                    bf = 15;
-                } else {
-                    bf = 25;
-                }
-                return { success: true, bodyFat: bf + '%', category: 'Fit' };
-            }
-        },
-
-        networkTools: {
-            calculateSubnet: (cidr) => {
-                try {
-                    const [ipArr, maskStr] = cidr.split('/');
-                    if (!ipArr || !maskStr) throw new Error("Invalid CIDR format");
-
-                    const mask = parseInt(maskStr);
-                    if (isNaN(mask) || mask < 0 || mask > 32) throw new Error("Invalid Mask");
-
-                    const ipParts = ipArr.split('.').map(Number);
-                    if (ipParts.length !== 4 || ipParts.some(n => isNaN(n) || n < 0 || n > 255)) throw new Error("Invalid IP");
-
-                    const ipNum = (ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3];
-                    const maskNum = mask === 0 ? 0 : (~0 << (32 - mask));
-
-                    const netNum = ipNum & maskNum;
-                    const broadNum = netNum | (~maskNum);
-
-                    const toIP = (n) => [(n >>> 24) & 0xFF, (n >>> 16) & 0xFF, (n >>> 8) & 0xFF, n & 0xFF].join('.');
-
+                calculateCalories: (w, h, age, gender, act) => {
+                    const bmr = 10 * w + 6.25 * h - 5 * age + (gender === 'male' ? 5 : -161);
+                    const tdee = Math.round(bmr * act);
                     return {
                         success: true,
-                        network: toIP(netNum),
-                        broadcast: toIP(broadNum),
-                        netmask: toIP(maskNum),
-                        firstIP: toIP(netNum + 1),
-                        lastIP: toIP(broadNum - 1),
-                        total: Math.max(0, Math.pow(2, 32 - mask) - 2),
-                        mask: mask
+                        tdee,
+                        bmr: Math.round(bmr),
+                        weightLoss: tdee - 500,
+                        weightGain: tdee + 500,
+                        macros: {
+                            protein: Math.round((tdee * 0.3) / 4), // 30%
+                            carbs: Math.round((tdee * 0.35) / 4), // 35%
+                            fat: Math.round((tdee * 0.35) / 9) // 35%
+                        }
                     };
-                } catch (e) {
-                    return { success: false, message: e.message };
-                }
+                },
+                    calculateWaterIntake: (w) => {
+                        const ml = Math.round(w * 35);
+                        return {
+                            success: true,
+                            ml,
+                            liters: (ml / 1000).toFixed(1),
+                            glasses: Math.ceil(ml / 250)
+                        };
+                    },
+                        calculateBodyFat: (g, w, h, n, waist, hip) => {
+                            // US Navy Method approximation
+                            let bf = 0;
+                            if (g === 'male') {
+                                // 495 / (1.0324-0.19077 * log10(waist-neck) + 0.15456 * log10(height))-450
+                                // Simplified fallback for now
+                                bf = 15;
+                            } else {
+                                bf = 25;
+                            }
+                            return { success: true, bodyFat: bf + '%', category: 'Fit' };
+                        }
+    },
+
+    networkTools: {
+        calculateSubnet: (cidr) => {
+            try {
+                const [ipArr, maskStr] = cidr.split('/');
+                if (!ipArr || !maskStr) throw new Error("Invalid CIDR format");
+
+                const mask = parseInt(maskStr);
+                if (isNaN(mask) || mask < 0 || mask > 32) throw new Error("Invalid Mask");
+
+                const ipParts = ipArr.split('.').map(Number);
+                if (ipParts.length !== 4 || ipParts.some(n => isNaN(n) || n < 0 || n > 255)) throw new Error("Invalid IP");
+
+                const ipNum = (ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3];
+                const maskNum = mask === 0 ? 0 : (~0 << (32 - mask));
+
+                const netNum = ipNum & maskNum;
+                const broadNum = netNum | (~maskNum);
+
+                const toIP = (n) => [(n >>> 24) & 0xFF, (n >>> 16) & 0xFF, (n >>> 8) & 0xFF, n & 0xFF].join('.');
+
+                return {
+                    success: true,
+                    network: toIP(netNum),
+                    broadcast: toIP(broadNum),
+                    netmask: toIP(maskNum),
+                    firstIP: toIP(netNum + 1),
+                    lastIP: toIP(broadNum - 1),
+                    total: Math.max(0, Math.pow(2, 32 - mask) - 2),
+                    mask: mask
+                };
+            } catch (e) {
+                return { success: false, message: e.message };
             }
-        },
+        }
+    },
 
-        // --- MEDIA TOOLS ---
+    // --- MEDIA TOOLS ---
 
-        imageCompressor: {
-            compress: async function (file, quality, format, resize = null) {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
+    imageCompressor: {
+        compress: async function (file, quality, format, resize = null) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
 
-                        // Handle resize
-                        if (resize) {
-                            if (resize.width && resize.height) {
-                                width = parseInt(resize.width);
-                                height = parseInt(resize.height);
-                            } else if (resize.width) {
-                                width = parseInt(resize.width);
-                                height = Math.round(img.height * (width / img.width));
-                            } else if (resize.height) {
-                                height = parseInt(resize.height);
-                                width = Math.round(img.width * (height / img.height));
-                            } else if (resize.scale) {
-                                const s = parseFloat(resize.scale);
-                                if (s > 0) {
-                                    width = Math.round(width * s);
-                                    height = Math.round(height * s);
-                                }
+                    // Handle resize
+                    if (resize) {
+                        if (resize.width && resize.height) {
+                            width = parseInt(resize.width);
+                            height = parseInt(resize.height);
+                        } else if (resize.width) {
+                            width = parseInt(resize.width);
+                            height = Math.round(img.height * (width / img.width));
+                        } else if (resize.height) {
+                            height = parseInt(resize.height);
+                            width = Math.round(img.width * (height / img.height));
+                        } else if (resize.scale) {
+                            const s = parseFloat(resize.scale);
+                            if (s > 0) {
+                                width = Math.round(width * s);
+                                height = Math.round(height * s);
                             }
                         }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        const outFormat = format || file.type;
-                        const q = quality / 100;
-
-                        canvas.toBlob((blob) => {
-                            if (!blob) return reject(new Error("Compression failed"));
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                                resolve({
-                                    originalSize: file.size,
-                                    compressedSize: blob.size,
-                                    reduction: ((file.size - blob.size) / file.size * 100).toFixed(1),
-                                    dataUrl: reader.result,
-                                    blob: blob,
-                                    width, height
-                                });
-                            };
-                            reader.readAsDataURL(blob);
-                        }, outFormat, q);
-                    };
-                    img.onerror = () => reject(new Error("Invalid image file"));
-                    img.src = URL.createObjectURL(file);
-                });
-            }
-        },
-
-        asciiTools: {
-            imageToAscii: (imageData, width, height, options = {}) => {
-                const chars = options.inverted ? '@%#*+=-:. ' : ' .:-=+*#%@';
-                let ascii = '';
-                for (let i = 0; i < imageData.data.length; i += 4) {
-                    const b = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
-                    ascii += chars[Math.floor(b / 255 * (chars.length - 1))];
-                    if ((i / 4 + 1) % width === 0) ascii += '\n';
-                }
-                return ascii;
-            },
-            textToAscii: (text) => ({ imageData: { data: [] }, width: 100, height: 100 })
-        },
-
-        colorExtractor: {
-            extractPalette: (img) => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                // Downscale for performance
-                const size = 64;
-                canvas.width = size; canvas.height = size;
-                ctx.drawImage(img, 0, 0, size, size);
-                const data = ctx.getImageData(0, 0, size, size).data;
-
-                const colorCounts = {};
-                const quantization = 16; // Group similar colors
-
-                for (let i = 0; i < data.length; i += 4) {
-                    if (data[i + 3] < 128) continue; // Ignore transparent
-                    const r = Math.round(data[i] / quantization) * quantization;
-                    const g = Math.round(data[i + 1] / quantization) * quantization;
-                    const b = Math.round(data[i + 2] / quantization) * quantization;
-                    const key = `${r},${g},${b}`;
-                    if (!colorCounts[key]) colorCounts[key] = { r, g, b, count: 0 };
-                    colorCounts[key].count++;
-                }
-
-                // Sort by frequency
-                const sortedColors = Object.values(colorCounts).sort((a, b) => b.count - a.count);
-
-                // Select distinct dominant colors
-                const palette = [];
-                const minDiff = 40; // Minimum difference to be considered distinct
-
-                for (const color of sortedColors) {
-                    if (palette.length >= 20) break; // Max 20 colors
-
-                    let isDistinct = true;
-                    for (const existing of palette) {
-                        const diff = Math.abs(color.r - existing.r) + Math.abs(color.g - existing.g) + Math.abs(color.b - existing.b);
-                        if (diff < minDiff) {
-                            isDistinct = false;
-                            break;
-                        }
                     }
 
-                    if (isDistinct) {
-                        const toHex = (n) => {
-                            const hex = Math.max(0, Math.min(255, n)).toString(16);
-                            return hex.length === 1 ? '0' + hex : hex;
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const outFormat = format || file.type;
+                    const q = quality / 100;
+
+                    canvas.toBlob((blob) => {
+                        if (!blob) return reject(new Error("Compression failed"));
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            resolve({
+                                originalSize: file.size,
+                                compressedSize: blob.size,
+                                reduction: ((file.size - blob.size) / file.size * 100).toFixed(1),
+                                dataUrl: reader.result,
+                                blob: blob,
+                                width, height
+                            });
                         };
-                        color.hex = `#${toHex(color.r)}${toHex(color.g)}${toHex(color.b)}`;
-                        palette.push(color);
+                        reader.readAsDataURL(blob);
+                    }, outFormat, q);
+                };
+                img.onerror = () => reject(new Error("Invalid image file"));
+                img.src = URL.createObjectURL(file);
+            });
+        }
+    },
+
+    asciiTools: {
+        imageToAscii: (imageData, width, height, options = {}) => {
+            const chars = options.inverted ? '@%#*+=-:. ' : ' .:-=+*#%@';
+            let ascii = '';
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                const b = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
+                ascii += chars[Math.floor(b / 255 * (chars.length - 1))];
+                if ((i / 4 + 1) % width === 0) ascii += '\n';
+            }
+            return ascii;
+        },
+            textToAscii: (text) => ({ imageData: { data: [] }, width: 100, height: 100 })
+    },
+
+    colorExtractor: {
+        extractPalette: (img) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            // Downscale for performance
+            const size = 64;
+            canvas.width = size; canvas.height = size;
+            ctx.drawImage(img, 0, 0, size, size);
+            const data = ctx.getImageData(0, 0, size, size).data;
+
+            const colorCounts = {};
+            const quantization = 16; // Group similar colors
+
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] < 128) continue; // Ignore transparent
+                const r = Math.round(data[i] / quantization) * quantization;
+                const g = Math.round(data[i + 1] / quantization) * quantization;
+                const b = Math.round(data[i + 2] / quantization) * quantization;
+                const key = `${r},${g},${b}`;
+                if (!colorCounts[key]) colorCounts[key] = { r, g, b, count: 0 };
+                colorCounts[key].count++;
+            }
+
+            // Sort by frequency
+            const sortedColors = Object.values(colorCounts).sort((a, b) => b.count - a.count);
+
+            // Select distinct dominant colors
+            const palette = [];
+            const minDiff = 40; // Minimum difference to be considered distinct
+
+            for (const color of sortedColors) {
+                if (palette.length >= 20) break; // Max 20 colors
+
+                let isDistinct = true;
+                for (const existing of palette) {
+                    const diff = Math.abs(color.r - existing.r) + Math.abs(color.g - existing.g) + Math.abs(color.b - existing.b);
+                    if (diff < minDiff) {
+                        isDistinct = false;
+                        break;
                     }
                 }
 
-                return palette.length > 0 ? palette : [{ hex: '#000000', r: 0, g: 0, b: 0 }];
-            },
+                if (isDistinct) {
+                    const toHex = (n) => {
+                        const hex = Math.max(0, Math.min(255, n)).toString(16);
+                        return hex.length === 1 ? '0' + hex : hex;
+                    };
+                    color.hex = `#${toHex(color.r)}${toHex(color.g)}${toHex(color.b)}`;
+                    palette.push(color);
+                }
+            }
+
+            return palette.length > 0 ? palette : [{ hex: '#000000', r: 0, g: 0, b: 0 }];
+        },
             processImage: (img, options) => {
                 return new Promise(resolve => {
                     const canvas = document.createElement('canvas');
@@ -2199,81 +2128,81 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
                     });
                 });
             }
-        },
+    },
 
-        bgRemoverTools: {
-            removeBackground: function (canvas, options) {
-                const ctx = canvas.getContext('2d');
-                const width = canvas.width;
-                const height = canvas.height;
-                const { tolerance = 30, targetColor, contiguous = true, startX = 0, startY = 0 } = options;
+    bgRemoverTools: {
+        removeBackground: function (canvas, options) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const { tolerance = 30, targetColor, contiguous = true, startX = 0, startY = 0 } = options;
 
-                if (!targetColor) return canvas.toDataURL();
+            if (!targetColor) return canvas.toDataURL();
 
-                const imgData = ctx.getImageData(0, 0, width, height);
-                const data = imgData.data;
-                const targetRGB = [targetColor.r, targetColor.g, targetColor.b];
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            const targetRGB = [targetColor.r, targetColor.g, targetColor.b];
 
-                const isMatch = (r, g, b) => {
-                    const diff = Math.abs(r - targetRGB[0]) + Math.abs(g - targetRGB[1]) + Math.abs(b - targetRGB[2]);
-                    return diff <= tolerance * 3;
-                };
+            const isMatch = (r, g, b) => {
+                const diff = Math.abs(r - targetRGB[0]) + Math.abs(g - targetRGB[1]) + Math.abs(b - targetRGB[2]);
+                return diff <= tolerance * 3;
+            };
 
-                if (contiguous && typeof startX === 'number' && typeof startY === 'number') {
-                    // Flood fill
-                    const stack = [[startX, startY]];
-                    const visited = new Uint8Array(width * height);
+            if (contiguous && typeof startX === 'number' && typeof startY === 'number') {
+                // Flood fill
+                const stack = [[startX, startY]];
+                const visited = new Uint8Array(width * height);
 
-                    while (stack.length) {
-                        const [x, y] = stack.pop();
-                        const idx = y * width + x;
-                        if (x < 0 || x >= width || y < 0 || y >= height || visited[idx]) continue;
+                while (stack.length) {
+                    const [x, y] = stack.pop();
+                    const idx = y * width + x;
+                    if (x < 0 || x >= width || y < 0 || y >= height || visited[idx]) continue;
 
-                        visited[idx] = 1;
-                        const pIdx = idx * 4;
-                        const r = data[pIdx], g = data[pIdx + 1], b = data[pIdx + 2];
+                    visited[idx] = 1;
+                    const pIdx = idx * 4;
+                    const r = data[pIdx], g = data[pIdx + 1], b = data[pIdx + 2];
 
-                        if (isMatch(r, g, b)) {
-                            data[pIdx + 3] = 0; // Transparent
-                            stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
-                        }
-                    }
-                } else {
-                    // Global
-                    for (let i = 0; i < data.length; i += 4) {
-                        if (isMatch(data[i], data[i + 1], data[i + 2])) data[i + 3] = 0;
+                    if (isMatch(r, g, b)) {
+                        data[pIdx + 3] = 0; // Transparent
+                        stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
                     }
                 }
-                ctx.putImageData(imgData, 0, 0);
-                return canvas.toDataURL('image/png');
+            } else {
+                // Global
+                for (let i = 0; i < data.length; i += 4) {
+                    if (isMatch(data[i], data[i + 1], data[i + 2])) data[i + 3] = 0;
+                }
             }
-        },
+            ctx.putImageData(imgData, 0, 0);
+            return canvas.toDataURL('image/png');
+        }
+    },
 
-        svgTools: {
-            optimize: (svg) => {
-                if (!svg) return '';
-                let res = svg;
-                // Remove comments and XML headers
-                res = res.replace(/<!--[\s\S]*?-->/g, '')
-                    .replace(/<\?xml.*?>/g, '')
-                    .replace(/<!DOCTYPE.*?>/g, '');
+    svgTools: {
+        optimize: (svg) => {
+            if (!svg) return '';
+            let res = svg;
+            // Remove comments and XML headers
+            res = res.replace(/<!--[\s\S]*?-->/g, '')
+                .replace(/<\?xml.*?>/g, '')
+                .replace(/<!DOCTYPE.*?>/g, '');
 
-                // Remove empty groups
-                res = res.replace(/<g>\s*<\/g>/g, '');
+            // Remove empty groups
+            res = res.replace(/<g>\s*<\/g>/g, '');
 
-                // Optimize Path Data (Round decimals to 2 precision)
-                res = res.replace(/\bd="([^"]+)"/g, (match, d) => {
-                    return 'd="' + d.replace(/(\d+\.\d{3,})/g, n => Number(Number(n).toFixed(2)))
-                        .replace(/\s+/g, ' ').trim() + '"';
-                });
+            // Optimize Path Data (Round decimals to 2 precision)
+            res = res.replace(/\bd="([^"]+)"/g, (match, d) => {
+                return 'd="' + d.replace(/(\d+\.\d{3,})/g, n => Number(Number(n).toFixed(2)))
+                    .replace(/\s+/g, ' ').trim() + '"';
+            });
 
-                // Minify whitespace
-                return res.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
-            }
-        },
+            // Minify whitespace
+            return res.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
+        }
+    },
 
-        pdfTools: {
-            _checkLib: () => { if (typeof PDFLib === 'undefined') throw new Error("PDFLib not loaded"); },
+    pdfTools: {
+        _checkLib: () => { if (typeof PDFLib === 'undefined') throw new Error("PDFLib not loaded"); },
             merge: async function (files) {
                 this._checkLib();
                 const doc = await PDFLib.PDFDocument.create();
@@ -2287,133 +2216,133 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
                 }
                 return new Blob([await doc.save()], { type: 'application/pdf' });
             },
-            imagesToPdf: async function (files) {
-                this._checkLib();
-                const doc = await PDFLib.PDFDocument.create();
-                for (const f of files) {
-                    try {
-                        const buffer = await f.arrayBuffer();
-                        let img;
-                        const isPng = f.type === 'image/png' || f.name.toLowerCase().endsWith('.png');
-                        // Treat everything else as JPG try
-                        if (isPng) {
-                            img = await doc.embedPng(buffer);
-                        } else {
-                            img = await doc.embedJpg(buffer);
-                        }
-
-                        const page = doc.addPage([img.width, img.height]);
-                        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
-                    } catch (e) {
-                        console.error("Image error:", f.name, e);
-                        // Don't throw to allow partial success, but log it.
-                        // Or if critical, throw. User says "fotoğraf eklenmiyor", so currently it fails silently.
-                    }
-                }
-                if (doc.getPageCount() === 0) throw new Error("No valid images could be added to PDF");
-                return new Blob([await doc.save()], { type: 'application/pdf' });
-            },
-            rotate: async function (file, angle) {
-                this._checkLib();
-                const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
-                doc.getPages().forEach(p => p.setRotation(PDFLib.degrees(p.getRotation().angle + angle)));
-                return new Blob([await doc.save()], { type: 'application/pdf' });
-            },
-            extract: async function (file, rangeStr) {
-                this._checkLib();
-                const src = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
-
+        imagesToPdf: async function (files) {
+            this._checkLib();
+            const doc = await PDFLib.PDFDocument.create();
+            for (const f of files) {
                 try {
-                    const form = src.getForm();
-                    if (form.getFields().length > 0) form.flatten();
-                } catch (e) { }
-
-                const doc = await PDFLib.PDFDocument.create();
-
-                const total = src.getPageCount();
-                const indices = new Set();
-                rangeStr.split(',').forEach(p => {
-                    const part = p.trim();
-                    if (!part) return;
-                    if (part.includes('-')) {
-                        const [start, end] = part.split('-').map(n => parseInt(n));
-                        if (!isNaN(start) && !isNaN(end)) {
-                            for (let i = start; i <= end; i++) indices.add(i - 1);
-                        }
+                    const buffer = await f.arrayBuffer();
+                    let img;
+                    const isPng = f.type === 'image/png' || f.name.toLowerCase().endsWith('.png');
+                    // Treat everything else as JPG try
+                    if (isPng) {
+                        img = await doc.embedPng(buffer);
                     } else {
-                        const val = parseInt(part);
-                        if (!isNaN(val)) indices.add(val - 1);
+                        img = await doc.embedJpg(buffer);
                     }
-                });
 
-                const validIndices = Array.from(indices).filter(i => i >= 0 && i < total).sort((a, b) => a - b);
-                if (validIndices.length === 0) throw new Error("No valid pages selected");
-
-                (await doc.copyPages(src, validIndices)).forEach(p => doc.addPage(p));
-                return new Blob([await doc.save()], { type: 'application/pdf' });
-            }
-        },
-
-        ocrTools: {
-            recognize: async (file, lang, onProgress) => {
-                if (typeof Tesseract === 'undefined') throw new Error("Tesseract not loaded");
-
-                // Initialize worker with language directly (v5 syntax)
-                // Note: Logger removed temporarily to fix "Function object could not be cloned" DOMException
-                const worker = await Tesseract.createWorker(lang);
-
-                try {
-                    // Update progress manually if possible, or skip
-                    if (onProgress) onProgress(0.5, "Processing...");
-
-                    const { data: { text } } = await worker.recognize(file);
-
-                    if (onProgress) onProgress(1, "Completed");
-                    await worker.terminate();
-                    return text;
+                    const page = doc.addPage([img.width, img.height]);
+                    page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
                 } catch (e) {
-                    await worker.terminate();
-                    throw e;
+                    console.error("Image error:", f.name, e);
+                    // Don't throw to allow partial success, but log it.
+                    // Or if critical, throw. User says "fotoğraf eklenmiyor", so currently it fails silently.
                 }
             }
+            if (doc.getPageCount() === 0) throw new Error("No valid images could be added to PDF");
+            return new Blob([await doc.save()], { type: 'application/pdf' });
         },
+        rotate: async function (file, angle) {
+            this._checkLib();
+            const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+            doc.getPages().forEach(p => p.setRotation(PDFLib.degrees(p.getRotation().angle + angle)));
+            return new Blob([await doc.save()], { type: 'application/pdf' });
+        },
+        extract: async function (file, rangeStr) {
+            this._checkLib();
+            const src = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
 
-        asciiTools: {
-            imageToAscii: (imageData, cols, rows, options) => {
-                const { data } = imageData;
-                const { contrast, inverted, color } = options;
-                let output = '';
-                // ' .:-=+*#%@' 
-                const chars = inverted ? '@%#*+=-:. ' : ' .:-=+*#%@';
+            try {
+                const form = src.getForm();
+                if (form.getFields().length > 0) form.flatten();
+            } catch (e) { }
 
-                for (let y = 0; y < rows; y++) {
-                    let line = '';
-                    for (let x = 0; x < cols; x++) {
-                        const offset = (y * cols + x) * 4;
-                        const r = data[offset];
-                        const g = data[offset + 1];
-                        const b = data[offset + 2];
+            const doc = await PDFLib.PDFDocument.create();
 
-                        let brightness = (0.299 * r + 0.587 * g + 0.114 * b);
-
-                        // Contrast calculation
-                        brightness = ((brightness - 128) * contrast) + 128;
-                        if (brightness < 0) brightness = 0;
-                        if (brightness > 255) brightness = 255;
-
-                        const charIndex = Math.floor((brightness / 255) * (chars.length - 1));
-                        const char = chars[charIndex] || chars[chars.length - 1];
-
-                        if (color) {
-                            line += `<span style="color: rgb(${r},${g},${b})">${char}</span>`;
-                        } else {
-                            line += char;
-                        }
+            const total = src.getPageCount();
+            const indices = new Set();
+            rangeStr.split(',').forEach(p => {
+                const part = p.trim();
+                if (!part) return;
+                if (part.includes('-')) {
+                    const [start, end] = part.split('-').map(n => parseInt(n));
+                    if (!isNaN(start) && !isNaN(end)) {
+                        for (let i = start; i <= end; i++) indices.add(i - 1);
                     }
-                    output += line + '\n';
+                } else {
+                    const val = parseInt(part);
+                    if (!isNaN(val)) indices.add(val - 1);
                 }
-                return output;
-            },
+            });
+
+            const validIndices = Array.from(indices).filter(i => i >= 0 && i < total).sort((a, b) => a - b);
+            if (validIndices.length === 0) throw new Error("No valid pages selected");
+
+            (await doc.copyPages(src, validIndices)).forEach(p => doc.addPage(p));
+            return new Blob([await doc.save()], { type: 'application/pdf' });
+        }
+    },
+
+    ocrTools: {
+        recognize: async (file, lang, onProgress) => {
+            if (typeof Tesseract === 'undefined') throw new Error("Tesseract not loaded");
+
+            // Initialize worker with language directly (v5 syntax)
+            // Note: Logger removed temporarily to fix "Function object could not be cloned" DOMException
+            const worker = await Tesseract.createWorker(lang);
+
+            try {
+                // Update progress manually if possible, or skip
+                if (onProgress) onProgress(0.5, "Processing...");
+
+                const { data: { text } } = await worker.recognize(file);
+
+                if (onProgress) onProgress(1, "Completed");
+                await worker.terminate();
+                return text;
+            } catch (e) {
+                await worker.terminate();
+                throw e;
+            }
+        }
+    },
+
+    asciiTools: {
+        imageToAscii: (imageData, cols, rows, options) => {
+            const { data } = imageData;
+            const { contrast, inverted, color } = options;
+            let output = '';
+            // ' .:-=+*#%@' 
+            const chars = inverted ? '@%#*+=-:. ' : ' .:-=+*#%@';
+
+            for (let y = 0; y < rows; y++) {
+                let line = '';
+                for (let x = 0; x < cols; x++) {
+                    const offset = (y * cols + x) * 4;
+                    const r = data[offset];
+                    const g = data[offset + 1];
+                    const b = data[offset + 2];
+
+                    let brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+
+                    // Contrast calculation
+                    brightness = ((brightness - 128) * contrast) + 128;
+                    if (brightness < 0) brightness = 0;
+                    if (brightness > 255) brightness = 255;
+
+                    const charIndex = Math.floor((brightness / 255) * (chars.length - 1));
+                    const char = chars[charIndex] || chars[chars.length - 1];
+
+                    if (color) {
+                        line += `<span style="color: rgb(${r},${g},${b})">${char}</span>`;
+                    } else {
+                        line += char;
+                    }
+                }
+                output += line + '\n';
+            }
+            return output;
+        },
             textToAscii: (text) => {
                 const c = document.createElement('canvas');
                 const ctx = c.getContext('2d');
@@ -2439,59 +2368,59 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
                     height: h
                 };
             }
-        },
+    },
 
-        audioTools: {
-            drawWaveform: (buffer, canvas, options = {}) => {
-                const ctx = canvas.getContext('2d');
-                const width = canvas.width;
-                const height = canvas.height;
-                const data = buffer.getChannelData(0); // Left channel
-                const step = Math.ceil(data.length / width);
-                const amp = height / 2;
+    audioTools: {
+        drawWaveform: (buffer, canvas, options = {}) => {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const data = buffer.getChannelData(0); // Left channel
+            const step = Math.ceil(data.length / width);
+            const amp = height / 2;
 
-                const color = options.color || '#6366f1';
-                const bgColor = options.bgColor || '#0f172a';
-                const barWidth = options.barWidth || 2;
-                const barGap = options.barGap || 1;
-                const style = options.style || 'bars';
+            const color = options.color || '#6366f1';
+            const bgColor = options.bgColor || '#0f172a';
+            const barWidth = options.barWidth || 2;
+            const barGap = options.barGap || 1;
+            const style = options.style || 'bars';
 
-                // Clear
-                ctx.fillStyle = bgColor;
-                ctx.fillRect(0, 0, width, height);
-                ctx.fillStyle = color;
-                ctx.strokeStyle = color;
+            // Clear
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
 
-                if (style === 'lines') {
-                    ctx.beginPath();
-                    ctx.lineWidth = 2;
-                    ctx.moveTo(0, amp);
-                    for (let i = 0; i < width; i++) {
-                        let min = 1.0; let max = -1.0;
-                        for (let j = 0; j < step; j++) {
-                            const datum = data[(i * step) + j]; // Simple sampling
-                            if (datum < min) min = datum;
-                            if (datum > max) max = datum;
-                        }
-                        ctx.lineTo(i, (1 + min) * amp);
-                        ctx.lineTo(i, (1 + max) * amp);
+            if (style === 'lines') {
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.moveTo(0, amp);
+                for (let i = 0; i < width; i++) {
+                    let min = 1.0; let max = -1.0;
+                    for (let j = 0; j < step; j++) {
+                        const datum = data[(i * step) + j]; // Simple sampling
+                        if (datum < min) min = datum;
+                        if (datum > max) max = datum;
                     }
-                    ctx.stroke();
-                } else {
-                    // Bars default
-                    const totalBars = Math.floor(width / (barWidth + barGap));
-                    const stepBar = Math.floor(data.length / totalBars);
-                    for (let i = 0; i < totalBars; i++) {
-                        let vol = 0;
-                        for (let j = 0; j < stepBar; j++) {
-                            vol += Math.abs(data[(i * stepBar) + j]);
-                        }
-                        const avg = vol / stepBar;
-                        const barH = Math.max(2, avg * height * 3); // Scale up
-                        ctx.fillRect(i * (barWidth + barGap), (height - barH) / 2, barWidth, barH);
-                    }
+                    ctx.lineTo(i, (1 + min) * amp);
+                    ctx.lineTo(i, (1 + max) * amp);
                 }
-            },
+                ctx.stroke();
+            } else {
+                // Bars default
+                const totalBars = Math.floor(width / (barWidth + barGap));
+                const stepBar = Math.floor(data.length / totalBars);
+                for (let i = 0; i < totalBars; i++) {
+                    let vol = 0;
+                    for (let j = 0; j < stepBar; j++) {
+                        vol += Math.abs(data[(i * stepBar) + j]);
+                    }
+                    const avg = vol / stepBar;
+                    const barH = Math.max(2, avg * height * 3); // Scale up
+                    ctx.fillRect(i * (barWidth + barGap), (height - barH) / 2, barWidth, barH);
+                }
+            }
+        },
             drawSpectrogram: function (analyser, canvas, color) {
                 const ctx = canvas.getContext('2d');
                 const w = canvas.width;
@@ -2529,175 +2458,175 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
                 };
                 draw();
             }
-        },
+    },
 
-        videoTools: { extractYoutubeId: (url) => url.includes('v=') ? url.split('v=')[1] : null, getThumbnails: () => [] },
-        ultraVideoTools: { getFitRect: (cw, ch, vw, vh, mode) => ({ x: 0, y: 0, w: cw, h: ch }) },
-        steganographyTools: {
-            encode: async function (file, message) {
-                return new Promise((resolve, reject) => {
-                    if (!message) return reject(new Error("No message provided"));
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            ctx.drawImage(img, 0, 0);
+    videoTools: { extractYoutubeId: (url) => url.includes('v=') ? url.split('v=')[1] : null, getThumbnails: () => [] },
+    ultraVideoTools: { getFitRect: (cw, ch, vw, vh, mode) => ({ x: 0, y: 0, w: cw, h: ch }) },
+    steganographyTools: {
+        encode: async function (file, message) {
+            return new Promise((resolve, reject) => {
+                if (!message) return reject(new Error("No message provided"));
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
 
-                            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                            const data = imgData.data;
+                        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const data = imgData.data;
 
-                            const encoder = new TextEncoder();
-                            const msgBytes = encoder.encode(message);
+                        const encoder = new TextEncoder();
+                        const msgBytes = encoder.encode(message);
 
-                            const bits = [];
-                            for (let i = 0; i < msgBytes.length; i++) {
-                                const b = msgBytes[i];
-                                for (let j = 7; j >= 0; j--) bits.push((b >> j) & 1);
-                            }
-                            // Delimiter: 3 null bytes (24 zeros)
-                            for (let i = 0; i < 24; i++) bits.push(0);
+                        const bits = [];
+                        for (let i = 0; i < msgBytes.length; i++) {
+                            const b = msgBytes[i];
+                            for (let j = 7; j >= 0; j--) bits.push((b >> j) & 1);
+                        }
+                        // Delimiter: 3 null bytes (24 zeros)
+                        for (let i = 0; i < 24; i++) bits.push(0);
 
-                            if (bits.length > (data.length / 4) * 3) {
-                                return reject(new Error("Message too long for this image."));
-                            }
+                        if (bits.length > (data.length / 4) * 3) {
+                            return reject(new Error("Message too long for this image."));
+                        }
 
-                            let bitIdx = 0;
-                            // Iterate pixels
-                            for (let i = 0; i < data.length; i += 4) {
+                        let bitIdx = 0;
+                        // Iterate pixels
+                        for (let i = 0; i < data.length; i += 4) {
+                            if (bitIdx >= bits.length) break;
+                            // RGB channels
+                            for (let j = 0; j < 3; j++) {
                                 if (bitIdx >= bits.length) break;
-                                // RGB channels
-                                for (let j = 0; j < 3; j++) {
-                                    if (bitIdx >= bits.length) break;
-                                    let val = data[i + j];
-                                    if (bits[bitIdx] === 1) val = val | 1;
-                                    else val = val & ~1;
-                                    data[i + j] = val;
-                                    bitIdx++;
-                                }
+                                let val = data[i + j];
+                                if (bits[bitIdx] === 1) val = val | 1;
+                                else val = val & ~1;
+                                data[i + j] = val;
+                                bitIdx++;
                             }
+                        }
 
-                            ctx.putImageData(imgData, 0, 0);
-                            resolve(canvas.toDataURL('image/png'));
-                        };
-                        img.src = e.target.result;
+                        ctx.putImageData(imgData, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
                     };
-                    reader.readAsDataURL(file);
-                });
-            },
-            decode: async function (file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            ctx.drawImage(img, 0, 0);
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        },
+        decode: async function (file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
 
-                            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                            const bits = [];
-                            // Extract ALL bits (potentially slow for huge images, but we scan until delimiter)
-                            // Limit scan to avoid freezing browser? 
-                            // Let's scan reasonably.
-                            const maxBits = data.length * 3;
+                        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                        const bits = [];
+                        // Extract ALL bits (potentially slow for huge images, but we scan until delimiter)
+                        // Limit scan to avoid freezing browser? 
+                        // Let's scan reasonably.
+                        const maxBits = data.length * 3;
 
-                            let nullCount = 0;
-                            let found = false;
-                            let extractedBytes = [];
-                            let currentByte = 0;
-                            let bitCount = 0;
+                        let nullCount = 0;
+                        let found = false;
+                        let extractedBytes = [];
+                        let currentByte = 0;
+                        let bitCount = 0;
 
-                            for (let i = 0; i < data.length; i += 4) {
-                                for (let j = 0; j < 3; j++) {
-                                    const bit = data[i + j] & 1;
-                                    currentByte = (currentByte << 1) | bit;
-                                    bitCount++;
+                        for (let i = 0; i < data.length; i += 4) {
+                            for (let j = 0; j < 3; j++) {
+                                const bit = data[i + j] & 1;
+                                currentByte = (currentByte << 1) | bit;
+                                bitCount++;
 
-                                    if (bitCount === 8) {
-                                        extractedBytes.push(currentByte);
-                                        if (currentByte === 0) {
-                                            nullCount++;
-                                            if (nullCount >= 3) {
-                                                found = true;
-                                            }
-                                        } else {
-                                            nullCount = 0;
+                                if (bitCount === 8) {
+                                    extractedBytes.push(currentByte);
+                                    if (currentByte === 0) {
+                                        nullCount++;
+                                        if (nullCount >= 3) {
+                                            found = true;
                                         }
-                                        currentByte = 0;
-                                        bitCount = 0;
+                                    } else {
+                                        nullCount = 0;
                                     }
-                                    if (found) break;
+                                    currentByte = 0;
+                                    bitCount = 0;
                                 }
                                 if (found) break;
                             }
+                            if (found) break;
+                        }
 
-                            if (!found) { resolve(null); return; }
+                        if (!found) { resolve(null); return; }
 
-                            const validBytes = extractedBytes.slice(0, extractedBytes.length - 3); // Remove delimiter
-                            try {
-                                const decoder = new TextDecoder();
-                                const str = decoder.decode(new Uint8Array(validBytes));
-                                resolve(str);
-                            } catch (e) { resolve(null); }
-                        };
-                        img.src = e.target.result;
+                        const validBytes = extractedBytes.slice(0, extractedBytes.length - 3); // Remove delimiter
+                        try {
+                            const decoder = new TextDecoder();
+                            const str = decoder.decode(new Uint8Array(validBytes));
+                            resolve(str);
+                        } catch (e) { resolve(null); }
                     };
-                    reader.readAsDataURL(file);
-                });
-            }
-        },
-
-        // --- WEB TOOLS ---
-
-        linkShortener: {
-            shorten: async (url) => ({ success: true, shortUrl: 'http://short.url/' + Math.random().toString(36).substr(2, 5) }),
-            getAllLinks: () => [], deleteLink: () => { }
-        },
-
-        scraperTools: {
-            fetch: async (url) => {
-                if (!url) throw new Error("URL is required");
-                if (!url.startsWith('http')) url = 'https://' + url;
-
-                // Helper for timeout
-                const fetchWithTimeout = (resource, options = {}) => {
-                    const { timeout = 20000 } = options;
-                    const controller = new AbortController();
-                    const id = setTimeout(() => controller.abort(), timeout);
-                    return fetch(resource, { ...options, signal: controller.signal })
-                        .then(response => { clearTimeout(id); return response; })
-                        .catch(err => { clearTimeout(id); throw err; });
+                    img.src = e.target.result;
                 };
+                reader.readAsDataURL(file);
+            });
+        }
+    },
 
-                // Strategy 1: CORSProxy.io (Fast & Reliable)
-                try {
-                    const response = await fetchWithTimeout(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-                    if (response.ok) return await response.text();
-                } catch (e) { console.warn("Proxy 1 failed, trying fallback..."); }
+    // --- WEB TOOLS ---
 
-                // Strategy 2: AllOrigins (Raw Mode)
-                try {
-                    const response = await fetchWithTimeout(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-                    if (response.ok) return await response.text();
-                } catch (e) { console.warn("Proxy 2 failed."); }
+    linkShortener: {
+        shorten: async (url) => ({ success: true, shortUrl: 'http://short.url/' + Math.random().toString(36).substr(2, 5) }),
+            getAllLinks: () => [], deleteLink: () => { }
+    },
 
-                // Strategy 3: AllOrigins (JSON Mode-Fallback)
-                try {
-                    const response = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        return data.contents;
-                    }
-                } catch (e) { }
+    scraperTools: {
+        fetch: async (url) => {
+            if (!url) throw new Error("URL is required");
+            if (!url.startsWith('http')) url = 'https://' + url;
 
-                throw new Error("Unable to access site. It may be blocking proxies or offline.");
-            },
+            // Helper for timeout
+            const fetchWithTimeout = (resource, options = {}) => {
+                const { timeout = 20000 } = options;
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), timeout);
+                return fetch(resource, { ...options, signal: controller.signal })
+                    .then(response => { clearTimeout(id); return response; })
+                    .catch(err => { clearTimeout(id); throw err; });
+            };
+
+            // Strategy 1: CORSProxy.io (Fast & Reliable)
+            try {
+                const response = await fetchWithTimeout(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+                if (response.ok) return await response.text();
+            } catch (e) { console.warn("Proxy 1 failed, trying fallback..."); }
+
+            // Strategy 2: AllOrigins (Raw Mode)
+            try {
+                const response = await fetchWithTimeout(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                if (response.ok) return await response.text();
+            } catch (e) { console.warn("Proxy 2 failed."); }
+
+            // Strategy 3: AllOrigins (JSON Mode-Fallback)
+            try {
+                const response = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.contents;
+                }
+            } catch (e) { }
+
+            throw new Error("Unable to access site. It may be blocking proxies or offline.");
+        },
             analyze: (html) => {
                 if (!html) return { links: [], images: [], headings: { h1: [], h2: [] }, meta: [] };
                 const parser = new DOMParser();
@@ -2729,54 +2658,54 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
 
                 return { links, images, headings, meta };
             }
-        },
+    },
 
-        ipLookup: {
-            getCurrentIP: async function () {
-                try {
-                    const response = await fetch('https://ipapi.co/json/');
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const data = await response.json();
-                    return { success: true, ip: data.ip, data: data };
-                } catch (e) {
-                    console.error('IP Lookup Error:', e);
-                    // Fallback to another service if needed, or return error
-                    return { success: false, message: 'Could not fetch IP data. Adblocker might be blocking the request.' };
-                }
-            },
-            getIPInfo: async function (ip) {
-                try {
-                    const response = await fetch(`https://ipapi.co/${ip}/json/`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const data = await response.json();
-                    if (data.error) return { success: false, message: data.reason || 'IP not found' };
-                    return { success: true, data: data };
-                } catch (e) {
-                    return { success: false, message: 'Lookup failed. ' + e.message };
-                }
-            },
-            searchIP: async function (ip) {
-                return this.getIPInfo(ip);
-            },
-            validateIP: function (ip) {
-                const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
-                const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
-                if (ipv4Regex.test(ip)) {
-                    return ip.split('.').every(part => parseInt(part) <= 255);
-                }
-                return ipv6Regex.test(ip);
-            },
-            getMapEmbed: (lat, lon) => {
-                // Using OpenStreetMap Embed which is free and requires no API key
-                // Bounding box calculation for zoom level
-                const delta = 0.05;
-                const bbox = `${lon - delta},${lat - delta},${lon + delta},${lat + delta}`;
-                return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+    ipLookup: {
+        getCurrentIP: async function () {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                return { success: true, ip: data.ip, data: data };
+            } catch (e) {
+                console.error('IP Lookup Error:', e);
+                // Fallback to another service if needed, or return error
+                return { success: false, message: 'Could not fetch IP data. Adblocker might be blocking the request.' };
             }
         },
+        getIPInfo: async function (ip) {
+            try {
+                const response = await fetch(`https://ipapi.co/${ip}/json/`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                if (data.error) return { success: false, message: data.reason || 'IP not found' };
+                return { success: true, data: data };
+            } catch (e) {
+                return { success: false, message: 'Lookup failed. ' + e.message };
+            }
+        },
+        searchIP: async function (ip) {
+            return this.getIPInfo(ip);
+        },
+        validateIP: function (ip) {
+            const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+            const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+            if (ipv4Regex.test(ip)) {
+                return ip.split('.').every(part => parseInt(part) <= 255);
+            }
+            return ipv6Regex.test(ip);
+        },
+        getMapEmbed: (lat, lon) => {
+            // Using OpenStreetMap Embed which is free and requires no API key
+            // Bounding box calculation for zoom level
+            const delta = 0.05;
+            const bbox = `${lon - delta},${lat - delta},${lon + delta},${lat + delta}`;
+            return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+        }
+    },
 
-        p2pTools: {
-            peer: null,
+    p2pTools: {
+        peer: null,
             init: function (onOpen, onConn, onError) {
                 if (typeof Peer === 'undefined') throw new Error("PeerJS not loaded");
                 if (this.peer && !this.peer.disconnected) return this.peer;
@@ -2784,113 +2713,113 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
                 this.peer.on('open', onOpen); this.peer.on('connection', onConn); this.peer.on('error', onError);
                 return this.peer;
             },
-            connect: function (id) { return this.peer.connect(id); }
-        },
+        connect: function (id) { return this.peer.connect(id); }
+    },
 
-        urlTool: {
-            encode: (t) => ({ success: true, result: encodeURIComponent(t) }),
+    urlTool: {
+        encode: (t) => ({ success: true, result: encodeURIComponent(t) }),
             decode: (t) => ({ success: true, result: decodeURIComponent(t) }),
-            encodeURL: (t) => ({ success: true, result: encodeURI(t) }),
-            decodeURL: (t) => ({ success: true, result: decodeURI(t) }),
-            parseURL: (u) => {
-                try {
-                    let urlStr = u.trim();
-                    if (!urlStr.match(/^[a-zA-Z]+:\/\//)) {
-                        urlStr = 'http://' + urlStr;
+                encodeURL: (t) => ({ success: true, result: encodeURI(t) }),
+                    decodeURL: (t) => ({ success: true, result: decodeURI(t) }),
+                        parseURL: (u) => {
+                            try {
+                                let urlStr = u.trim();
+                                if (!urlStr.match(/^[a-zA-Z]+:\/\//)) {
+                                    urlStr = 'http://' + urlStr;
+                                }
+                                const url = new URL(urlStr);
+                                const params = {};
+                                url.searchParams.forEach((v, k) => params[k] = v);
+                                return {
+                                    success: true,
+                                    data: {
+                                        protocol: url.protocol,
+                                        hostname: url.hostname,
+                                        pathname: url.pathname,
+                                        search: url.search,
+                                        params: params
+                                    }
+                                };
+                            } catch (e) { return { success: false, message: "Invalid URL" }; }
+                        },
+                            parseQueryString: (q) => {
+                                try {
+                                    const params = {};
+                                    const searchParams = new URLSearchParams(q);
+                                    searchParams.forEach((v, k) => params[k] = v);
+                                    return { success: true, data: { params } };
+                                } catch (e) { return { success: false, message: "Invalid Query" }; }
+                            }
+    },
+
+    jwtTools: {
+        decode: (t) => {
+            try {
+                const parts = t.split('.');
+                if (parts.length < 2) throw new Error("Invalid format");
+
+                const base64UrlDecode = (str) => {
+                    let output = str.replace(/-/g, '+').replace(/_/g, '/');
+                    switch (output.length % 4) {
+                        case 0: break;
+                        case 2: output += '=='; break;
+                        case 3: output += '='; break;
+                        default: throw new Error("Illegal base64url string!");
                     }
-                    const url = new URL(urlStr);
-                    const params = {};
-                    url.searchParams.forEach((v, k) => params[k] = v);
-                    return {
-                        success: true,
-                        data: {
-                            protocol: url.protocol,
-                            hostname: url.hostname,
-                            pathname: url.pathname,
-                            search: url.search,
-                            params: params
-                        }
-                    };
-                } catch (e) { return { success: false, message: "Invalid URL" }; }
-            },
-            parseQueryString: (q) => {
-                try {
-                    const params = {};
-                    const searchParams = new URLSearchParams(q);
-                    searchParams.forEach((v, k) => params[k] = v);
-                    return { success: true, data: { params } };
-                } catch (e) { return { success: false, message: "Invalid Query" }; }
+                    return decodeURIComponent(escape(window.atob(output)));
+                };
+
+                const header = JSON.parse(base64UrlDecode(parts[0]));
+                const payload = JSON.parse(base64UrlDecode(parts[1]));
+
+                const now = Math.floor(Date.now() / 1000);
+                const isExpired = payload.exp ? payload.exp < now : false;
+
+                return { success: true, header, payload, isExpired };
+            } catch (e) {
+                return { success: false, message: "Invalid JWT format" };
             }
         },
-
-        jwtTools: {
-            decode: (t) => {
-                try {
-                    const parts = t.split('.');
-                    if (parts.length < 2) throw new Error("Invalid format");
-
-                    const base64UrlDecode = (str) => {
-                        let output = str.replace(/-/g, '+').replace(/_/g, '/');
-                        switch (output.length % 4) {
-                            case 0: break;
-                            case 2: output += '=='; break;
-                            case 3: output += '='; break;
-                            default: throw new Error("Illegal base64url string!");
-                        }
-                        return decodeURIComponent(escape(window.atob(output)));
-                    };
-
-                    const header = JSON.parse(base64UrlDecode(parts[0]));
-                    const payload = JSON.parse(base64UrlDecode(parts[1]));
-
-                    const now = Math.floor(Date.now() / 1000);
-                    const isExpired = payload.exp ? payload.exp < now : false;
-
-                    return { success: true, header, payload, isExpired };
-                } catch (e) {
-                    return { success: false, message: "Invalid JWT format" };
-                }
-            },
             getSampleTokens: () => ({
                 valid: { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c' },
                 expired: { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyNDAwMjJ9.XbPqh0hQ6Y1e7K3kL6e8M' }
             })
+    },
+
+    // --- MISC ---
+
+    cardTools: {
+        generateLuhn: (prefix, len) => {
+            // Generate random digits for remaining positions (except last digit for checksum)
+            let number = prefix;
+            const digitsNeeded = len - prefix.length - 1; // -1 for Luhn checksum digit
+
+            for (let i = 0; i < digitsNeeded; i++) {
+                number += Math.floor(Math.random() * 10);
+            }
+
+            // Calculate Luhn checksum
+            let sum = 0;
+            let isEven = true;
+
+            // Process digits from right to left (before adding checksum)
+            for (let i = number.length - 1; i >= 0; i--) {
+                let digit = parseInt(number[i]);
+
+                if (isEven) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+
+                sum += digit;
+                isEven = !isEven;
+            }
+
+            // Calculate check digit
+            const checkDigit = (10 - (sum % 10)) % 10;
+
+            return number + checkDigit;
         },
-
-        // --- MISC ---
-
-        cardTools: {
-            generateLuhn: (prefix, len) => {
-                // Generate random digits for remaining positions (except last digit for checksum)
-                let number = prefix;
-                const digitsNeeded = len - prefix.length - 1; // -1 for Luhn checksum digit
-
-                for (let i = 0; i < digitsNeeded; i++) {
-                    number += Math.floor(Math.random() * 10);
-                }
-
-                // Calculate Luhn checksum
-                let sum = 0;
-                let isEven = true;
-
-                // Process digits from right to left (before adding checksum)
-                for (let i = number.length - 1; i >= 0; i--) {
-                    let digit = parseInt(number[i]);
-
-                    if (isEven) {
-                        digit *= 2;
-                        if (digit > 9) digit -= 9;
-                    }
-
-                    sum += digit;
-                    isEven = !isEven;
-                }
-
-                // Calculate check digit
-                const checkDigit = (10 - (sum % 10)) % 10;
-
-                return number + checkDigit;
-            },
             format: (n) => {
                 // Format card number with spaces (4-4-4-4 or 4-6-5 for Amex)
                 if (n.length === 15) {
@@ -2901,680 +2830,680 @@ ${d.twitterHandle ? `<meta name="twitter:creator" content="${d.twitterHandle}">`
                     return n.match(/.{1,4}/g).join(' ');
                 }
             }
-        },
-        pianoTools: {
-            getNotes: () => [
-                // C4 Octave
-                { note: 'C', freq: 261.63, key: 'A', black: false },
-                { note: 'C#', freq: 277.18, key: 'W', black: true },
-                { note: 'D', freq: 293.66, key: 'S', black: false },
-                { note: 'D#', freq: 311.13, key: 'E', black: true },
-                { note: 'E', freq: 329.63, key: 'D', black: false },
-                { note: 'F', freq: 349.23, key: 'F', black: false },
-                { note: 'F#', freq: 369.99, key: 'T', black: true },
-                { note: 'G', freq: 392.00, key: 'G', black: false },
-                { note: 'G#', freq: 415.30, key: 'Y', black: true },
-                { note: 'A', freq: 440.00, key: 'H', black: false },
-                { note: 'A#', freq: 466.16, key: 'U', black: true },
-                { note: 'B', freq: 493.88, key: 'J', black: false },
-                // C5 Octave
-                { note: 'C5', freq: 523.25, key: 'K', black: false },
-                { note: 'C#5', freq: 554.37, key: 'O', black: true },
-                { note: 'D5', freq: 587.33, key: 'L', black: false },
-                { note: 'D#5', freq: 622.25, key: 'P', black: true },
-                { note: 'E5', freq: 659.25, key: ';', black: false }
-            ]
-        },
-        metadataTools: {
-            read: async function (file) {
-                if (typeof ExifReader === 'undefined') throw new Error("ExifReader library not loaded");
+    },
+    pianoTools: {
+        getNotes: () => [
+            // C4 Octave
+            { note: 'C', freq: 261.63, key: 'A', black: false },
+            { note: 'C#', freq: 277.18, key: 'W', black: true },
+            { note: 'D', freq: 293.66, key: 'S', black: false },
+            { note: 'D#', freq: 311.13, key: 'E', black: true },
+            { note: 'E', freq: 329.63, key: 'D', black: false },
+            { note: 'F', freq: 349.23, key: 'F', black: false },
+            { note: 'F#', freq: 369.99, key: 'T', black: true },
+            { note: 'G', freq: 392.00, key: 'G', black: false },
+            { note: 'G#', freq: 415.30, key: 'Y', black: true },
+            { note: 'A', freq: 440.00, key: 'H', black: false },
+            { note: 'A#', freq: 466.16, key: 'U', black: true },
+            { note: 'B', freq: 493.88, key: 'J', black: false },
+            // C5 Octave
+            { note: 'C5', freq: 523.25, key: 'K', black: false },
+            { note: 'C#5', freq: 554.37, key: 'O', black: true },
+            { note: 'D5', freq: 587.33, key: 'L', black: false },
+            { note: 'D#5', freq: 622.25, key: 'P', black: true },
+            { note: 'E5', freq: 659.25, key: ';', black: false }
+        ]
+    },
+    metadataTools: {
+        read: async function (file) {
+            if (typeof ExifReader === 'undefined') throw new Error("ExifReader library not loaded");
 
-                const tags = await ExifReader.load(file, { expanded: true });
-                // ExifReader 'expanded' mode gives nice groups: 'exif', 'gps', 'file', etc.
+            const tags = await ExifReader.load(file, { expanded: true });
+            // ExifReader 'expanded' mode gives nice groups: 'exif', 'gps', 'file', etc.
 
-                const flat = {};
-                const groups = { exif: {}, gps: {} };
-                let gps = null;
+            const flat = {};
+            const groups = { exif: {}, gps: {} };
+            let gps = null;
 
-                // Populate flat list for display
-                // Combine all groups
-                Object.keys(tags).forEach(groupName => {
-                    if (tags[groupName]) {
-                        Object.entries(tags[groupName]).forEach(([k, v]) => {
-                            // v is { description: ..., value: ... } or just value in expanded mode? 
-                            // In expanded mode: tags.exif['Artist'] is { description: "Name", value: ... }
-                            let desc = v.description;
-                            if (Array.isArray(desc)) desc = desc.join(', ');
+            // Populate flat list for display
+            // Combine all groups
+            Object.keys(tags).forEach(groupName => {
+                if (tags[groupName]) {
+                    Object.entries(tags[groupName]).forEach(([k, v]) => {
+                        // v is { description: ..., value: ... } or just value in expanded mode? 
+                        // In expanded mode: tags.exif['Artist'] is { description: "Name", value: ... }
+                        let desc = v.description;
+                        if (Array.isArray(desc)) desc = desc.join(', ');
 
-                            const key = `${groupName}:${k}`;
-                            flat[key] = desc;
+                        const key = `${groupName}:${k}`;
+                        flat[key] = desc;
 
-                            // Populate groups for UI mapping
-                            if (groupName === 'exif') groups.exif[k] = v;
-                            if (groupName === 'gps') groups.gps[k] = v;
-                        });
-                    }
-                });
-
-                // GPS Helper
-                if (tags.gps && tags.gps.Latitude && tags.gps.Longitude) {
-                    gps = {
-                        lat: tags.gps.Latitude,
-                        lng: tags.gps.Longitude
-                    };
-                }
-
-                return { flat, groups, gps };
-            },
-            strip: async function (file) {
-                if (typeof piexif === 'undefined') throw new Error("PiExifJS library not loaded");
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = e => {
-                        try {
-                            // Passing null as exif data strips it
-                            const clean = piexif.remove(e.target.result);
-                            resolve(clean);
-                        } catch (err) { resolve(e.target.result); } // If fails (e.g. PNG), return original
-                    };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            },
-            update: async function (dataUrl, edits) {
-                if (typeof piexif === 'undefined') throw new Error("PiExifJS library not loaded");
-
-                // Load existing
-                let exifObj;
-                try {
-                    exifObj = piexif.load(dataUrl);
-                } catch (e) { exifObj = { "0th": {}, "Exif": {}, "GPS": {}, "1st": {}, "thumbnail": null }; }
-
-                // Helper
-                const set0th = (tag, val) => { if (!exifObj["0th"]) exifObj["0th"] = {}; exifObj["0th"][tag] = val; };
-                const setExif = (tag, val) => { if (!exifObj["Exif"]) exifObj["Exif"] = {}; exifObj["Exif"][tag] = val; };
-
-                // 271 Make, 272 Model, 315 Artist (0th IFD)
-                if (edits.make) set0th(271, edits.make);
-                if (edits.model) set0th(272, edits.model);
-                if (edits.artist) set0th(315, edits.artist);
-
-                // DateTime: 306 (0th) format "YYYY:MM:DD HH:MM:SS"
-                if (edits.date) {
-                    // edits.date is from datetime-local input (YYYY-MM-DDTHH:MM)
-                    let d = edits.date.replace('T', ' ').replace(/-/g, ':');
-                    if (d.length === 16) d += ':00'; // add seconds
-                    set0th(306, d);
-                }
-
-                // GPS update is skipped for safety reasons in this basic version
-
-                const bytes = piexif.dump(exifObj);
-                return piexif.insert(bytes, dataUrl);
-            }
-        },
-        diffTools: {
-            compare: (text1, text2) => {
-                const lines1 = text1.split('\n');
-                const lines2 = text2.split('\n');
-                const diffs = [];
-                let i = 0, j = 0;
-
-                // Very basic LCS-like approximation for 2-way diff
-                while (i < lines1.length || j < lines2.length) {
-                    if (i < lines1.length && j < lines2.length && lines1[i] === lines2[j]) {
-                        diffs.push({ value: lines1[i], count: 1 });
-                        i++; j++;
-                    } else if (j < lines2.length && (i >= lines1.length || !lines1.includes(lines2[j]))) {
-                        // Added in new
-                        diffs.push({ value: lines2[j], added: true, count: 1 });
-                        j++;
-                    } else if (i < lines1.length) {
-                        // Removed from old
-                        diffs.push({ value: lines1[i], removed: true, count: 1 });
-                        i++;
-                    }
-                }
-                return diffs;
-            }
-        },
-
-        promptTools: {
-            enhance: (subject, platform = 'midjourney') => {
-                if (!subject) return subject;
-
-                // Intelligent enhancement based on platform
-                const enhancements = {
-                    midjourney: [
-                        'highly detailed',
-                        'professional photography',
-                        'cinematic lighting',
-                        'award winning',
-                        '8k uhd',
-                        'sharp focus'
-                    ],
-                    dalle: [
-                        'professional grade',
-                        'high quality',
-                        'detailed',
-                        'well composed'
-                    ],
-                    stable: [
-                        'masterpiece',
-                        'best quality',
-                        'ultra detailed',
-                        'intricate details',
-                        'photorealistic',
-                        '8k resolution'
-                    ],
-                    chatgpt: [
-                        'Please provide a comprehensive and detailed response.',
-                        'Use clear examples and explanations.',
-                        'Structure your answer logically.'
-                    ],
-                    claude: [
-                        'Think step by step and provide detailed reasoning.',
-                        'Be thorough and precise in your explanation.',
-                        'Consider multiple perspectives.'
-                    ],
-                    gemini: [
-                        'Provide a detailed and well-structured response.',
-                        'Use concrete examples to illustrate your points.',
-                        'Ensure accuracy and clarity.'
-                    ]
-                };
-
-                const boosts = enhancements[platform] || enhancements.midjourney;
-
-                // For text AI, add instructions
-                if (['chatgpt', 'claude', 'gemini'].includes(platform)) {
-                    return `${subject}\n\n${boosts.join(' ')}`;
-                }
-
-                // For image AI, add quality modifiers
-                const qualityBoosts = boosts.slice(0, 3).join(', ');
-                return `${subject}, ${qualityBoosts}`;
-            }
-        },
-
-        // --- MARKDOWN TOOLS ---
-        markdownTools: {
-            parseMarkdown: (text) => {
-                if (!text) return '';
-                let html = text
-                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') // Escape HTML
-                    .replace(/^# (.*$)/gim, '<h1>$1</h1>') // H1
-                    .replace(/^## (.*$)/gim, '<h2>$1</h2>') // H2
-                    .replace(/^### (.*$)/gim, '<h3>$1</h3>') // H3
-                    .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>') // Blockquote
-                    .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>') // Bold
-                    .replace(/\*(.*)\*/gim, '<em>$1</em>') // Italic
-                    .replace(/!\[(.*?)\]\((.*?)\)/gim, '<img alt="$1" src="$2" />') // Image
-                    .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>') // Link
-                    .replace(/`(.*?)`/gim, '<code>$1</code>') // Inline Code
-                    .replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>') // List Item
-                    .replace(/(\n|^)(?!\s*<li>)(.*)/gim, function (match, p1, p2) {
-                        // Paragraphs: Wrap lines that aren't empty, headers, blockquotes, or list items in <p>
-                        if (p2.match(/<\/?(h|li|ul|ol|blockquote)/)) return match;
-                        return p2.trim() ? `${p1}<p>${p2}</p>` : match;
+                        // Populate groups for UI mapping
+                        if (groupName === 'exif') groups.exif[k] = v;
+                        if (groupName === 'gps') groups.gps[k] = v;
                     });
+                }
+            });
 
-                // Wrap adjacent li in ul (basic)
-                html = html.replace(/(<li>.*<\/li>\s*)+/gim, '<ul>$&</ul>');
+            // GPS Helper
+            if (tags.gps && tags.gps.Latitude && tags.gps.Longitude) {
+                gps = {
+                    lat: tags.gps.Latitude,
+                    lng: tags.gps.Longitude
+                };
+            }
 
-                // Code block (triple backtick)
-                html = html.replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>');
+            return { flat, groups, gps };
+        },
+        strip: async function (file) {
+            if (typeof piexif === 'undefined') throw new Error("PiExifJS library not loaded");
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    try {
+                        // Passing null as exif data strips it
+                        const clean = piexif.remove(e.target.result);
+                        resolve(clean);
+                    } catch (err) { resolve(e.target.result); } // If fails (e.g. PNG), return original
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        },
+        update: async function (dataUrl, edits) {
+            if (typeof piexif === 'undefined') throw new Error("PiExifJS library not loaded");
 
-                return html;
-            },
+            // Load existing
+            let exifObj;
+            try {
+                exifObj = piexif.load(dataUrl);
+            } catch (e) { exifObj = { "0th": {}, "Exif": {}, "GPS": {}, "1st": {}, "thumbnail": null }; }
+
+            // Helper
+            const set0th = (tag, val) => { if (!exifObj["0th"]) exifObj["0th"] = {}; exifObj["0th"][tag] = val; };
+            const setExif = (tag, val) => { if (!exifObj["Exif"]) exifObj["Exif"] = {}; exifObj["Exif"][tag] = val; };
+
+            // 271 Make, 272 Model, 315 Artist (0th IFD)
+            if (edits.make) set0th(271, edits.make);
+            if (edits.model) set0th(272, edits.model);
+            if (edits.artist) set0th(315, edits.artist);
+
+            // DateTime: 306 (0th) format "YYYY:MM:DD HH:MM:SS"
+            if (edits.date) {
+                // edits.date is from datetime-local input (YYYY-MM-DDTHH:MM)
+                let d = edits.date.replace('T', ' ').replace(/-/g, ':');
+                if (d.length === 16) d += ':00'; // add seconds
+                set0th(306, d);
+            }
+
+            // GPS update is skipped for safety reasons in this basic version
+
+            const bytes = piexif.dump(exifObj);
+            return piexif.insert(bytes, dataUrl);
+        }
+    },
+    diffTools: {
+        compare: (text1, text2) => {
+            const lines1 = text1.split('\n');
+            const lines2 = text2.split('\n');
+            const diffs = [];
+            let i = 0, j = 0;
+
+            // Very basic LCS-like approximation for 2-way diff
+            while (i < lines1.length || j < lines2.length) {
+                if (i < lines1.length && j < lines2.length && lines1[i] === lines2[j]) {
+                    diffs.push({ value: lines1[i], count: 1 });
+                    i++; j++;
+                } else if (j < lines2.length && (i >= lines1.length || !lines1.includes(lines2[j]))) {
+                    // Added in new
+                    diffs.push({ value: lines2[j], added: true, count: 1 });
+                    j++;
+                } else if (i < lines1.length) {
+                    // Removed from old
+                    diffs.push({ value: lines1[i], removed: true, count: 1 });
+                    i++;
+                }
+            }
+            return diffs;
+        }
+    },
+
+    promptTools: {
+        enhance: (subject, platform = 'midjourney') => {
+            if (!subject) return subject;
+
+            // Intelligent enhancement based on platform
+            const enhancements = {
+                midjourney: [
+                    'highly detailed',
+                    'professional photography',
+                    'cinematic lighting',
+                    'award winning',
+                    '8k uhd',
+                    'sharp focus'
+                ],
+                dalle: [
+                    'professional grade',
+                    'high quality',
+                    'detailed',
+                    'well composed'
+                ],
+                stable: [
+                    'masterpiece',
+                    'best quality',
+                    'ultra detailed',
+                    'intricate details',
+                    'photorealistic',
+                    '8k resolution'
+                ],
+                chatgpt: [
+                    'Please provide a comprehensive and detailed response.',
+                    'Use clear examples and explanations.',
+                    'Structure your answer logically.'
+                ],
+                claude: [
+                    'Think step by step and provide detailed reasoning.',
+                    'Be thorough and precise in your explanation.',
+                    'Consider multiple perspectives.'
+                ],
+                gemini: [
+                    'Provide a detailed and well-structured response.',
+                    'Use concrete examples to illustrate your points.',
+                    'Ensure accuracy and clarity.'
+                ]
+            };
+
+            const boosts = enhancements[platform] || enhancements.midjourney;
+
+            // For text AI, add instructions
+            if (['chatgpt', 'claude', 'gemini'].includes(platform)) {
+                return `${subject}\n\n${boosts.join(' ')}`;
+            }
+
+            // For image AI, add quality modifiers
+            const qualityBoosts = boosts.slice(0, 3).join(', ');
+            return `${subject}, ${qualityBoosts}`;
+        }
+    },
+
+    // --- MARKDOWN TOOLS ---
+    markdownTools: {
+        parseMarkdown: (text) => {
+            if (!text) return '';
+            let html = text
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') // Escape HTML
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>') // H1
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>') // H2
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>') // H3
+                .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>') // Blockquote
+                .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>') // Bold
+                .replace(/\*(.*)\*/gim, '<em>$1</em>') // Italic
+                .replace(/!\[(.*?)\]\((.*?)\)/gim, '<img alt="$1" src="$2" />') // Image
+                .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>') // Link
+                .replace(/`(.*?)`/gim, '<code>$1</code>') // Inline Code
+                .replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>') // List Item
+                .replace(/(\n|^)(?!\s*<li>)(.*)/gim, function (match, p1, p2) {
+                    // Paragraphs: Wrap lines that aren't empty, headers, blockquotes, or list items in <p>
+                    if (p2.match(/<\/?(h|li|ul|ol|blockquote)/)) return match;
+                    return p2.trim() ? `${p1}<p>${p2}</p>` : match;
+                });
+
+            // Wrap adjacent li in ul (basic)
+            html = html.replace(/(<li>.*<\/li>\s*)+/gim, '<ul>$&</ul>');
+
+            // Code block (triple backtick)
+            html = html.replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>');
+
+            return html;
+        },
             exportHTML: (text) => {
                 const body = window.DevTools.markdownTools.parseMarkdown(text);
                 return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:system-ui,sans-serif;line-height:1.6;max-width:800px;margin:2rem auto;padding:0 1rem;color:#333;}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:4px;}blockquote{border-left:4px solid #ddd;padding-left:1rem;color:#666;margin:1rem 0;}img{max-width:100%;}</style></head><body>${body}</body></html>`;
             }
-        },
+    },
 
-        jsonTools: {
-            generateTypes: (jsonStr, rootName = 'RootObject', lang = 'ts') => {
-                try {
-                    const obj = JSON.parse(jsonStr);
+    jsonTools: {
+        generateTypes: (jsonStr, rootName = 'RootObject', lang = 'ts') => {
+            try {
+                const obj = JSON.parse(jsonStr);
 
-                    if (lang === 'ts') {
-                        const interfaces = [];
-                        const seenNames = new Set();
+                if (lang === 'ts') {
+                    const interfaces = [];
+                    const seenNames = new Set();
 
-                        const generate = (name, o) => {
-                            if (seenNames.has(name)) return name; // Avoid duplicates/cycles
-                            seenNames.add(name);
+                    const generate = (name, o) => {
+                        if (seenNames.has(name)) return name; // Avoid duplicates/cycles
+                        seenNames.add(name);
 
-                            let props = '';
+                        let props = '';
 
-                            // Handle Array Root
-                            if (Array.isArray(o)) {
-                                if (o.length > 0 && typeof o[0] === 'object') {
-                                    const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', o[0]);
-                                    return `${childType}[]`;
-                                }
-                                return 'any[]';
+                        // Handle Array Root
+                        if (Array.isArray(o)) {
+                            if (o.length > 0 && typeof o[0] === 'object') {
+                                const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', o[0]);
+                                return `${childType}[]`;
                             }
-
-                            for (const [k, v] of Object.entries(o)) {
-                                const propName = k;
-                                let type = typeof v;
-
-                                if (v === null) type = 'any';
-                                else if (Array.isArray(v)) {
-                                    if (v.length > 0) {
-                                        const first = v[0];
-                                        if (typeof first === 'object' && first !== null) {
-                                            const childTypeName = name + '_' + k.charAt(0).toUpperCase() + k.slice(1);
-                                            generate(childTypeName, first);
-                                            type = `${childTypeName}[]`;
-                                        } else {
-                                            type = `${typeof first}[]`;
-                                        }
-                                    } else {
-                                        type = 'any[]';
-                                    }
-                                } else if (type === 'object') {
-                                    const childTypeName = name + '_' + k.charAt(0).toUpperCase() + k.slice(1);
-                                    generate(childTypeName, v);
-                                    type = childTypeName;
-                                }
-                                props += `  ${propName}: ${type};\n`;
-                            }
-
-                            interfaces.push(`interface ${name} {\n${props}}`);
-                            return name;
-                        };
-
-                        if (Array.isArray(obj)) {
-                            const rootType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
-                            return `type ${rootName} = ${rootType}[];\n\n` + interfaces.reverse().join('\n\n');
-                        } else {
-                            generate(rootName, obj);
-                            return interfaces.reverse().join('\n\n');
+                            return 'any[]';
                         }
-                    } else if (lang === 'go') {
-                        const structs = [];
-                        const seenNames = new Set();
 
-                        const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-                        const toPascalCase = s => s.split('_').map(capitalize).join('');
+                        for (const [k, v] of Object.entries(o)) {
+                            const propName = k;
+                            let type = typeof v;
 
-                        const generate = (name, o) => {
-                            if (seenNames.has(name)) return name;
-                            seenNames.add(name);
-
-                            let props = '';
-
-                            // Handle Array Root
-                            if (Array.isArray(o)) {
-                                if (o.length > 0) {
-                                    const first = o[0];
+                            if (v === null) type = 'any';
+                            else if (Array.isArray(v)) {
+                                if (v.length > 0) {
+                                    const first = v[0];
                                     if (typeof first === 'object' && first !== null) {
-                                        const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
-                                        return `[]${childType}`;
-                                    }
-                                    const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float64') : typeof first === 'boolean' ? 'bool' : 'interface{}';
-                                    return `[]${primitiveType}`;
-                                }
-                                return '[]interface{}';
-                            }
-
-                            for (const [k, v] of Object.entries(o)) {
-                                const fieldName = toPascalCase(k);
-                                let goType = 'interface{}';
-
-                                if (v === null) {
-                                    goType = 'interface{}';
-                                } else if (Array.isArray(v)) {
-                                    if (v.length > 0) {
-                                        const first = v[0];
-                                        if (typeof first === 'object' && first !== null) {
-                                            const childTypeName = name + fieldName;
-                                            goType = '[]' + generate(childTypeName, first);
-                                        } else {
-                                            const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float64') : typeof first === 'boolean' ? 'bool' : 'interface{}';
-                                            goType = `[]${primitiveType}`;
-                                        }
+                                        const childTypeName = name + '_' + k.charAt(0).toUpperCase() + k.slice(1);
+                                        generate(childTypeName, first);
+                                        type = `${childTypeName}[]`;
                                     } else {
-                                        goType = '[]interface{}';
+                                        type = `${typeof first}[]`;
                                     }
-                                } else if (typeof v === 'object') {
-                                    const childTypeName = name + fieldName;
-                                    generate(childTypeName, v);
-                                    goType = childTypeName;
-                                } else if (typeof v === 'string') {
-                                    goType = 'string';
-                                } else if (typeof v === 'number') {
-                                    goType = Number.isInteger(v) ? 'int' : 'float64';
-                                } else if (typeof v === 'boolean') {
-                                    goType = 'bool';
+                                } else {
+                                    type = 'any[]';
                                 }
-
-                                props += `    ${fieldName} ${goType} \`json:"${k}"\`\n`;
+                            } else if (type === 'object') {
+                                const childTypeName = name + '_' + k.charAt(0).toUpperCase() + k.slice(1);
+                                generate(childTypeName, v);
+                                type = childTypeName;
                             }
-
-                            structs.push(`type ${name} struct {\n${props}}`);
-                            return name;
-                        };
-
-                        if (Array.isArray(obj)) {
-                            const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
-                            return `type ${rootName} []${itemType}\n\n` + structs.reverse().join('\n\n');
-                        } else {
-                            generate(rootName, obj);
-                            return structs.reverse().join('\n\n');
+                            props += `  ${propName}: ${type};\n`;
                         }
-                    } else if (lang === 'csharp') {
-                        const classes = [];
-                        const seenNames = new Set();
 
-                        const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-                        const toPascalCase = s => s.split('_').map(capitalize).join('');
+                        interfaces.push(`interface ${name} {\n${props}}`);
+                        return name;
+                    };
 
-                        const generate = (name, o) => {
-                            if (seenNames.has(name)) return name;
-                            seenNames.add(name);
-
-                            let props = '';
-
-                            // Handle Array Root
-                            if (Array.isArray(o)) {
-                                if (o.length > 0) {
-                                    const first = o[0];
-                                    if (typeof first === 'object' && first !== null) {
-                                        const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
-                                        return `List<${childType}>`;
-                                    }
-                                    const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'double') : typeof first === 'boolean' ? 'bool' : 'object';
-                                    return `List<${primitiveType}>`;
-                                }
-                                return 'List<object>';
-                            }
-
-                            for (const [k, v] of Object.entries(o)) {
-                                const propName = toPascalCase(k);
-                                let csType = 'object';
-
-                                if (v === null) {
-                                    csType = 'object';
-                                } else if (Array.isArray(v)) {
-                                    if (v.length > 0) {
-                                        const first = v[0];
-                                        if (typeof first === 'object' && first !== null) {
-                                            const childTypeName = name + propName;
-                                            csType = 'List<' + generate(childTypeName, first) + '>';
-                                        } else {
-                                            const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'double') : typeof first === 'boolean' ? 'bool' : 'object';
-                                            csType = `List<${primitiveType}>`;
-                                        }
-                                    } else {
-                                        csType = 'List<object>';
-                                    }
-                                } else if (typeof v === 'object') {
-                                    const childTypeName = name + propName;
-                                    generate(childTypeName, v);
-                                    csType = childTypeName;
-                                } else if (typeof v === 'string') {
-                                    csType = 'string';
-                                } else if (typeof v === 'number') {
-                                    csType = Number.isInteger(v) ? 'int' : 'double';
-                                } else if (typeof v === 'boolean') {
-                                    csType = 'bool';
-                                }
-
-                                props += `    public ${csType} ${propName} { get; set; }\n`;
-                            }
-
-                            classes.push(`public class ${name}\n{\n${props}}`);
-                            return name;
-                        };
-
-                        if (Array.isArray(obj)) {
-                            const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
-                            return `public class ${rootName} : List<${itemType}> { }\n\n` + classes.reverse().join('\n\n');
-                        } else {
-                            generate(rootName, obj);
-                            return classes.reverse().join('\n\n');
-                        }
-                    } else if (lang === 'java') {
-                        const classes = [];
-                        const seenNames = new Set();
-
-                        const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-                        const toCamelCase = s => {
-                            const parts = s.split('_');
-                            return parts[0] + parts.slice(1).map(capitalize).join('');
-                        };
-                        const toPascalCase = s => s.split('_').map(capitalize).join('');
-
-                        const generate = (name, o) => {
-                            if (seenNames.has(name)) return name;
-                            seenNames.add(name);
-
-                            let props = '';
-
-                            // Handle Array Root
-                            if (Array.isArray(o)) {
-                                if (o.length > 0) {
-                                    const first = o[0];
-                                    if (typeof first === 'object' && first !== null) {
-                                        const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
-                                        return `List<${childType}>`;
-                                    }
-                                    const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Integer' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Object';
-                                    return `List<${primitiveType}>`;
-                                }
-                                return 'List<Object>';
-                            }
-
-                            for (const [k, v] of Object.entries(o)) {
-                                const fieldName = toCamelCase(k);
-                                const methodName = toPascalCase(k);
-                                let javaType = 'Object';
-
-                                if (v === null) {
-                                    javaType = 'Object';
-                                } else if (Array.isArray(v)) {
-                                    if (v.length > 0) {
-                                        const first = v[0];
-                                        if (typeof first === 'object' && first !== null) {
-                                            const childTypeName = name + toPascalCase(k);
-                                            javaType = 'List<' + generate(childTypeName, first) + '>';
-                                        } else {
-                                            const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Integer' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Object';
-                                            javaType = `List<${primitiveType}>`;
-                                        }
-                                    } else {
-                                        javaType = 'List<Object>';
-                                    }
-                                } else if (typeof v === 'object') {
-                                    const childTypeName = name + toPascalCase(k);
-                                    generate(childTypeName, v);
-                                    javaType = childTypeName;
-                                } else if (typeof v === 'string') {
-                                    javaType = 'String';
-                                } else if (typeof v === 'number') {
-                                    javaType = Number.isInteger(v) ? 'Integer' : 'Double';
-                                } else if (typeof v === 'boolean') {
-                                    javaType = 'Boolean';
-                                }
-
-                                props += `    private ${javaType} ${fieldName};\n`;
-                                props += `    public ${javaType} get${methodName}() { return ${fieldName}; }\n`;
-                                props += `    public void set${methodName}(${javaType} ${fieldName}) { this.${fieldName} = ${fieldName}; }\n\n`;
-                            }
-
-                            classes.push(`public class ${name} {\n${props}}`);
-                            return name;
-                        };
-
-                        if (Array.isArray(obj)) {
-                            const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
-                            return `public class ${rootName} extends ArrayList<${itemType}> { }\n\n` + classes.reverse().join('\n\n');
-                        } else {
-                            generate(rootName, obj);
-                            return classes.reverse().join('\n\n');
-                        }
-                    } else if (lang === 'python') {
-                        const classes = [];
-                        const seenNames = new Set();
-
-                        const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-                        const toPascalCase = s => s.split('_').map(capitalize).join('');
-
-                        const generate = (name, o) => {
-                            if (seenNames.has(name)) return name;
-                            seenNames.add(name);
-
-                            let props = '';
-
-                            // Handle Array Root
-                            if (Array.isArray(o)) {
-                                if (o.length > 0) {
-                                    const first = o[0];
-                                    if (typeof first === 'object' && first !== null) {
-                                        const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
-                                        return `List[${childType}]`;
-                                    }
-                                    const primitiveType = typeof first === 'string' ? 'str' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float') : typeof first === 'boolean' ? 'bool' : 'Any';
-                                    return `List[${primitiveType}]`;
-                                }
-                                return 'List[Any]';
-                            }
-
-                            for (const [k, v] of Object.entries(o)) {
-                                const fieldName = k; // Keep snake_case for Python
-                                let pyType = 'Any';
-
-                                if (v === null) {
-                                    pyType = 'Any';
-                                } else if (Array.isArray(v)) {
-                                    if (v.length > 0) {
-                                        const first = v[0];
-                                        if (typeof first === 'object' && first !== null) {
-                                            const childTypeName = name + toPascalCase(k);
-                                            pyType = 'List[' + generate(childTypeName, first) + ']';
-                                        } else {
-                                            const primitiveType = typeof first === 'string' ? 'str' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float') : typeof first === 'boolean' ? 'bool' : 'Any';
-                                            pyType = `List[${primitiveType}]`;
-                                        }
-                                    } else {
-                                        pyType = 'List[Any]';
-                                    }
-                                } else if (typeof v === 'object') {
-                                    const childTypeName = name + toPascalCase(k);
-                                    generate(childTypeName, v);
-                                    pyType = childTypeName;
-                                } else if (typeof v === 'string') {
-                                    pyType = 'str';
-                                } else if (typeof v === 'number') {
-                                    pyType = Number.isInteger(v) ? 'int' : 'float';
-                                } else if (typeof v === 'boolean') {
-                                    pyType = 'bool';
-                                }
-
-                                props += `    ${fieldName}: ${pyType}\n`;
-                            }
-
-                            classes.push(`@dataclass\nclass ${name}:\n${props}`);
-                            return name;
-                        };
-
-                        if (Array.isArray(obj)) {
-                            const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
-                            return `from dataclasses import dataclass\nfrom typing import Any, List\n\n${rootName} = List[${itemType}]\n\n` + classes.reverse().join('\n\n');
-                        } else {
-                            generate(rootName, obj);
-                            return `from dataclasses import dataclass\nfrom typing import Any, List\n\n` + classes.reverse().join('\n\n');
-                        }
-                    } else if (lang === 'kotlin') {
-                        const classes = [];
-                        const seenNames = new Set();
-
-                        const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-                        const toCamelCase = s => {
-                            const parts = s.split('_');
-                            return parts[0] + parts.slice(1).map(capitalize).join('');
-                        };
-                        const toPascalCase = s => s.split('_').map(capitalize).join('');
-
-                        const generate = (name, o) => {
-                            if (seenNames.has(name)) return name;
-                            seenNames.add(name);
-
-                            let props = '';
-
-                            // Handle Array Root
-                            if (Array.isArray(o)) {
-                                if (o.length > 0) {
-                                    const first = o[0];
-                                    if (typeof first === 'object' && first !== null) {
-                                        const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
-                                        return `List<${childType}>`;
-                                    }
-                                    const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Int' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Any';
-                                    return `List<${primitiveType}>`;
-                                }
-                                return 'List<Any>';
-                            }
-
-                            const entries = Object.entries(o);
-                            for (let i = 0; i < entries.length; i++) {
-                                const [k, v] = entries[i];
-                                const propName = toCamelCase(k);
-                                let ktType = 'Any';
-
-                                if (v === null) {
-                                    ktType = 'Any?';
-                                } else if (Array.isArray(v)) {
-                                    if (v.length > 0) {
-                                        const first = v[0];
-                                        if (typeof first === 'object' && first !== null) {
-                                            const childTypeName = name + toPascalCase(k);
-                                            ktType = 'List<' + generate(childTypeName, first) + '>';
-                                        } else {
-                                            const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Int' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Any';
-                                            ktType = `List<${primitiveType}>`;
-                                        }
-                                    } else {
-                                        ktType = 'List<Any>';
-                                    }
-                                } else if (typeof v === 'object') {
-                                    const childTypeName = name + toPascalCase(k);
-                                    generate(childTypeName, v);
-                                    ktType = childTypeName;
-                                } else if (typeof v === 'string') {
-                                    ktType = 'String';
-                                } else if (typeof v === 'number') {
-                                    ktType = Number.isInteger(v) ? 'Int' : 'Double';
-                                } else if (typeof v === 'boolean') {
-                                    ktType = 'Boolean';
-                                }
-
-                                props += `    val ${propName}: ${ktType}`;
-                                if (i < entries.length - 1) props += ',';
-                                props += '\n';
-                            }
-
-                            classes.push(`data class ${name}(\n${props})`);
-                            return name;
-                        };
-
-                        if (Array.isArray(obj)) {
-                            const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
-                            return `typealias ${rootName} = List<${itemType}>\n\n` + classes.reverse().join('\n\n');
-                        } else {
-                            generate(rootName, obj);
-                            return classes.reverse().join('\n\n');
-                        }
+                    if (Array.isArray(obj)) {
+                        const rootType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
+                        return `type ${rootName} = ${rootType}[];\n\n` + interfaces.reverse().join('\n\n');
+                    } else {
+                        generate(rootName, obj);
+                        return interfaces.reverse().join('\n\n');
                     }
-                    return `// Type generation for ${lang} coming soon`;
-                } catch (e) {
-                    return `// Error: ${e.message}`;
+                } else if (lang === 'go') {
+                    const structs = [];
+                    const seenNames = new Set();
+
+                    const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+                    const toPascalCase = s => s.split('_').map(capitalize).join('');
+
+                    const generate = (name, o) => {
+                        if (seenNames.has(name)) return name;
+                        seenNames.add(name);
+
+                        let props = '';
+
+                        // Handle Array Root
+                        if (Array.isArray(o)) {
+                            if (o.length > 0) {
+                                const first = o[0];
+                                if (typeof first === 'object' && first !== null) {
+                                    const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
+                                    return `[]${childType}`;
+                                }
+                                const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float64') : typeof first === 'boolean' ? 'bool' : 'interface{}';
+                                return `[]${primitiveType}`;
+                            }
+                            return '[]interface{}';
+                        }
+
+                        for (const [k, v] of Object.entries(o)) {
+                            const fieldName = toPascalCase(k);
+                            let goType = 'interface{}';
+
+                            if (v === null) {
+                                goType = 'interface{}';
+                            } else if (Array.isArray(v)) {
+                                if (v.length > 0) {
+                                    const first = v[0];
+                                    if (typeof first === 'object' && first !== null) {
+                                        const childTypeName = name + fieldName;
+                                        goType = '[]' + generate(childTypeName, first);
+                                    } else {
+                                        const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float64') : typeof first === 'boolean' ? 'bool' : 'interface{}';
+                                        goType = `[]${primitiveType}`;
+                                    }
+                                } else {
+                                    goType = '[]interface{}';
+                                }
+                            } else if (typeof v === 'object') {
+                                const childTypeName = name + fieldName;
+                                generate(childTypeName, v);
+                                goType = childTypeName;
+                            } else if (typeof v === 'string') {
+                                goType = 'string';
+                            } else if (typeof v === 'number') {
+                                goType = Number.isInteger(v) ? 'int' : 'float64';
+                            } else if (typeof v === 'boolean') {
+                                goType = 'bool';
+                            }
+
+                            props += `    ${fieldName} ${goType} \`json:"${k}"\`\n`;
+                        }
+
+                        structs.push(`type ${name} struct {\n${props}}`);
+                        return name;
+                    };
+
+                    if (Array.isArray(obj)) {
+                        const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
+                        return `type ${rootName} []${itemType}\n\n` + structs.reverse().join('\n\n');
+                    } else {
+                        generate(rootName, obj);
+                        return structs.reverse().join('\n\n');
+                    }
+                } else if (lang === 'csharp') {
+                    const classes = [];
+                    const seenNames = new Set();
+
+                    const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+                    const toPascalCase = s => s.split('_').map(capitalize).join('');
+
+                    const generate = (name, o) => {
+                        if (seenNames.has(name)) return name;
+                        seenNames.add(name);
+
+                        let props = '';
+
+                        // Handle Array Root
+                        if (Array.isArray(o)) {
+                            if (o.length > 0) {
+                                const first = o[0];
+                                if (typeof first === 'object' && first !== null) {
+                                    const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
+                                    return `List<${childType}>`;
+                                }
+                                const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'double') : typeof first === 'boolean' ? 'bool' : 'object';
+                                return `List<${primitiveType}>`;
+                            }
+                            return 'List<object>';
+                        }
+
+                        for (const [k, v] of Object.entries(o)) {
+                            const propName = toPascalCase(k);
+                            let csType = 'object';
+
+                            if (v === null) {
+                                csType = 'object';
+                            } else if (Array.isArray(v)) {
+                                if (v.length > 0) {
+                                    const first = v[0];
+                                    if (typeof first === 'object' && first !== null) {
+                                        const childTypeName = name + propName;
+                                        csType = 'List<' + generate(childTypeName, first) + '>';
+                                    } else {
+                                        const primitiveType = typeof first === 'string' ? 'string' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'double') : typeof first === 'boolean' ? 'bool' : 'object';
+                                        csType = `List<${primitiveType}>`;
+                                    }
+                                } else {
+                                    csType = 'List<object>';
+                                }
+                            } else if (typeof v === 'object') {
+                                const childTypeName = name + propName;
+                                generate(childTypeName, v);
+                                csType = childTypeName;
+                            } else if (typeof v === 'string') {
+                                csType = 'string';
+                            } else if (typeof v === 'number') {
+                                csType = Number.isInteger(v) ? 'int' : 'double';
+                            } else if (typeof v === 'boolean') {
+                                csType = 'bool';
+                            }
+
+                            props += `    public ${csType} ${propName} { get; set; }\n`;
+                        }
+
+                        classes.push(`public class ${name}\n{\n${props}}`);
+                        return name;
+                    };
+
+                    if (Array.isArray(obj)) {
+                        const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
+                        return `public class ${rootName} : List<${itemType}> { }\n\n` + classes.reverse().join('\n\n');
+                    } else {
+                        generate(rootName, obj);
+                        return classes.reverse().join('\n\n');
+                    }
+                } else if (lang === 'java') {
+                    const classes = [];
+                    const seenNames = new Set();
+
+                    const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+                    const toCamelCase = s => {
+                        const parts = s.split('_');
+                        return parts[0] + parts.slice(1).map(capitalize).join('');
+                    };
+                    const toPascalCase = s => s.split('_').map(capitalize).join('');
+
+                    const generate = (name, o) => {
+                        if (seenNames.has(name)) return name;
+                        seenNames.add(name);
+
+                        let props = '';
+
+                        // Handle Array Root
+                        if (Array.isArray(o)) {
+                            if (o.length > 0) {
+                                const first = o[0];
+                                if (typeof first === 'object' && first !== null) {
+                                    const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
+                                    return `List<${childType}>`;
+                                }
+                                const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Integer' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Object';
+                                return `List<${primitiveType}>`;
+                            }
+                            return 'List<Object>';
+                        }
+
+                        for (const [k, v] of Object.entries(o)) {
+                            const fieldName = toCamelCase(k);
+                            const methodName = toPascalCase(k);
+                            let javaType = 'Object';
+
+                            if (v === null) {
+                                javaType = 'Object';
+                            } else if (Array.isArray(v)) {
+                                if (v.length > 0) {
+                                    const first = v[0];
+                                    if (typeof first === 'object' && first !== null) {
+                                        const childTypeName = name + toPascalCase(k);
+                                        javaType = 'List<' + generate(childTypeName, first) + '>';
+                                    } else {
+                                        const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Integer' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Object';
+                                        javaType = `List<${primitiveType}>`;
+                                    }
+                                } else {
+                                    javaType = 'List<Object>';
+                                }
+                            } else if (typeof v === 'object') {
+                                const childTypeName = name + toPascalCase(k);
+                                generate(childTypeName, v);
+                                javaType = childTypeName;
+                            } else if (typeof v === 'string') {
+                                javaType = 'String';
+                            } else if (typeof v === 'number') {
+                                javaType = Number.isInteger(v) ? 'Integer' : 'Double';
+                            } else if (typeof v === 'boolean') {
+                                javaType = 'Boolean';
+                            }
+
+                            props += `    private ${javaType} ${fieldName};\n`;
+                            props += `    public ${javaType} get${methodName}() { return ${fieldName}; }\n`;
+                            props += `    public void set${methodName}(${javaType} ${fieldName}) { this.${fieldName} = ${fieldName}; }\n\n`;
+                        }
+
+                        classes.push(`public class ${name} {\n${props}}`);
+                        return name;
+                    };
+
+                    if (Array.isArray(obj)) {
+                        const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
+                        return `public class ${rootName} extends ArrayList<${itemType}> { }\n\n` + classes.reverse().join('\n\n');
+                    } else {
+                        generate(rootName, obj);
+                        return classes.reverse().join('\n\n');
+                    }
+                } else if (lang === 'python') {
+                    const classes = [];
+                    const seenNames = new Set();
+
+                    const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+                    const toPascalCase = s => s.split('_').map(capitalize).join('');
+
+                    const generate = (name, o) => {
+                        if (seenNames.has(name)) return name;
+                        seenNames.add(name);
+
+                        let props = '';
+
+                        // Handle Array Root
+                        if (Array.isArray(o)) {
+                            if (o.length > 0) {
+                                const first = o[0];
+                                if (typeof first === 'object' && first !== null) {
+                                    const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
+                                    return `List[${childType}]`;
+                                }
+                                const primitiveType = typeof first === 'string' ? 'str' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float') : typeof first === 'boolean' ? 'bool' : 'Any';
+                                return `List[${primitiveType}]`;
+                            }
+                            return 'List[Any]';
+                        }
+
+                        for (const [k, v] of Object.entries(o)) {
+                            const fieldName = k; // Keep snake_case for Python
+                            let pyType = 'Any';
+
+                            if (v === null) {
+                                pyType = 'Any';
+                            } else if (Array.isArray(v)) {
+                                if (v.length > 0) {
+                                    const first = v[0];
+                                    if (typeof first === 'object' && first !== null) {
+                                        const childTypeName = name + toPascalCase(k);
+                                        pyType = 'List[' + generate(childTypeName, first) + ']';
+                                    } else {
+                                        const primitiveType = typeof first === 'string' ? 'str' : typeof first === 'number' ? (Number.isInteger(first) ? 'int' : 'float') : typeof first === 'boolean' ? 'bool' : 'Any';
+                                        pyType = `List[${primitiveType}]`;
+                                    }
+                                } else {
+                                    pyType = 'List[Any]';
+                                }
+                            } else if (typeof v === 'object') {
+                                const childTypeName = name + toPascalCase(k);
+                                generate(childTypeName, v);
+                                pyType = childTypeName;
+                            } else if (typeof v === 'string') {
+                                pyType = 'str';
+                            } else if (typeof v === 'number') {
+                                pyType = Number.isInteger(v) ? 'int' : 'float';
+                            } else if (typeof v === 'boolean') {
+                                pyType = 'bool';
+                            }
+
+                            props += `    ${fieldName}: ${pyType}\n`;
+                        }
+
+                        classes.push(`@dataclass\nclass ${name}:\n${props}`);
+                        return name;
+                    };
+
+                    if (Array.isArray(obj)) {
+                        const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
+                        return `from dataclasses import dataclass\nfrom typing import Any, List\n\n${rootName} = List[${itemType}]\n\n` + classes.reverse().join('\n\n');
+                    } else {
+                        generate(rootName, obj);
+                        return `from dataclasses import dataclass\nfrom typing import Any, List\n\n` + classes.reverse().join('\n\n');
+                    }
+                } else if (lang === 'kotlin') {
+                    const classes = [];
+                    const seenNames = new Set();
+
+                    const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+                    const toCamelCase = s => {
+                        const parts = s.split('_');
+                        return parts[0] + parts.slice(1).map(capitalize).join('');
+                    };
+                    const toPascalCase = s => s.split('_').map(capitalize).join('');
+
+                    const generate = (name, o) => {
+                        if (seenNames.has(name)) return name;
+                        seenNames.add(name);
+
+                        let props = '';
+
+                        // Handle Array Root
+                        if (Array.isArray(o)) {
+                            if (o.length > 0) {
+                                const first = o[0];
+                                if (typeof first === 'object' && first !== null) {
+                                    const childType = generate(name.endsWith('s') ? name.slice(0, -1) : name + 'Item', first);
+                                    return `List<${childType}>`;
+                                }
+                                const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Int' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Any';
+                                return `List<${primitiveType}>`;
+                            }
+                            return 'List<Any>';
+                        }
+
+                        const entries = Object.entries(o);
+                        for (let i = 0; i < entries.length; i++) {
+                            const [k, v] = entries[i];
+                            const propName = toCamelCase(k);
+                            let ktType = 'Any';
+
+                            if (v === null) {
+                                ktType = 'Any?';
+                            } else if (Array.isArray(v)) {
+                                if (v.length > 0) {
+                                    const first = v[0];
+                                    if (typeof first === 'object' && first !== null) {
+                                        const childTypeName = name + toPascalCase(k);
+                                        ktType = 'List<' + generate(childTypeName, first) + '>';
+                                    } else {
+                                        const primitiveType = typeof first === 'string' ? 'String' : typeof first === 'number' ? (Number.isInteger(first) ? 'Int' : 'Double') : typeof first === 'boolean' ? 'Boolean' : 'Any';
+                                        ktType = `List<${primitiveType}>`;
+                                    }
+                                } else {
+                                    ktType = 'List<Any>';
+                                }
+                            } else if (typeof v === 'object') {
+                                const childTypeName = name + toPascalCase(k);
+                                generate(childTypeName, v);
+                                ktType = childTypeName;
+                            } else if (typeof v === 'string') {
+                                ktType = 'String';
+                            } else if (typeof v === 'number') {
+                                ktType = Number.isInteger(v) ? 'Int' : 'Double';
+                            } else if (typeof v === 'boolean') {
+                                ktType = 'Boolean';
+                            }
+
+                            props += `    val ${propName}: ${ktType}`;
+                            if (i < entries.length - 1) props += ',';
+                            props += '\n';
+                        }
+
+                        classes.push(`data class ${name}(\n${props})`);
+                        return name;
+                    };
+
+                    if (Array.isArray(obj)) {
+                        const itemType = generate(rootName.endsWith('s') ? rootName.slice(0, -1) : rootName + 'Item', obj[0]);
+                        return `typealias ${rootName} = List<${itemType}>\n\n` + classes.reverse().join('\n\n');
+                    } else {
+                        generate(rootName, obj);
+                        return classes.reverse().join('\n\n');
+                    }
                 }
+                return `// Type generation for ${lang} coming soon`;
+            } catch (e) {
+                return `// Error: ${e.message}`;
             }
         }
-    };
-})();
+    }
+};
+}) ();
