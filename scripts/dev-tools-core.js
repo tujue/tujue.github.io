@@ -656,15 +656,6 @@
                             .res-left .res-tag { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 4px 8px; margin: 0; } 
                             .res-left .res-skills { gap: 8px; } `;
                 }
-                else if (theme === 'classic') {
-                    css += `.a4-page { font-family: 'Georgia', 'Times New Roman', serif; color: #222; } 
-                            .res-header { text-align: center; border-bottom: 3px double #444; padding-bottom: 30px; margin-bottom: 30px; } 
-                            .res-name { font-family: 'Georgia', serif; font-size: 3rem; letter-spacing: 0; color: #000; } 
-                            .res-title { color: #555; font-style: italic; margin-top: 5px; } 
-                            .res-sec-title { border: none; text-align: center; text-transform: uppercase; font-size: 1.1rem; letter-spacing: 3px; margin-bottom: 20px; color: #444; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 5px 0; } 
-                            .res-role { font-weight: bold; font-family: 'Georgia', serif; }
-                            .res-desc { line-height: 1.6; }`;
-                }
                 else if (theme === 'tech') {
                     const c = color || '#2563eb';
                     css += `.a4-page { font-family: 'Segoe UI', 'Roboto', sans-serif; background: #f8fafc; color: #334155; }
