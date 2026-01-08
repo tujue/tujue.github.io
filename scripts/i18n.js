@@ -2,7 +2,7 @@
 const translations = {
     en: {
         // Header & Navigation
-        'app.title': 'TULPAR',
+        'app.title': 'TULPAR - 50+ Professional Developer Tools | JSON, OCR, PDF, Background Remover & More',
         'app.tagline': '50+ Free Professional Tools',
         'search.placeholder': "Search for tools (e.g., 'json', 'pdf', 'color')...",
         'search.noResults': 'No tools found',
@@ -54,8 +54,8 @@ const translations = {
 
         // Hero Section
         'hero.badge': '100% Free • No Login • No Limits • Privacy First',
-        'hero.title': 'Professional Tools Suite',
-        'hero.subtitle': '50+ free professional tools for everyone. Fast, beautiful, and works entirely in your browser. Your data never leaves your device - complete privacy guaranteed.',
+        'hero.title': 'TULPAR - Next-Gen Developer Studio',
+        'hero.subtitle': '50+ Professional tools for developers, designers, and creators. Completely free, lightning-fast, and 100% privacy-focused. Your data never leaves your device.',
 
         // Features
         'features.title': 'Why TULPAR?',
@@ -88,7 +88,7 @@ const translations = {
 
     tr: {
         // Header & Navigasyon
-        'app.title': 'TULPAR',
+        'app.title': 'TULPAR - 50+ Ücretsiz Geliştirici Aracı | JSON, OCR, PDF, Arka Plan Silici ve Daha Fazlası',
         'app.tagline': '50+ Ücretsiz Profesyonel Araç',
         'search.placeholder': "Araç ara (örn: 'json', 'pdf', 'renk')...",
         'search.noResults': 'Araç bulunamadı',
@@ -140,8 +140,8 @@ const translations = {
 
         // Hero Section
         'hero.badge': '100% Ücretsiz • Üyelik Yok • Gizlilik Odaklı',
-        'hero.title': 'TULPAR Geliştirici Seti',
-        'hero.subtitle': 'Herkes için 50+ ücretsiz profesyonel araç. Hızlı, güzel ve tamamen tarayıcınızda çalışır. Verileriniz hiçbir zaman cihazınızdan ayrılmaz - tam gizlilik garantisi.',
+        'hero.title': 'TULPAR - Yeni Nesil Geliştirici Stüdyosu',
+        'hero.subtitle': 'Geliştiriciler, tasarımcılar ve herkes için 50+ profesyonel araç. Tamamen ücretsiz, ışık hızında ve %100 gizlilik odaklı. Verileriniz asla cihazınızı terk etmez.',
 
         // Kategoriler
         'category.title': 'Kategoriye göre filtrele:',
@@ -397,6 +397,19 @@ class I18n {
 
         // Update title
         document.title = this.t('app.title');
+
+        // Update SEO Section Visibility
+        const seoEn = document.getElementById('seo-en');
+        const seoTr = document.getElementById('seo-tr');
+        if (seoEn && seoTr) {
+            if (this.currentLang === 'tr') {
+                seoEn.style.display = 'none';
+                seoTr.style.display = 'block';
+            } else {
+                seoEn.style.display = 'block';
+                seoTr.style.display = 'none';
+            }
+        }
 
         // Trigger custom event for other components
         window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: this.currentLang } }));

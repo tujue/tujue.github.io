@@ -363,6 +363,9 @@ Ctrl/Cmd + C  →  Copy output
         const toolsGrid = document.getElementById('tools-grid');
         toolsGrid.parentElement.insertBefore(categoryFilter, toolsGrid);
 
+        // Initial translation update
+        updateCategoryText();
+
         // Listen for language changes
         window.addEventListener('languageChanged', updateCategoryText);
 
@@ -416,7 +419,9 @@ Ctrl/Cmd + C  →  Copy output
             if (mainSearch) {
                 mainSearch.addEventListener('input', (e) => {
                     const query = e.target.value.toLowerCase();
-                    const toolCards = document.querySelectorAll('.tool-card');
+                    // Only search in actual tools, not feature cards
+                    const toolsGrid = document.getElementById('tools-grid');
+                    const toolCards = toolsGrid ? toolsGrid.querySelectorAll('.tool-card') : [];
 
                     toolCards.forEach(card => {
                         const title = card.querySelector('.tool-title').innerText.toLowerCase();

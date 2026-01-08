@@ -23,7 +23,7 @@ class OGImageStudioTool extends BaseTool {
     }
 
     renderUI() {
-        const isTr = document.documentElement.lang === 'tr';
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         return `
             <style>
                 .og-studio-container {
@@ -653,13 +653,23 @@ class OGImageStudioTool extends BaseTool {
                     <!-- Layers Panel -->
                     <div class="og-layers-panel">
                         <div class="og-section-title">📚 ${isTr ? 'KATMANLAR' : 'LAYERS'}</div>
-                        <div class="og-layers-list" id="og-layers-list"></div>
+                        <div class="og-layers-list" id="og-layers-list">
+                            <div class="og-empty-state">
+                                <i class="fas fa-layer-group"></i>
+                                <p>${isTr ? 'Öğe eklemek için sol taraftaki butonları kullanın' : 'Use buttons on the left to add elements'}</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Properties Panel -->
                     <div class="og-props-panel">
                         <div class="og-section-title">⚙️ ${isTr ? 'ÖZELLİKLER' : 'PROPERTIES'}</div>
-                        <div class="og-props-scroll" id="og-props-content"></div>
+                        <div class="og-props-scroll" id="og-props-content">
+                            <div class="og-empty-state">
+                                <i class="fas fa-mouse-pointer"></i>
+                                <p>${isTr ? 'Özellikleri düzenlemek için bir katman seçin' : 'Select a layer to edit properties'}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

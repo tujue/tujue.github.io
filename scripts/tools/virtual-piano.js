@@ -10,6 +10,9 @@ class VirtualPianoTool extends BaseTool {
         this.recording = [];
         this.isRecording = false;
         this.recordStartTime = 0;
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.recordedAudioBlob = null;
     }
 
     renderUI() {
@@ -28,6 +31,8 @@ class VirtualPianoTool extends BaseTool {
             record: 'Kayıt Başlat',
             stopRecord: 'Kaydı Durdur',
             play: 'Kaydı Oynat',
+            download: 'İndir (MIDI)',
+            downloadAudio: 'Sesi İndir',
             clear: 'Temizle',
             demo: 'Demo Melodi Çal'
         } : {
@@ -44,6 +49,8 @@ class VirtualPianoTool extends BaseTool {
             record: 'Start Recording',
             stopRecord: 'Stop Recording',
             play: 'Play Recording',
+            download: 'Download (MIDI)',
+            downloadAudio: 'Download Audio',
             clear: 'Clear',
             demo: 'Play Demo Melody'
         };
@@ -112,7 +119,12 @@ class VirtualPianoTool extends BaseTool {
                             <button id="p-btn-play-rec" class="btn btn-sm btn-success" style="font-size: 0.75rem;" disabled>▶ ${txt.play}</button>
                         </div>
                         
-                        <button id="p-btn-clear-rec" class="btn btn-sm btn-outline" style="width: 100%; font-size: 0.75rem;" disabled>${txt.clear}</button>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem;">
+                            <button id="p-btn-download-rec" class="btn btn-sm btn-primary" style="font-size: 0.75rem;" disabled>💾 ${txt.download}</button>
+                            <button id="p-btn-download-audio" class="btn btn-sm btn-success" style="font-size: 0.75rem;" disabled>🎵 ${txt.downloadAudio}</button>
+                        </div>
+                        
+                        <button id="p-btn-clear-rec" class="btn btn-sm btn-outline" style="width: 100%; font-size: 0.75rem; margin-bottom: 1rem;" disabled>${txt.clear}</button>
                         
                         <div id="p-rec-info" style="margin-top: 1rem; font-size: 0.7rem; opacity: 0.6; text-align: center;">No recording</div>
                     </div>
@@ -261,6 +273,8 @@ class VirtualPianoTool extends BaseTool {
         // Recording controls
         document.getElementById('p-btn-record').onclick = () => this._toggleRecording();
         document.getElementById('p-btn-play-rec').onclick = () => this._playRecording();
+        document.getElementById('p-btn-download-rec').onclick = () => this._downloadRecording();
+        document.getElementById('p-btn-download-audio').onclick = () => this._downloadAudio();
         document.getElementById('p-btn-clear-rec').onclick = () => this._clearRecording();
 
         // Demo
@@ -275,7 +289,11 @@ class VirtualPianoTool extends BaseTool {
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         this.analyser = this.audioCtx.createAnalyser();
         this.analyser.fftSize = 2048;
+
+        // Create a destination for recording
+        this.recordDest = this.audioCtx.createMediaStreamDestination();
         this.analyser.connect(this.audioCtx.destination);
+        this.analyser.connect(this.recordDest);
     }
 
     _playNote(n) {
@@ -348,17 +366,43 @@ class VirtualPianoTool extends BaseTool {
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
 
         if (!this.isRecording) {
+            // Start recording
+            this._initAudio();
             this.recording = [];
+            this.audioChunks = [];
             this.recordStartTime = Date.now();
             this.isRecording = true;
+
+            // Start audio recording
+            try {
+                this.mediaRecorder = new MediaRecorder(this.recordDest.stream);
+                this.mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) this.audioChunks.push(e.data);
+                };
+                this.mediaRecorder.onstop = () => {
+                    this.recordedAudioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                    document.getElementById('p-btn-download-audio').disabled = false;
+                };
+                this.mediaRecorder.start();
+            } catch (err) {
+                console.error('MediaRecorder error:', err);
+            }
+
             btn.textContent = isTr ? '⏹ Durdur' : '⏹ Stop';
             btn.classList.replace('btn-danger', 'btn-warning');
             document.getElementById('p-rec-info').textContent = 'Recording...';
         } else {
+            // Stop recording
             this.isRecording = false;
+
+            if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+                this.mediaRecorder.stop();
+            }
+
             btn.textContent = isTr ? '● Kayıt Başlat' : '● Start Recording';
             btn.classList.replace('btn-warning', 'btn-danger');
             document.getElementById('p-btn-play-rec').disabled = false;
+            document.getElementById('p-btn-download-rec').disabled = false;
             document.getElementById('p-btn-clear-rec').disabled = false;
             document.getElementById('p-rec-info').textContent = `${this.recording.length} events recorded`;
         }
@@ -381,32 +425,118 @@ class VirtualPianoTool extends BaseTool {
         });
     }
 
+    _downloadRecording() {
+        if (this.recording.length === 0) return;
+
+        // Create JSON representation
+        const data = {
+            recording: this.recording,
+            notes: this.notes.map(n => ({ note: n.note, freq: n.freq })),
+            timestamp: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `piano-recording-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    _downloadAudio() {
+        if (!this.recordedAudioBlob) return;
+
+        const url = URL.createObjectURL(this.recordedAudioBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `piano-performance-${Date.now()}.webm`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
     _clearRecording() {
         this.recording = [];
+        this.audioChunks = [];
+        this.recordedAudioBlob = null;
         document.getElementById('p-btn-play-rec').disabled = true;
+        document.getElementById('p-btn-download-rec').disabled = true;
+        document.getElementById('p-btn-download-audio').disabled = true;
         document.getElementById('p-btn-clear-rec').disabled = true;
         document.getElementById('p-rec-info').textContent = 'No recording';
     }
 
     _playDemo() {
-        // Simple C major scale
-        const melody = [
-            { note: 'C', delay: 0 },
-            { note: 'D', delay: 400 },
-            { note: 'E', delay: 800 },
-            { note: 'F', delay: 1200 },
-            { note: 'G', delay: 1600 },
-            { note: 'A', delay: 2000 },
-            { note: 'B', delay: 2400 },
-            { note: 'C5', delay: 2800 }
+        const melodies = [
+            // Twinkle Twinkle Little Star
+            [
+                { note: 'C', delay: 0, duration: 400 },
+                { note: 'C', delay: 500, duration: 400 },
+                { note: 'G', delay: 1000, duration: 400 },
+                { note: 'G', delay: 1500, duration: 400 },
+                { note: 'A', delay: 2000, duration: 400 },
+                { note: 'A', delay: 2500, duration: 400 },
+                { note: 'G', delay: 3000, duration: 800 },
+                { note: 'F', delay: 4000, duration: 400 },
+                { note: 'F', delay: 4500, duration: 400 },
+                { note: 'E', delay: 5000, duration: 400 },
+                { note: 'E', delay: 5500, duration: 400 },
+                { note: 'D', delay: 6000, duration: 400 },
+                { note: 'D', delay: 6500, duration: 400 },
+                { note: 'C', delay: 7000, duration: 800 }
+            ],
+            // Happy Birthday
+            [
+                { note: 'C', delay: 0, duration: 300 },
+                { note: 'C', delay: 400, duration: 200 },
+                { note: 'D', delay: 700, duration: 500 },
+                { note: 'C', delay: 1300, duration: 500 },
+                { note: 'F', delay: 1900, duration: 500 },
+                { note: 'E', delay: 2500, duration: 900 },
+                { note: 'C', delay: 3500, duration: 300 },
+                { note: 'C', delay: 3900, duration: 200 },
+                { note: 'D', delay: 4200, duration: 500 },
+                { note: 'C', delay: 4800, duration: 500 },
+                { note: 'G', delay: 5400, duration: 500 },
+                { note: 'F', delay: 6000, duration: 900 }
+            ],
+            // Für Elise (intro)
+            [
+                { note: 'E', delay: 0, duration: 250 },
+                { note: 'D#', delay: 300, duration: 250 },
+                { note: 'E', delay: 600, duration: 250 },
+                { note: 'D#', delay: 900, duration: 250 },
+                { note: 'E', delay: 1200, duration: 250 },
+                { note: 'B', delay: 1500, duration: 250 },
+                { note: 'D', delay: 1800, duration: 250 },
+                { note: 'C', delay: 2100, duration: 250 },
+                { note: 'A', delay: 2400, duration: 500 }
+            ],
+            // Jingle Bells (intro)
+            [
+                { note: 'E', delay: 0, duration: 300 },
+                { note: 'E', delay: 400, duration: 300 },
+                { note: 'E', delay: 800, duration: 600 },
+                { note: 'E', delay: 1500, duration: 300 },
+                { note: 'E', delay: 1900, duration: 300 },
+                { note: 'E', delay: 2300, duration: 600 },
+                { note: 'E', delay: 3000, duration: 300 },
+                { note: 'G', delay: 3400, duration: 300 },
+                { note: 'C', delay: 3800, duration: 300 },
+                { note: 'D', delay: 4200, duration: 300 },
+                { note: 'E', delay: 4600, duration: 900 }
+            ]
         ];
+
+        // Pick a random melody
+        const melody = melodies[Math.floor(Math.random() * melodies.length)];
 
         melody.forEach(m => {
             setTimeout(() => {
                 const n = this.notes.find(x => x.note === m.note);
                 if (n) {
                     this._playNote(n);
-                    setTimeout(() => this._stopNote(n.note), 300);
+                    setTimeout(() => this._stopNote(n.note), m.duration);
                 }
             }, m.delay);
         });

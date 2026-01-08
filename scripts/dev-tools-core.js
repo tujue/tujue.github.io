@@ -335,7 +335,7 @@
                         .res-contact { justify-content: center; gap: 25px; font-style: italic; }
                         .res-name { font-family: 'Playfair Display', serif; font-style: italic; font-size: 3rem; font-weight: 400; margin-bottom: 10px; }
                         .res-title { font-size: 0.9rem; letter-spacing: 0.2em; color: ${color}; }
-                        .res-sec-title { text-align: center; border-bottom: 1px solid ${color}40; border-top: 1px solid ${color}40; padding: 12px 0; font-family: 'Playfair Display', serif; font-style: italic; text-transform: none; font-size: 1.6rem; letter-spacing: 0; background: transparent; color: ${color}; }
+                        .res-sec-title { text-align: center; border-bottom: 1px solid ${color}40; border-top: 1px solid ${color}40; padding: 12px 0; font-family: 'Playfair Display', serif; font-style: italic; text-transform: none; font-size: 1.28rem; letter-spacing: 0; background: transparent; color: ${color}; }
                         .res-photo { border-radius: 50%; box-shadow: 0 0 0 8px ${color}10; margin: 0 auto 20px; width: 130px; height: 130px; }
                         .res-tag { border: 1px solid ${color}40; background: white; border-radius: 20px; font-family: 'Montserrat', sans-serif; }
                         .res-item-head { font-family: 'Montserrat', sans-serif; letter-spacing:0.02em; }
@@ -692,16 +692,16 @@
                 }
                 else if (theme === 'leftside') {
                     css += `.a4-page { display: grid; grid-template-columns: 280px 1fr; padding: 0; min-height: 1123px; } 
-                            .res-left { background: ${color || '#2d3748'}; color: white; padding: 50px 30px; min-height: 100%; display: flex; flex-direction: column; } 
+                            .res-left { background: ${color || '#2d3748'}; color: white; padding: 35px 25px; min-height: 100%; display: flex; flex-direction: column; } 
                             .res-right { padding: 50px 40px; background: white; } 
-                            .res-name { color: white; font-size: 2.2rem; margin-bottom: 5px; line-height:1.1; } 
-                            .res-title { color: rgba(255, 255, 255, 0.7); margin-bottom: 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 20px; display: block; font-size: 0.95rem; } 
-                            .res-contact { flex-direction: column; color: rgba(255, 255, 255, 0.9); margin-top: 0; gap: 15px; align-items: flex-start; } 
+                            .res-name { color: white; font-size: 1.9rem; margin-bottom: 3px; line-height:1.1; } 
+                            .res-title { color: rgba(255, 255, 255, 0.7); margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 15px; display: block; font-size: 0.85rem; } 
+                            .res-contact { flex-direction: column; color: rgba(255, 255, 255, 0.9); margin-top: 0; gap: 10px; align-items: flex-start; font-size: 0.85rem; } 
                             .res-sec-title { color: ${color || '#2d3748'}; border-color: ${color || '#2d3748'}30; } 
-                            .res-photo { width: 150px; height: 150px; margin-bottom: 30px; border: 4px solid rgba(255, 255, 255, 0.2); box-shadow: none; align-self: center; object-fit: cover; border-radius: 50%; } 
-                            .res-left .res-sec-title { color: white; border-color: rgba(255, 255, 255, 0.2); margin-top: 40px; margin-bottom: 15px; font-size: 1rem; } 
-                            .res-left .res-tag { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 4px 8px; margin: 0; } 
-                            .res-left .res-skills { gap: 8px; } `;
+                            .res-photo { width: 130px; height: 130px; margin-bottom: 20px; border: 4px solid rgba(255, 255, 255, 0.2); box-shadow: none; align-self: center; object-fit: cover; border-radius: 50%; } 
+                            .res-left .res-sec-title { color: white; border-color: rgba(255, 255, 255, 0.2); margin-top: 25px; margin-bottom: 12px; font-size: 0.9rem; } 
+                            .res-left .res-tag { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 3px 6px; margin: 0; font-size: 0.75rem; } 
+                            .res-left .res-skills { gap: 6px; } `;
                 }
                 else if (theme === 'tech') {
                     const c = color || '#2563eb';
@@ -1363,7 +1363,7 @@
                         ${d.languages ? `
                         <div class="res-sec-title" style="margin-top:20px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
                         <div class="res-skills">
-                             ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag">${s.trim()}</span>` : '').join('')}
+                             ${d.languages.split(',').map((s, i) => { const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22']; const col = colors[i % colors.length]; return s.trim() ? `<span class="res-tag" style="background:${col}15; color:${col}; border:1px solid ${col}40;">${s.trim()}</span>` : ''; }).join('')}
                         </div>` : ''}
 
                         ${d.interests ? `
@@ -1505,21 +1505,19 @@
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        ${d.languages ? `
-                        <div class="res-section" style="margin-bottom: 0;">
-                            <div class="res-sec-title" style="margin-bottom: 6px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
-                            <div class="res-skills" style="gap: 6px;">
-                                 ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag" style="background:${d.color}15; color:${d.color}; border:1px solid ${d.color}40; padding: 3px 8px; font-size: 0.8rem;">${s.trim()}</span>` : '').join('')}
-                            </div>
-                        </div>` : '<div></div>'}
+                    ${d.interests ? `
+                    <div class="res-section" style="margin-bottom: 8px;">
+                        <div class="res-sec-title" style="margin-bottom: 6px;">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
+                        <div class="res-desc" style="margin-top:0; font-size: 0.8rem; line-height: 1.4;">${d.interests}</div>
+                    </div>` : ''}
 
-                        ${d.interests ? `
-                        <div class="res-section" style="margin-bottom: 0;">
-                            <div class="res-sec-title" style="margin-bottom: 6px;">${isTr ? 'İLGİ ALANLARI' : 'INTERESTS'}</div>
-                            <div class="res-desc" style="margin-top:0; font-size: 0.8rem; line-height: 1.4;">${d.interests}</div>
-                        </div>` : ''}
-                    </div>
+                    ${d.languages ? `
+                    <div class="res-section" style="margin-bottom: 0;">
+                        <div class="res-sec-title" style="margin-bottom: 6px;">${isTr ? 'DİLLER' : 'LANGUAGES'}</div>
+                        <div class="res-skills" style="gap: 6px;">
+                             ${d.languages.split(',').map(s => s.trim() ? `<span class="res-tag" style="background:${d.color}15; color:${d.color}; border:1px solid ${d.color}40; padding: 3px 8px; font-size: 0.8rem;">${s.trim()}</span>` : '').join('')}
+                        </div>
+                    </div>` : ''}
     `;
 
                 }

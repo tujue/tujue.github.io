@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tujue.github.io/sitemap.xml
