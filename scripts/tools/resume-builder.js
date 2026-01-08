@@ -290,105 +290,95 @@ class ResumeBuilderTool extends BaseTool {
         btn.textContent = 'PDF Oluşturuluyor...';
         btn.disabled = true;
 
-        const page = document.getElementById('res-a4-page');
-        if (!page) {
-            console.error('A4 page not found for PDF export.');
+        // Use browser's native print instead of html2canvas
+        try {
+            // Add print-specific styles
+            const printStyle = document.createElement('style');
+            printStyle.id = 'print-styles';
+            printStyle.textContent = `
+                @media print {
+                    @page { size: A4; margin: 0; }
+                    body * { visibility: hidden; }
+                    .a4-page, .a4-page * { visibility: visible; }
+                    .a4-page {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 210mm;
+                        height: 297mm;
+                        box-shadow: none !important;
+                        transform: none !important;
+                    }
+                    .res-sticky-nav, #res-nav-bar, .nav-item { display: none !important; }
+                }
+            `;
+            document.head.appendChild(printStyle);
+
+            // Trigger print dialog
+            setTimeout(() => {
+                window.print();
+                btn.textContent = originalText;
+                btn.disabled = false;
+                setTimeout(() => {
+                    if (printStyle) printStyle.remove();
+                }, 100);
+            }, 100);
+
+        } catch (error) {
+            console.error('Print error:', error);
+            alert('PDF oluşturulamadı. Lütfen tekrar deneyin.');
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    // BACKUP: Old html2canvas method (not used anymore)
+    const _runPdfExportOld = (btn) => {
+        const originalText = btn.textContent;
+        btn.textContent = 'PDF Oluşturuluyor...';
+        btn.disabled = true;
+
+        const page = document.querySelector('.a4-page').parentElement;
+        if (!page || !window.DevTools || !window.DevTools.resumeGenerator) {
+            alert('PDF oluşturmak için önce CV\'nizi önizleme sekmesinde görüntüleyin.');
             btn.textContent = originalText;
             btn.disabled = false;
             return;
-            const originalText = btn.textContent;
-            btn.textContent = 'PDF Oluşturuluyor...';
-            btn.disabled = true;
+        }
 
-            // Use browser's native print instead of html2canvas
-            try {
-                // Add print-specific styles
-                const printStyle = document.createElement('style');
-                printStyle.id = 'print-styles';
-                printStyle.textContent = `
-                    @media print {
-                        @page { size: A4; margin: 0; }
-                        body * { visibility: hidden; }
-                        .a4-page, .a4-page * { visibility: visible; }
-                        .a4-page {
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            width: 210mm;
-                            height: 297mm;
-                            box-shadow: none !important;
-                            transform: none !important;
-                        }
-                        .res-sticky-nav, #res-nav-bar, .nav-item { display: none !important; }
-                    }
-                `;
-                document.head.appendChild(printStyle);
-
-                // Trigger print dialog
-                setTimeout(() => {
-                    window.print();
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                    setTimeout(() => {
-                        if (printStyle) printStyle.remove();
-                    }, 100);
-                }, 100);
-
-            } catch (error) {
-                console.error('Print error:', error);
-                alert('PDF oluşturulamadı. Lütfen tekrar deneyin.');
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
+        const loadLibraries = () => {
+            return new Promise((resolve, reject) => {
+                if (window.html2canvas && window.jspdf) {
+                    resolve();
+                    return;
+                }
+                const script1 = document.createElement('script');
+                script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script1.onload = () => {
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    script2.onload = () => resolve();
+                    script2.onerror = () => reject(new Error('jsPDF yüklenemedi'));
+                    document.head.appendChild(script2);
+                };
+                script1.onerror = () => reject(new Error('html2canvas yüklenemedi'));
+                document.head.appendChild(script1);
+            });
         };
 
-        // BACKUP: Old html2canvas method (not used)
-        const _runPdfExportOld = (btn) => {
-            const originalText = btn.textContent;
-            btn.textContent = 'PDF Oluşturuluyor...';
-            btn.disabled = true;
+        loadLibraries().then(async () => {
+            // Temporarily remove zoom and prepare for capture
+            const originalTransform = page.style.transform;
+            page.style.transform = 'none';
+            page.style.boxShadow = 'none';
+            document.body.classList.add('pdf-mode');
+            window.scrollTo(0, 0);
 
-            const page = document.querySelector('.a4-page').parentElement;
-            if (!page || !window.DevTools || !window.DevTools.resumeGenerator) {
-                alert('PDF oluşturmak için önce CV\'nizi önizleme sekmesinde görüntüleyin.');
-                btn.textContent = originalText;
-                btn.disabled = false;
-                return;
-            }
+            // Apply class directly to the captured element to ensure styles persist in html2canvas
+            document.querySelector('.a4-page').classList.add('pdf-target');
 
-            const loadLibraries = () => {
-                return new Promise((resolve, reject) => {
-                    if (window.html2canvas && window.jspdf) {
-                        resolve();
-                        return;
-                    }
-                    const script1 = document.createElement('script');
-                    script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                    script1.onload = () => {
-                        const script2 = document.createElement('script');
-                        script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-                        script2.onload = () => resolve();
-                        script2.onerror = () => reject(new Error('jsPDF yüklenemedi'));
-                        document.head.appendChild(script2);
-                    };
-                    script1.onerror = () => reject(new Error('html2canvas yüklenemedi'));
-                    document.head.appendChild(script1);
-                });
-            };
-
-            loadLibraries().then(async () => {
-                // Temporarily remove zoom and prepare for capture
-                const originalTransform = page.style.transform;
-                page.style.transform = 'none';
-                page.style.boxShadow = 'none';
-                document.body.classList.add('pdf-mode');
-                window.scrollTo(0, 0);
-
-                // Apply class directly to the captured element to ensure styles persist in html2canvas
-                document.querySelector('.a4-page').classList.add('pdf-target');
-
-                let theme = this.data.theme || 'modern';
-                let pdfCss = `
+            let theme = this.data.theme || 'modern';
+            let pdfCss = `
                 /* Scope to .pdf-target (The A4 Page itself) */
                 .pdf-target * { 
                     box-sizing: border-box !important; 
@@ -444,142 +434,142 @@ class ResumeBuilderTool extends BaseTool {
                 .pdf-target::after { content: ""; display: table; clear: both; }
             `;
 
-                // Theme Specific Fixes (LAYOUT COLUMNS ONLY)
-                if (theme === 'nova') {
-                    pdfCss += `
+            // Theme Specific Fixes (LAYOUT COLUMNS ONLY)
+            if (theme === 'nova') {
+                pdfCss += `
                     .pdf-target .v-sidebar { float: left !important; width: 32% !important; min-height: 1000px; }
                     .pdf-target .v-main { float: right !important; width: 64% !important; }
                 `;
-                } else if (theme === 'orbit') {
-                    pdfCss += `
+            } else if (theme === 'orbit') {
+                pdfCss += `
                     .pdf-target .e-sidebar { float: left !important; width: 30% !important; min-height: 1000px; }
                     .pdf-target .e-main { float: right !important; width: 65% !important; }
                 `;
-                } else if (theme === 'bloom') {
-                    pdfCss += `
+            } else if (theme === 'bloom') {
+                pdfCss += `
                     .pdf-target .a-left { float: left !important; width: 35% !important; min-height: 1000px; }
                     .pdf-target .a-right { float: right !important; width: 60% !important; }
                     .pdf-target .a-container { display: block !important; }
                 `;
-                } else if (theme === 'wave') {
-                    pdfCss += `
+            } else if (theme === 'wave') {
+                pdfCss += `
                    .pdf-target .s-left { float: left !important; width: 32% !important; min-height: 1000px; }
                    .pdf-target .s-right { float: right !important; width: 64% !important; }
                 `;
-                } else if (theme === 'bold') {
-                    pdfCss += `
+            } else if (theme === 'bold') {
+                pdfCss += `
                    .pdf-target .k-left { float: left !important; width: 35% !important; min-height: 1000px; }
                    .pdf-target .k-right { float: right !important; width: 60% !important; }
                 `;
-                } else if (theme === 'prime') {
-                    pdfCss += `
+            } else if (theme === 'prime') {
+                pdfCss += `
                     .pdf-target .o-box { width: 100% !important; margin-bottom: 20px !important; display: block !important; }
                     .pdf-target .o-grid { display: block !important; }
                 `;
-                } else if (theme === 'leftside') {
-                    pdfCss += `
+            } else if (theme === 'leftside') {
+                pdfCss += `
                     .pdf-target .res-left { float: left !important; width: 30% !important; min-height: 1000px; }
                     .pdf-target .res-right { float: right !important; width: 66% !important; }
                 `;
-                } else {
-                    // Standard (No Sidebar) - Linearize Bottom Grid
-                    pdfCss += `
+            } else {
+                // Standard (No Sidebar) - Linearize Bottom Grid
+                pdfCss += `
                     .pdf-target div[style*="grid-template-columns"] { display: block !important; }
                 `;
-                }
-
-                let pdfStyle = document.createElement('style');
-                pdfStyle.id = 'res-pdf-fix';
-                pdfStyle.textContent = pdfCss;
-                document.head.appendChild(pdfStyle);
-
-                // Wait for layout reflow
-                await new Promise(r => setTimeout(r, 600));
-
-                html2canvas(document.querySelector('.a4-page'), {
-                    scale: 2,
-                    useCORS: true,
-                    scrollY: 0,
-                    scrollX: 0
-                }).then((canvas) => {
-                    // Restore zoom and styles
-                    page.style.transform = originalTransform;
-                    page.style.boxShadow = 'var(--shadow-lg)';
-                    document.body.classList.remove('pdf-mode');
-                    document.querySelector('.a4-page').classList.remove('pdf-target');
-                    if (pdfStyle) pdfStyle.remove();
-
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new window.jspdf.jsPDF({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4'
-                    });
-
-                    const imgWidth = 210; // A4 width in mm
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                    pdf.save(`CV_${this.data.name || 'Resume'}.pdf`);
-
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                }).catch(error => {
-                    console.error('Error generating PDF:', error);
-                    page.style.transform = originalTransform;
-                    page.style.boxShadow = 'var(--shadow-lg)';
-                    document.body.classList.remove('pdf-mode');
-                    if (pdfStyle) pdfStyle.remove();
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                    alert('PDF oluşturulurken bir hata oluştu: ' + error.message);
-                });
-            }).catch(error => {
-                console.error('Error loading PDF libraries:', error);
-                btn.textContent = originalText;
-                btn.disabled = false;
-                alert('PDF kütüphaneleri yüklenemedi. Lütfen internet bağlantınızı kontrol edin.');
-            });
-        }
-
-        renderTabContent() {
-            // Data Sanitization to prevent undefined/broken UI
-            if (this.data.certificates && Array.isArray(this.data.certificates)) {
-                this.data.certificates = this.data.certificates.map(c => (typeof c === 'object' && c) ? { name: c.name || '', issuer: c.issuer || '', date: c.date || '' } : { name: '', issuer: '', date: '' });
             }
 
-            const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
-            const txt = isTr ? {
-                tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', l: 'Diller', s: 'Yetenekler', d: 'Görünüm', v: 'Önizleme' },
-                btn: { next: 'Sonraki Adım >', prev: '< Geri', reset: 'Sıfırla', print: 'Yazdır / PDF' },
-                lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle', summary: 'Özet / Hakkımda', languages: 'Diller', interests: 'İlgi Alanları', skills: 'Yetenekler' },
-                exp: { title: 'İş Deneyimi', add: 'Deneyim Ekle', company: 'Şirket Adı', position: 'Pozisyon', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
-                edu: { title: 'Eğitim', add: 'Eğitim Ekle', school: 'Okul Adı', degree: 'Derece / Bölüm', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
-                certs: { title: 'Sertifikalar', add: 'Sertifika Ekle', name: 'Sertifika Adı', issuer: 'Veren Kurum', date: 'Tarih' },
-                design: { title: 'Görünüm Ayarları', color: 'Renk Teması', font: 'Yazı Tipi', template: 'Şablon Seçimi' },
-                fonts: { sans: 'Standart', modern: 'Modern', display: 'Zarif', strong: 'Güçlü', serif: 'Serif', condensed: 'Sıkışık', mono: 'Kod', sweet: 'Tatlı (Nunito)' }
-            } : {
-                tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', l: 'Languages', s: 'Skills', d: 'Design', v: 'Preview' },
-                btn: { next: 'Next Step >', prev: '< Back', reset: 'Reset', print: 'Print / PDF' },
-                lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo', summary: 'Summary / About Me', languages: 'Languages', interests: 'Interests', skills: 'Skills' },
-                exp: { title: 'Work Experience', add: 'Add Experience', company: 'Company Name', position: 'Position', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
-                edu: { title: 'Education', add: 'Add Education', school: 'School Name', degree: 'Degree / Field of Study', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
-                certs: { title: 'Certificates', add: 'Add Certificate', name: 'Certificate Name', issuer: 'Issuer', date: 'Date' },
-                design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' },
-                fonts: { sans: 'Standard', modern: 'Modern', display: 'Elegant', strong: 'Strong', serif: 'Serif', condensed: 'Condensed', mono: 'Code', sweet: 'Sweet (Nunito)' }
-            };
+            let pdfStyle = document.createElement('style');
+            pdfStyle.id = 'res-pdf-fix';
+            pdfStyle.textContent = pdfCss;
+            document.head.appendChild(pdfStyle);
 
-            const renderStickyNav = (isCompact = false, warningBadge = '') => {
-                const tabs = ['personal', 'exp', 'edu', 'certs', 'skills', 'preview'];
-                const currentIdx = tabs.indexOf(this.currentTab);
+            // Wait for layout reflow
+            await new Promise(r => setTimeout(r, 600));
 
-                let nextBtn = '';
-                if (this.currentTab === 'preview') {
-                    nextBtn = `<button onclick="window._printPdf(this)" class="btn btn-success btn-sm" style="font-weight: bold; min-width: 110px;">💾 ${txt.btn.print}</button>`;
-                } else {
-                    nextBtn = `<button onclick="window._resNav(1)" class="btn btn-primary btn-sm" style="font-weight: bold; min-width: 100px;">${txt.btn.next}</button>`;
-                }
+            html2canvas(document.querySelector('.a4-page'), {
+                scale: 2,
+                useCORS: true,
+                scrollY: 0,
+                scrollX: 0
+            }).then((canvas) => {
+                // Restore zoom and styles
+                page.style.transform = originalTransform;
+                page.style.boxShadow = 'var(--shadow-lg)';
+                document.body.classList.remove('pdf-mode');
+                document.querySelector('.a4-page').classList.remove('pdf-target');
+                if (pdfStyle) pdfStyle.remove();
 
-                return `
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new window.jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`CV_${this.data.name || 'Resume'}.pdf`);
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }).catch(error => {
+                console.error('Error generating PDF:', error);
+                page.style.transform = originalTransform;
+                page.style.boxShadow = 'var(--shadow-lg)';
+                document.body.classList.remove('pdf-mode');
+                if (pdfStyle) pdfStyle.remove();
+                btn.textContent = originalText;
+                btn.disabled = false;
+                alert('PDF oluşturulurken bir hata oluştu: ' + error.message);
+            });
+        }).catch(error => {
+            console.error('Error loading PDF libraries:', error);
+            btn.textContent = originalText;
+            btn.disabled = false;
+            alert('PDF kütüphaneleri yüklenemedi. Lütfen internet bağlantınızı kontrol edin.');
+        });
+    }
+
+    renderTabContent() {
+        // Data Sanitization to prevent undefined/broken UI
+        if (this.data.certificates && Array.isArray(this.data.certificates)) {
+            this.data.certificates = this.data.certificates.map(c => (typeof c === 'object' && c) ? { name: c.name || '', issuer: c.issuer || '', date: c.date || '' } : { name: '', issuer: '', date: '' });
+        }
+
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+        const txt = isTr ? {
+            tabs: { p: 'Kişisel Bilgiler', x: 'Deneyim', e: 'Eğitim', c: 'Sertifikalar', l: 'Diller', s: 'Yetenekler', d: 'Görünüm', v: 'Önizleme' },
+            btn: { next: 'Sonraki Adım >', prev: '< Geri', reset: 'Sıfırla', print: 'Yazdır / PDF' },
+            lbl: { name: 'Ad Soyad', title: 'Ünvan', mail: 'E-posta', web: 'Website', phone: 'Telefon', addr: 'Adres', photo: 'Profil Fotoğrafı', upload: 'Fotoğraf Yükle', summary: 'Özet / Hakkımda', languages: 'Diller', interests: 'İlgi Alanları', skills: 'Yetenekler' },
+            exp: { title: 'İş Deneyimi', add: 'Deneyim Ekle', company: 'Şirket Adı', position: 'Pozisyon', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
+            edu: { title: 'Eğitim', add: 'Eğitim Ekle', school: 'Okul Adı', degree: 'Derece / Bölüm', start: 'Başlangıç Tarihi', end: 'Bitiş Tarihi', current: 'Devam Ediyor', desc: 'Açıklama' },
+            certs: { title: 'Sertifikalar', add: 'Sertifika Ekle', name: 'Sertifika Adı', issuer: 'Veren Kurum', date: 'Tarih' },
+            design: { title: 'Görünüm Ayarları', color: 'Renk Teması', font: 'Yazı Tipi', template: 'Şablon Seçimi' },
+            fonts: { sans: 'Standart', modern: 'Modern', display: 'Zarif', strong: 'Güçlü', serif: 'Serif', condensed: 'Sıkışık', mono: 'Kod', sweet: 'Tatlı (Nunito)' }
+        } : {
+            tabs: { p: 'Personal Info', x: 'Experience', e: 'Education', c: 'Certificates', l: 'Languages', s: 'Skills', d: 'Design', v: 'Preview' },
+            btn: { next: 'Next Step >', prev: '< Back', reset: 'Reset', print: 'Print / PDF' },
+            lbl: { name: 'Full Name', title: 'Job Title', mail: 'Email', web: 'Website', phone: 'Phone', addr: 'Address', photo: 'Profile Photo', upload: 'Upload Photo', summary: 'Summary / About Me', languages: 'Languages', interests: 'Interests', skills: 'Skills' },
+            exp: { title: 'Work Experience', add: 'Add Experience', company: 'Company Name', position: 'Position', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
+            edu: { title: 'Education', add: 'Add Education', school: 'School Name', degree: 'Degree / Field of Study', start: 'Start Date', end: 'End Date', current: 'Current', desc: 'Description' },
+            certs: { title: 'Certificates', add: 'Add Certificate', name: 'Certificate Name', issuer: 'Issuer', date: 'Date' },
+            design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' },
+            fonts: { sans: 'Standard', modern: 'Modern', display: 'Elegant', strong: 'Strong', serif: 'Serif', condensed: 'Condensed', mono: 'Code', sweet: 'Sweet (Nunito)' }
+        };
+
+        const renderStickyNav = (isCompact = false, warningBadge = '') => {
+            const tabs = ['personal', 'exp', 'edu', 'certs', 'skills', 'preview'];
+            const currentIdx = tabs.indexOf(this.currentTab);
+
+            let nextBtn = '';
+            if (this.currentTab === 'preview') {
+                nextBtn = `<button onclick="window._printPdf(this)" class="btn btn-success btn-sm" style="font-weight: bold; min-width: 110px;">💾 ${txt.btn.print}</button>`;
+            } else {
+                nextBtn = `<button onclick="window._resNav(1)" class="btn btn-primary btn-sm" style="font-weight: bold; min-width: 100px;">${txt.btn.next}</button>`;
+            }
+
+            return `
                 <div class="res-sticky-nav ${isCompact ? 'compact' : ''}">
                     ${this.currentTab !== 'personal' ? `<button onclick="window._resNav(-1)" class="btn btn-outline btn-sm" style="min-width: 70px; background: var(--surface);">${txt.btn.prev}</button>` : ''}
                     <button onclick="window._resReset()" class="btn btn-text btn-sm" style="color: #ef4444; opacity: 0.8;">${txt.btn.reset}</button>
@@ -588,22 +578,22 @@ class ResumeBuilderTool extends BaseTool {
                     ${nextBtn}
                 </div>
             `;
-            };
+        };
 
-            const c = document.getElementById('res-content-area');
-            c.innerHTML = '';
-            const d = this.data;
-            const div = document.createElement('div');
-            div.className = 'res-fade-in';
-            div.style.flex = '1';
-            div.style.display = 'flex';
-            div.style.flexDirection = 'column';
-            div.style.minHeight = '0';
-            div.style.width = '100%';
-            div.style.height = '100%';
+        const c = document.getElementById('res-content-area');
+        c.innerHTML = '';
+        const d = this.data;
+        const div = document.createElement('div');
+        div.className = 'res-fade-in';
+        div.style.flex = '1';
+        div.style.display = 'flex';
+        div.style.flexDirection = 'column';
+        div.style.minHeight = '0';
+        div.style.width = '100%';
+        div.style.height = '100%';
 
-            if (this.currentTab === 'personal') {
-                div.innerHTML = `
+        if (this.currentTab === 'personal') {
+            div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
@@ -654,22 +644,22 @@ class ResumeBuilderTool extends BaseTool {
                     <div style="height: 150px; width: 100%; flex-shrink: 0;"></div>
                 </div>
             `;
-                c.appendChild(div);
+            c.appendChild(div);
 
-                const upl = document.getElementById('res-upl');
-                if (upl) {
-                    upl.onchange = (e) => {
-                        const f = e.target.files[0];
-                        if (f) {
-                            const r = new FileReader();
-                            r.onload = (ye) => { this.data.photo = ye.target.result; this._save(); this.renderTabContent(); };
-                            r.readAsDataURL(f);
-                        }
-                    };
-                }
+            const upl = document.getElementById('res-upl');
+            if (upl) {
+                upl.onchange = (e) => {
+                    const f = e.target.files[0];
+                    if (f) {
+                        const r = new FileReader();
+                        r.onload = (ye) => { this.data.photo = ye.target.result; this._save(); this.renderTabContent(); };
+                        r.readAsDataURL(f);
+                    }
+                };
             }
-            else if (this.currentTab === 'exp') {
-                div.innerHTML = `
+        }
+        else if (this.currentTab === 'exp') {
+            div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
@@ -706,10 +696,10 @@ class ResumeBuilderTool extends BaseTool {
                     <div style="height: 100px; flex-shrink: 0;"></div>
                 </div>
             `;
-                c.appendChild(div);
-            }
-            else if (this.currentTab === 'edu') {
-                div.innerHTML = `
+            c.appendChild(div);
+        }
+        else if (this.currentTab === 'edu') {
+            div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
@@ -742,12 +732,12 @@ class ResumeBuilderTool extends BaseTool {
                     <div style="height: 100px; flex-shrink: 0;"></div>
                 </div>
             `;
-                c.appendChild(div);
-            }
-            else if (this.currentTab === 'certs') {
-                if (!d.certificates) d.certificates = [];
+            c.appendChild(div);
+        }
+        else if (this.currentTab === 'certs') {
+            if (!d.certificates) d.certificates = [];
 
-                div.innerHTML = `
+            div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card">
@@ -780,10 +770,10 @@ class ResumeBuilderTool extends BaseTool {
                     <div style="height: 100px; flex-shrink: 0;"></div>
                 </div>
             `;
-                c.appendChild(div);
-            }
-            else if (this.currentTab === 'skills') {
-                div.innerHTML = `
+            c.appendChild(div);
+        }
+        else if (this.currentTab === 'skills') {
+            div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card" style="max-width: 700px;">
@@ -796,10 +786,10 @@ class ResumeBuilderTool extends BaseTool {
                     <div style="height: 120px; flex-shrink: 0;"></div>
                 </div>
             `;
-                c.appendChild(div);
-            }
-            else if (this.currentTab === 'languages') {
-                div.innerHTML = `
+            c.appendChild(div);
+        }
+        else if (this.currentTab === 'languages') {
+            div.innerHTML = `
                 ${renderStickyNav()}
                 <div class="res-scroll-container">
                     <div class="res-card" style="max-width: 700px;">
@@ -812,30 +802,30 @@ class ResumeBuilderTool extends BaseTool {
                     <div style="height: 120px; flex-shrink: 0;"></div>
                 </div>
             `;
-                c.appendChild(div);
-            }
-            else if (this.currentTab === 'design') {
-                const themes = [
-                    { id: 'modern', name: 'Modern' },
-                    { id: 'nova', name: 'Nova (Modern)' },
-                    { id: 'orbit', name: 'Orbit (Koyu)' },
-                    { id: 'bloom', name: 'Bloom (Pastel)' },
-                    { id: 'wave', name: 'Wave (Dalga)' },
-                    { id: 'bold', name: 'Bold (Güçlü)' },
-                    { id: 'prime', name: 'Prime (Kurumsal)' },
-                    { id: 'elegant', name: 'Elegant (Premium)' },
-                    { id: 'titan', name: 'Titan (Premium)' },
-                    { id: 'cyber', name: 'Cyber (Dark)' },
-                    { id: 'brutal', name: 'Brutal (Bold)' },
-                    { id: 'executive', name: 'Executive' },
-                    { id: 'minimal', name: 'Minimal' },
-                    { id: 'leftside', name: 'Sol Sütun' },
-                    { id: 'skyline', name: 'Skyline' },
-                    { id: 'tech', name: 'Teknoloji' },
-                    { id: 'classic', name: 'Klasik' }
-                ];
+            c.appendChild(div);
+        }
+        else if (this.currentTab === 'design') {
+            const themes = [
+                { id: 'modern', name: 'Modern' },
+                { id: 'nova', name: 'Nova (Modern)' },
+                { id: 'orbit', name: 'Orbit (Koyu)' },
+                { id: 'bloom', name: 'Bloom (Pastel)' },
+                { id: 'wave', name: 'Wave (Dalga)' },
+                { id: 'bold', name: 'Bold (Güçlü)' },
+                { id: 'prime', name: 'Prime (Kurumsal)' },
+                { id: 'elegant', name: 'Elegant (Premium)' },
+                { id: 'titan', name: 'Titan (Premium)' },
+                { id: 'cyber', name: 'Cyber (Dark)' },
+                { id: 'brutal', name: 'Brutal (Bold)' },
+                { id: 'executive', name: 'Executive' },
+                { id: 'minimal', name: 'Minimal' },
+                { id: 'leftside', name: 'Sol Sütun' },
+                { id: 'skyline', name: 'Skyline' },
+                { id: 'tech', name: 'Teknoloji' },
+                { id: 'classic', name: 'Klasik' }
+            ];
 
-                div.innerHTML = `
+            div.innerHTML = `
                 < div class="res-card" >
                     <h3>Görünüm Ayarları</h3>
                     <div class="res-form-grid" style="margin-top:20px;">
@@ -893,47 +883,47 @@ class ResumeBuilderTool extends BaseTool {
                     </div>
                 </div >
                 `;
-                c.appendChild(div);
+            c.appendChild(div);
 
-                document.getElementById('in-color').oninput = (e) => { d.color = e.target.value; this._save(); };
-                const hFontSel = document.getElementById('in-header-font');
-                const bFontSel = document.getElementById('in-body-font');
-                hFontSel.value = d.headerFont || d.font || 'sans';
-                bFontSel.value = d.bodyFont || d.font || 'sans';
-                const updateFonts = () => {
-                    d.headerFont = hFontSel.value;
-                    d.bodyFont = bFontSel.value;
-                    this._save();
-                };
-                hFontSel.onchange = updateFonts;
-                bFontSel.onchange = updateFonts;
+            document.getElementById('in-color').oninput = (e) => { d.color = e.target.value; this._save(); };
+            const hFontSel = document.getElementById('in-header-font');
+            const bFontSel = document.getElementById('in-body-font');
+            hFontSel.value = d.headerFont || d.font || 'sans';
+            bFontSel.value = d.bodyFont || d.font || 'sans';
+            const updateFonts = () => {
+                d.headerFont = hFontSel.value;
+                d.bodyFont = bFontSel.value;
+                this._save();
+            };
+            hFontSel.onchange = updateFonts;
+            bFontSel.onchange = updateFonts;
 
 
 
-                // _setTheme is now global in setupListeners
-                const thGrid = div.querySelector('.theme-grid'); // localized scope if needed
+            // _setTheme is now global in setupListeners
+            const thGrid = div.querySelector('.theme-grid'); // localized scope if needed
+        }
+        else if (this.currentTab === 'preview') {
+            // Generate warning for sticky nav
+            const currentTheme = d.theme || 'modern';
+            const limit = this.THEME_LIMITS[currentTheme] || 99;
+            const expCount = d.experience.length;
+            const isOverLimit = expCount >= limit;
+            const isCritical = expCount > limit;
+
+            let warningBadge = '';
+            if (isOverLimit) {
+                const warningColor = isCritical ? '#ef4444' : '#f59e0b';
+                const warningBg = isCritical ? '#fef2f2' : '#fffbeb';
+                const warningIcon = isCritical ? '⚠️' : '💡';
+                const warningText = isTr
+                    ? `${warningIcon} ${txt.tabs.x}: ${expCount}/${limit}`
+                    : `${warningIcon} Exp: ${expCount}/${limit}`;
+
+                warningBadge = `<div style="background: ${warningBg}; border: 1px solid ${warningColor}; border-radius: 4px; padding: 4px 10px; font-size: 0.75rem; color: ${warningColor}; font-weight: 600; white-space: nowrap;">${warningText}</div>`;
             }
-            else if (this.currentTab === 'preview') {
-                // Generate warning for sticky nav
-                const currentTheme = d.theme || 'modern';
-                const limit = this.THEME_LIMITS[currentTheme] || 99;
-                const expCount = d.experience.length;
-                const isOverLimit = expCount >= limit;
-                const isCritical = expCount > limit;
 
-                let warningBadge = '';
-                if (isOverLimit) {
-                    const warningColor = isCritical ? '#ef4444' : '#f59e0b';
-                    const warningBg = isCritical ? '#fef2f2' : '#fffbeb';
-                    const warningIcon = isCritical ? '⚠️' : '💡';
-                    const warningText = isTr
-                        ? `${warningIcon} ${txt.tabs.x}: ${expCount}/${limit}`
-                        : `${warningIcon} Exp: ${expCount}/${limit}`;
-
-                    warningBadge = `<div style="background: ${warningBg}; border: 1px solid ${warningColor}; border-radius: 4px; padding: 4px 10px; font-size: 0.75rem; color: ${warningColor}; font-weight: 600; white-space: nowrap;">${warningText}</div>`;
-                }
-
-                div.innerHTML = `
+            div.innerHTML = `
                 <div id="res-preview-wrapper" class="res-fade-in" style="display: flex; flex-direction: column; flex: 1; height: 100%; min-height: 0;">
                     ${renderStickyNav(true, warningBadge)}
 
@@ -944,33 +934,33 @@ class ResumeBuilderTool extends BaseTool {
             </div>
         </div>
                 `;
-                c.appendChild(div);
+            c.appendChild(div);
 
-                // Render HTML using Core
-                if (window.DevTools.resumeGenerator && window.DevTools.resumeGenerator.generateResumeHTML) {
-                    const res = window.DevTools.resumeGenerator.generateResumeHTML(d);
-                    const page = document.getElementById('res-a4-page');
+            // Render HTML using Core
+            if (window.DevTools.resumeGenerator && window.DevTools.resumeGenerator.generateResumeHTML) {
+                const res = window.DevTools.resumeGenerator.generateResumeHTML(d);
+                const page = document.getElementById('res-a4-page');
 
-                    // Inject Style
-                    let style = document.getElementById('res-style-inj');
-                    if (!style) { style = document.createElement('style'); style.id = 'res-style-inj'; document.head.appendChild(style); }
-                    style.textContent = res.css;
+                // Inject Style
+                let style = document.getElementById('res-style-inj');
+                if (!style) { style = document.createElement('style'); style.id = 'res-style-inj'; document.head.appendChild(style); }
+                style.textContent = res.css;
 
 
-                    // Optimized Update
-                    if (page.innerHTML !== res.html) page.innerHTML = res.html;
-                    this.fitPreview();
-                } else {
-                    document.getElementById('res-a4-page').innerHTML = 'Core module update required.';
-                }
+                // Optimized Update
+                if (page.innerHTML !== res.html) page.innerHTML = res.html;
+                this.fitPreview();
+            } else {
+                document.getElementById('res-a4-page').innerHTML = 'Core module update required.';
             }
         }
+    }
 
-        _renderList(container, type) {
-            const listDiv = container.querySelector(`#list - ${type} `);
-            const list = type === 'exp' ? this.data.experience : this.data.education;
+    _renderList(container, type) {
+        const listDiv = container.querySelector(`#list - ${type} `);
+        const list = type === 'exp' ? this.data.experience : this.data.education;
 
-            listDiv.innerHTML = list.map((it, i) => `
+        listDiv.innerHTML = list.map((it, i) => `
                 < div class="res-card" style = "margin-bottom: 15px; position:relative; padding: 15px;" >
                 <button onclick="window._delItem('${type}', ${i})" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer;">🗑️</button>
                 <div class="res-form-grid">
@@ -987,112 +977,112 @@ class ResumeBuilderTool extends BaseTool {
             </div >
                 `).join('');
 
-        }
-
-        onClose() {
-            const ws = document.querySelector('.workspace-content');
-            if (ws) {
-                ws.classList.remove('full-width-workspace');
-                ws.style.padding = this._origWsPadding || ''; // Restore original padding
-            }
-
-            // Restore header styles
-            const header = document.querySelector('.workspace-header');
-            if (header) {
-                header.style.display = this._origHeaderDisplay || '';
-                header.style.cssText = '';
-            }
-
-            const title = document.querySelector('.workspace-header .workspace-title');
-            if (title) title.style.cssText = '';
-        }
-
-        fitPreview() {
-            const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
-            const container = document.getElementById('res-preview-container');
-            const page = document.getElementById('res-a4-page');
-            if (!container || !page) return;
-
-            const contW = container.clientWidth - 40; // Subtract padding room
-            const pageW = 794;
-            const pageH = 1123;
-
-            if (this.zoom === 'fit') {
-                // Smart Fit Strategy:
-                // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
-                const availableH = window.innerHeight - 150;
-                const wScale = contW / pageW;
-                const hScale = availableH / pageH;
-
-                // Choose the smaller scale to ensure it fits entirely on screen
-                this.scaleValue = Math.min(wScale, hScale, 0.95);
-            }
-
-            // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
-            if ('zoom' in page.style) {
-                page.style.zoom = this.scaleValue;
-                page.style.transform = 'none';
-            } else {
-                page.style.transform = `scale(${this.scaleValue})`;
-            }
-
-            // Ensure wrapper height accounts for the scaled content to allow proper scrolling
-            const wrapper = document.getElementById('res-page-wrapper');
-            if (wrapper) {
-                const scaledH = pageH * this.scaleValue;
-                wrapper.style.height = `${scaledH + 80} px`; // page height + padding
-            }
-
-            const lbl = document.getElementById('z-val');
-            if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
-        }
-
-        _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
-        _load() { const s = localStorage.getItem('dt_resume_v2'); return s ? JSON.parse(s) : null; }
-        _getDefaults() {
-            // Check language for localized sample data
-            const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
-
-            return {
-                name: isTr ? 'Demir Yılmaz' : 'Alex Morgan',
-                title: isTr ? 'Kıdemli Yazılım Mimarı' : 'Senior Software Architect',
-                email: 'hello@example.com',
-                website: 'linkedin.com/in/demo',
-                phone: '+90 555 012 34 56',
-                address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
-                summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
-                photo: 'https://randomuser.me/api/portraits/men/32.jpg', // Placeholder image
-                skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
-                theme: 'modern',
-                font: 'sans',
-                color: '#2d3748',
-                experience: [
-                    {
-                        role: isTr ? 'Kıdemli Takım Lideri' : 'Senior Team Lead',
-                        comp: 'TechGlobal Systems',
-                        date: '2021 - Günümüz',
-                        desc: isTr ? '• Dağıtık sistemlerin mimari tasarımı ve ölçeklendirilmesi.\n• 15 kişilik yazılım ekibinin yönetimi ve mentorluğu.\n• CI/CD süreçlerinin optimizasyonu ile deploy süresinin %40 azaltılması.'
-                            : '• Architectural design and scaling of distributed systems.\n• Management and mentorship of a 15-person software team.\n• Optimization of CI/CD processes reducing deploy time by 40%.'
-                    },
-                    {
-                        role: isTr ? 'Full Stack Geliştirici' : 'Full Stack Developer',
-                        comp: 'Innova Startups',
-                        date: '2018 - 2021',
-                        desc: isTr ? '• Modern web teknolojileri ile SaaS ürün geliştirme.\n• RESTful API tasarımı ve mikroservis entegrasyonları.\n• Kullanıcı deneyimini (UX) artırmaya yönelik performans iyileştirmeleri.'
-                            : '• SaaS product development with modern web technologies.\n• RESTful API design and microservices integration.\n• Performance improvements focused on enhancing user experience (UX).'
-                    }
-                ],
-                education: [
-                    {
-                        sch: isTr ? 'Orta Doğu Teknik Üniversitesi' : 'Stanford University',
-                        deg: isTr ? 'Bilgisayar Mühendisliği, B.S.' : 'B.S. Computer Science',
-                        date: '2014 - 2018'
-                    }
-                ],
-                languages: isTr ? 'Türkçe (Anadil), İngilizce (C1), Almanca (B1)' : 'English (Native), Spanish (C1), German (B1)',
-                interests: isTr ? 'Fotoğrafçılık, Açık Kaynak, Seyahat, Gitar' : 'Photography, Open Source, Travel, Guitar'
-            };
-        }
     }
+
+    onClose() {
+        const ws = document.querySelector('.workspace-content');
+        if (ws) {
+            ws.classList.remove('full-width-workspace');
+            ws.style.padding = this._origWsPadding || ''; // Restore original padding
+        }
+
+        // Restore header styles
+        const header = document.querySelector('.workspace-header');
+        if (header) {
+            header.style.display = this._origHeaderDisplay || '';
+            header.style.cssText = '';
+        }
+
+        const title = document.querySelector('.workspace-header .workspace-title');
+        if (title) title.style.cssText = '';
+    }
+
+    fitPreview() {
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+        const container = document.getElementById('res-preview-container');
+        const page = document.getElementById('res-a4-page');
+        if (!container || !page) return;
+
+        const contW = container.clientWidth - 40; // Subtract padding room
+        const pageW = 794;
+        const pageH = 1123;
+
+        if (this.zoom === 'fit') {
+            // Smart Fit Strategy:
+            // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
+            const availableH = window.innerHeight - 150;
+            const wScale = contW / pageW;
+            const hScale = availableH / pageH;
+
+            // Choose the smaller scale to ensure it fits entirely on screen
+            this.scaleValue = Math.min(wScale, hScale, 0.95);
+        }
+
+        // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
+        if ('zoom' in page.style) {
+            page.style.zoom = this.scaleValue;
+            page.style.transform = 'none';
+        } else {
+            page.style.transform = `scale(${this.scaleValue})`;
+        }
+
+        // Ensure wrapper height accounts for the scaled content to allow proper scrolling
+        const wrapper = document.getElementById('res-page-wrapper');
+        if (wrapper) {
+            const scaledH = pageH * this.scaleValue;
+            wrapper.style.height = `${scaledH + 80} px`; // page height + padding
+        }
+
+        const lbl = document.getElementById('z-val');
+        if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
+    }
+
+    _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
+    _load() { const s = localStorage.getItem('dt_resume_v2'); return s ? JSON.parse(s) : null; }
+    _getDefaults() {
+        // Check language for localized sample data
+        const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+
+        return {
+            name: isTr ? 'Demir Yılmaz' : 'Alex Morgan',
+            title: isTr ? 'Kıdemli Yazılım Mimarı' : 'Senior Software Architect',
+            email: 'hello@example.com',
+            website: 'linkedin.com/in/demo',
+            phone: '+90 555 012 34 56',
+            address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
+            summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
+            photo: 'https://randomuser.me/api/portraits/men/32.jpg', // Placeholder image
+            skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
+            theme: 'modern',
+            font: 'sans',
+            color: '#2d3748',
+            experience: [
+                {
+                    role: isTr ? 'Kıdemli Takım Lideri' : 'Senior Team Lead',
+                    comp: 'TechGlobal Systems',
+                    date: '2021 - Günümüz',
+                    desc: isTr ? '• Dağıtık sistemlerin mimari tasarımı ve ölçeklendirilmesi.\n• 15 kişilik yazılım ekibinin yönetimi ve mentorluğu.\n• CI/CD süreçlerinin optimizasyonu ile deploy süresinin %40 azaltılması.'
+                        : '• Architectural design and scaling of distributed systems.\n• Management and mentorship of a 15-person software team.\n• Optimization of CI/CD processes reducing deploy time by 40%.'
+                },
+                {
+                    role: isTr ? 'Full Stack Geliştirici' : 'Full Stack Developer',
+                    comp: 'Innova Startups',
+                    date: '2018 - 2021',
+                    desc: isTr ? '• Modern web teknolojileri ile SaaS ürün geliştirme.\n• RESTful API tasarımı ve mikroservis entegrasyonları.\n• Kullanıcı deneyimini (UX) artırmaya yönelik performans iyileştirmeleri.'
+                        : '• SaaS product development with modern web technologies.\n• RESTful API design and microservices integration.\n• Performance improvements focused on enhancing user experience (UX).'
+                }
+            ],
+            education: [
+                {
+                    sch: isTr ? 'Orta Doğu Teknik Üniversitesi' : 'Stanford University',
+                    deg: isTr ? 'Bilgisayar Mühendisliği, B.S.' : 'B.S. Computer Science',
+                    date: '2014 - 2018'
+                }
+            ],
+            languages: isTr ? 'Türkçe (Anadil), İngilizce (C1), Almanca (B1)' : 'English (Native), Spanish (C1), German (B1)',
+            interests: isTr ? 'Fotoğrafçılık, Açık Kaynak, Seyahat, Gitar' : 'Photography, Open Source, Travel, Guitar'
+        };
+    }
+}
 
 window.initResumeBuilderLogic = ResumeBuilderTool;
