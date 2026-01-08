@@ -55,7 +55,7 @@ function loadToolScript(toolId) {
         const script = document.createElement('script');
         script.id = scriptId;
         // Bump version to force reload of updated tools
-        script.src = `scripts/tools/${toolId}.js?v=3.10.20`;
+        script.src = `scripts/tools/${toolId}.js?v=3.10.21`;
         script.onload = resolve;
         script.onerror = () => {
             console.error(`Failed to load tool script: ${toolId}.js`);

@@ -2,6 +2,7 @@
 class MetaTagsTool extends BaseTool {
   constructor(config) {
     super(config);
+    this.uploadedImageBase64 = null; // Store base64 for preview only
   }
 
   renderUI() {
@@ -9,15 +10,17 @@ class MetaTagsTool extends BaseTool {
     const txt = isTr ? {
       config: 'İçerik Ayarları',
       template: 'Hızlı Şablon',
-      labels: { title: 'Başlık', desc: 'Açıklama', keywords: 'Etiketler', url: 'URL', image: 'Görsel URL', site: 'Site Adı', author: 'Yazar', twitter: 'Twitter' },
+      labels: { title: 'Başlık', desc: 'Açıklama', keywords: 'Etiketler', url: 'URL', image: 'Görsel URL / Yükle', site: 'Site Adı', author: 'Yazar', twitter: 'Twitter' },
       tabs: { google: 'Google', fb: 'Facebook', tw: 'Twitter', insta: 'Instagram 📸', code: 'Kaynak Kod' },
-      preview: 'Önizleme'
+      preview: 'Önizleme',
+      upload: 'Görsel Seç'
     } : {
       config: 'Content Configuration',
       template: 'Quick Template',
-      labels: { title: 'Title', desc: 'Description', keywords: 'Keywords', url: 'URL', image: 'Image URL', site: 'Site Name', author: 'Author', twitter: 'Twitter Handle' },
+      labels: { title: 'Title', desc: 'Description', keywords: 'Keywords', url: 'URL', image: 'Image URL / Upload', site: 'Site Name', author: 'Author', twitter: 'Twitter Handle' },
       tabs: { google: 'Google', fb: 'Facebook', tw: 'Twitter', insta: 'Instagram 📸', code: 'Source Code' },
-      preview: 'Preview'
+      preview: 'Preview',
+      upload: 'Upload Image'
     };
 
     const templates = [{ id: 'blog', name: 'Blog Post' }, { id: 'product', name: 'Product' }, { id: 'portfolio', name: 'Portfolio' }];
@@ -37,7 +40,16 @@ class MetaTagsTool extends BaseTool {
 
                         <div class="form-group"><label class="form-label">${txt.labels.title}</label><input type="text" id="m-in-title" class="form-input m-in" placeholder="Page Title (Max 60 chars)"></div>
                         <div class="form-group"><label class="form-label">${txt.labels.desc}</label><textarea id="m-in-desc" class="form-input m-in" rows="3" placeholder="Page Description (Max 160 chars)"></textarea></div>
-                        <div class="form-group"><label class="form-label">${txt.labels.image}</label><input type="text" id="m-in-img" class="form-input m-in" placeholder="https://example.com/image.jpg"></div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">${txt.labels.image}</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="m-in-img" class="form-input m-in" placeholder="https://example.com/image.jpg" style="flex:1;">
+                                <input type="file" id="m-in-file" accept="image/*" hidden>
+                                <button id="m-btn-upload" class="btn btn-outline" style="white-space: nowrap;">📁 ${txt.upload}</button>
+                            </div>
+                            <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 5px;">* Uploaded image is for preview only. In code, the filename will be used.</div>
+                        </div>
                         
                         <div class="grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px;">
                              <div class="form-group"><label class="form-label">${txt.labels.url}</label><input type="text" id="m-in-url" class="form-input m-in" placeholder="https://..."></div>
@@ -145,9 +157,36 @@ class MetaTagsTool extends BaseTool {
       tw: document.getElementById('m-in-tw')
     };
 
+    const fileIn = document.getElementById('m-in-file');
+    const uploadBtn = document.getElementById('m-btn-upload');
+
+    // File Upload Logic
+    uploadBtn.onclick = () => fileIn.click();
+    fileIn.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          this.uploadedImageBase64 = evt.target.result;
+          // Update input with filename as placeholder
+          els.img.value = `https://example.com/assets/${file.name}`;
+          updatePreviews();
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
     const updatePreviews = () => {
       const val = (k) => els[k].value;
       const fallbackImg = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNlZWVlZWUiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJhcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+SU1BR0U8L3RleHQ+PC9zdmc+';
+
+      // Prefer uploaded image for preview if user hasn't manually changed the input from the filename we set
+      let previewImg = val('img');
+      if (this.uploadedImageBase64 && (previewImg.includes(fileIn.files[0]?.name) || !previewImg)) {
+        previewImg = this.uploadedImageBase64;
+      } else if (!previewImg) {
+        previewImg = fallbackImg;
+      }
 
       // Google
       document.getElementById('p-g-title').textContent = val('title') || 'Page Title';
@@ -158,20 +197,20 @@ class MetaTagsTool extends BaseTool {
       document.getElementById('p-fb-title').textContent = val('title') || 'Page Title';
       document.getElementById('p-fb-desc').textContent = val('desc') || 'Description...';
       document.getElementById('p-fb-site').textContent = (val('site') || 'EXAMPLE.COM').toUpperCase();
-      document.getElementById('p-fb-img').style.backgroundImage = `url('${val('img') || fallbackImg}')`;
+      document.getElementById('p-fb-img').style.backgroundImage = `url('${previewImg}')`;
 
       // Twitter
       document.getElementById('p-tw-title').textContent = val('title') || 'Page Title';
       document.getElementById('p-tw-desc').textContent = val('desc') || 'Description...';
       document.getElementById('p-tw-site').textContent = (val('site') || 'example.com').toLowerCase();
-      document.getElementById('p-tw-img').style.backgroundImage = `url('${val('img') || fallbackImg}')`;
+      document.getElementById('p-tw-img').style.backgroundImage = `url('${previewImg}')`;
 
       // Instagram
       const user = val('tw') || val('author') || 'username';
       document.getElementById('p-in-user').textContent = user;
       document.getElementById('p-in-user2').textContent = user;
       document.getElementById('p-in-desc').textContent = val('desc') || 'Caption text goes here...';
-      document.getElementById('p-in-img').style.backgroundImage = `url('${val('img') || fallbackImg}')`;
+      document.getElementById('p-in-img').style.backgroundImage = `url('${previewImg}')`;
 
       // Code Generation
       const data = {};
@@ -270,4 +309,5 @@ class MetaTagsTool extends BaseTool {
   }
 }
 
+// Register tool
 window.initMetaTagsGeneratorLogic = MetaTagsTool;
