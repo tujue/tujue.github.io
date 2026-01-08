@@ -55,7 +55,7 @@ function loadToolScript(toolId) {
         const script = document.createElement('script');
         script.id = scriptId;
         // Bump version to force reload of updated tools
-        script.src = `scripts/tools/${toolId}.js?v=3.10.21`;
+        script.src = `scripts/tools/${toolId}.js?v=3.10.22`;
         script.onload = resolve;
         script.onerror = () => {
             console.error(`Failed to load tool script: ${toolId}.js`);
@@ -143,6 +143,8 @@ window.setupToolListeners = async function (toolId) {
         const instance = new toolRef({ id: toolId });
         instance.render(workspaceBody);
         window.AppState.activeToolInstance = instance; // Store for cleanup
+        window.activeToolInstance = instance; // For inline onclick handlers
+        window.currentTool = instance; // Alias for some tools
     }
     // Functional Tool
     else if (typeof toolRef === 'function') {
