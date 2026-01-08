@@ -91,14 +91,6 @@ class ResumeBuilderTool extends BaseTool {
                 <!-- Injected via JS -->
             </div>
 
-            <!-- Wizard Footer -->
-            <div class="res-wizard-footer">
-                <button id="res-btn-prev" class="btn btn-outline" style="min-width: 80px; padding: 4px 10px; font-size: 0.9rem;">${txt.btn.prev}</button>
-                <button id="res-btn-reset" class="btn btn-text" style="color: #ef4444; padding: 4px 10px; font-size: 0.9rem;">${txt.btn.reset}</button>
-                <div style="flex:1;"></div>
-                <button id="res-btn-next" class="btn btn-primary" style="min-width: 100px; font-weight: bold; padding: 4px 15px; font-size: 0.9rem;">${txt.btn.next}</button>
-            </div>
-
             <style>
                 .res-wizard-nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 0 10px; gap: 15px; overflow-x: auto; flex-shrink: 0; min-height: 45px; align-items: center; }
                 .res-step { padding: 8px 5px; cursor: pointer; border-bottom: 3px solid transparent; opacity: 0.6; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; font-size: 0.9rem; }
@@ -106,13 +98,11 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 40px 0; width: 100%; scroll-behavior: smooth; }
-                .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: none; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; transition: 0.2s; }
-                .res-wizard-footer.active { display: flex !important; }
+                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 20px 0; width: 100%; scroll-behavior: smooth; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
-                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin: 30px auto; }
+                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; padding-bottom: 60px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin: 30px auto; }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
@@ -158,9 +148,8 @@ class ResumeBuilderTool extends BaseTool {
             // Update dropdowns if exists
             document.querySelectorAll('select[onchange*="_setTheme"]').forEach(s => s.value = id);
         };
-        window._printPdf = () => {
-            const nextBtn = document.createElement('button'); // Temp button for context
-            this._runPdfExport(nextBtn);
+        window._printPdf = (btn) => {
+            this._runPdfExport(btn);
         };
         window._setFont = (id) => {
             this.data.font = id;
@@ -215,13 +204,6 @@ class ResumeBuilderTool extends BaseTool {
         document.querySelectorAll('.res-step').forEach(el => el.classList.remove('active'));
         const active = document.querySelector(`.res-step[onclick="window._resTab('${this.currentTab}')"]`);
         if (active) active.classList.add('active');
-
-        // Toggle global footer - only show in preview
-        const footer = document.querySelector('.res-wizard-footer');
-        if (footer) {
-            if (this.currentTab === 'preview') footer.classList.add('active');
-            else footer.classList.remove('active');
-        }
     }
 
     _runPdfExport(btn) {
@@ -293,21 +275,20 @@ class ResumeBuilderTool extends BaseTool {
             design: { title: 'Design Settings', color: 'Color Theme', font: 'Font', template: 'Template Selection' }
         };
 
-        const renderFormButtons = () => {
+        const renderFormButtons = (extraStyle = '') => {
             const tabs = ['personal', 'exp', 'edu', 'skills', 'preview'];
             const currentIdx = tabs.indexOf(this.currentTab);
-            const isLastTab = currentIdx === tabs.length - 1;
 
             let nextButtonContent = '';
             if (this.currentTab === 'preview') {
-                nextButtonContent = `<button onclick="window._printPdf()" class="btn btn-success" style="min-width: 120px; font-weight: bold; padding: 8px 20px; font-size: 0.9rem;">${txt.btn.print}</button>`;
+                nextButtonContent = `<button onclick="window._printPdf(this)" class="btn btn-success" style="min-width: 140px; font-weight: bold; padding: 10px 25px; font-size: 1rem; box-shadow: 0 4px 15px rgba(34,197,94,0.3);">${txt.btn.print}</button>`;
             } else {
                 nextButtonContent = `<button onclick="window._resNav(1)" class="btn btn-primary" style="min-width: 120px; font-weight: bold; padding: 8px 20px; font-size: 0.9rem;">${txt.btn.next}</button>`;
             }
 
             return `
-                <div style="display: flex; gap: 15px; margin-top: 35px; padding-top: 25px; border-top: 1px solid var(--border-color); align-items: center; width: 100%;">
-                    ${this.currentTab !== 'personal' ? `<button onclick="window._resNav(-1)" class="btn btn-outline" style="min-width: 90px; padding: 7px 15px; font-size: 0.85rem;">${txt.btn.prev}</button>` : ''}
+                <div style="display: flex; gap: 15px; margin: 0 auto; padding: 25px 30px; border-top: 1px solid var(--border-color); align-items: center; width: 100%; max-width: 900px; ${extraStyle}">
+                    ${this.currentTab !== 'personal' ? `<button onclick="window._resNav(-1)" class="btn btn-outline" style="min-width: 90px; padding: 7px 15px; font-size: 0.85rem; background: var(--surface);">${txt.btn.prev}</button>` : ''}
                     <button onclick="window._resReset()" class="btn btn-text" style="color: #ef4444; padding: 7px 15px; font-size: 0.85rem;">${txt.btn.reset}</button>
                     <div style="flex:1;"></div>
                     ${nextButtonContent}
@@ -558,18 +539,26 @@ class ResumeBuilderTool extends BaseTool {
         }
         else if (this.currentTab === 'preview') {
             div.innerHTML = `
-                <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 40px 0;">
-                    <div id="res-page-wrapper" style="display: flex; justify-content: center; min-height: min-content; width: 100%;">
-                        <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; flex-shrink: 0;"></div>
-                    </div>
+                <div id="res-preview-wrapper" class="res-fade-in" style="display: flex; flex-direction: column; height: 100%;">
                     
-                    <!-- Zoom Controls -->
-                     <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 12px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); z-index: 100;">
-                        <button id="z-minus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">−</button>
-                        <span id="z-val" style="min-width: 45px; text-align: center; font-size: 0.85rem; font-variant-numeric: tabular-nums;">FIT</span>
-                        <button id="z-plus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">+</button>
-                        <div style="width:1px; height:15px; background:rgba(255,255,255,0.3);"></div>
-                        <button id="z-fit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.75rem; font-weight:bold; padding: 5px 2px;">${isTr ? 'SIĞDIR' : 'FIT SCREEN'}</button>
+                    <!-- Buttons at TOP for Preview -->
+                    <div style="background: var(--surface); border-bottom: 1px solid var(--border-color); sticky: top; z-index: 100;">
+                        ${renderFormButtons('border-top: none; padding: 15px 30px;')}
+                    </div>
+
+                    <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 30px 0;">
+                        <div id="res-page-wrapper" style="display: flex; justify-content: center; min-height: min-content; width: 100%;">
+                            <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; flex-shrink: 0;"></div>
+                        </div>
+                        
+                        <!-- Zoom Controls -->
+                         <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); border-radius: 30px; padding: 5px 15px; display: flex; align-items: center; gap: 12px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); z-index: 100;">
+                            <button id="z-minus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">−</button>
+                            <span id="z-val" style="min-width: 45px; text-align: center; font-size: 0.85rem; font-variant-numeric: tabular-nums;">FIT</span>
+                            <button id="z-plus" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">+</button>
+                            <div style="width:1px; height:15px; background:rgba(255,255,255,0.3);"></div>
+                            <button id="z-fit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.75rem; font-weight:bold; padding: 5px 2px;">${isTr ? 'SIĞDIR' : 'FIT SCREEN'}</button>
+                        </div>
                     </div>
                 </div>
             `;
