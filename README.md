@@ -78,7 +78,6 @@
 - **PDF Manager** - Merge, rotate, extract pages, images to PDF
 - **OCR Tool** - Extract text from images (Tesseract.js)
 - **Audio Waveform** - Visualize audio waveforms
-- **Video Studio** - Basic video editing
 - **Metadata Viewer** - View/edit image EXIF data
 
 ### 🎮 Other Utilities (6)
