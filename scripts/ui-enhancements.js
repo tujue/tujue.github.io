@@ -447,7 +447,7 @@ Ctrl/Cmd + C  →  Copy output
 
                 // (Ctrl+K listener removed from here as it is already handled in initKeyboardShortcuts)
             }
-        }, 500);
+        }, 700);
     }
 };
 
