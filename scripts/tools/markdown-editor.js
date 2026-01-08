@@ -70,17 +70,18 @@ class MarkdownEditorTool extends BaseTool {
     const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
     const txtW = isTr ? 'kelime' : 'words';
     const txtR = isTr ? 'dk okuma' : 'min read';
+    const welcomeTxt = isTr ?
+      '# Markdown Editörü\n\nPremium Markdown editörüne hoş geldiniz. Solda yazmaya başlayın, sağda canlı önizlemeyi görün.\n\n### Özellikler\n- **Gerçek zamanlı** önizleme\n- HTML Dışa Aktarma\n- Temiz Arayüz' :
+      '# Markdown Editor\n\nWelcome to your premium Markdown editor. Start typing on the left to see the live preview on the right.\n\n### Features\n- **Real-time** preview\n- HTML Export\n- Clean Interface';
 
     // Initial content if empty
     if (!input.value) {
-      input.value = isTr ?
-        '# Markdown Editörü\n\nPremium Markdown editörüne hoş geldiniz. Solda yazmaya başlayın, sağda canlı önizlemeyi görün.\n\n### Özellikler\n- **Gerçek zamanlı** önizleme\n- HTML Dışa Aktarma\n- Temiz Arayüz' :
-        '# Markdown Editor\n\nWelcome to your premium Markdown editor. Start typing on the left to see the live preview on the right.\n\n### Features\n- **Real-time** preview\n- HTML Export\n- Clean Interface';
+      input.value = welcomeTxt;
     }
 
     const update = () => {
       const val = input.value;
-      preview.innerHTML = window.DevTools.markdownTools.parseMarkdown(val);
+      preview.innerHTML = this.parseMarkdown(val);
 
       const words = val.trim().split(/\s+/).filter(w => w.length > 0).length;
       const readTime = Math.ceil(words / 200);
@@ -119,19 +120,55 @@ class MarkdownEditorTool extends BaseTool {
     };
 
     document.getElementById('md-btn-export').onclick = () => {
-      if (window.DevTools.markdownTools && window.DevTools.markdownTools.exportHTML) {
-        const html = window.DevTools.markdownTools.exportHTML(input.value);
-        const blob = new Blob([html], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'markdown-export.html';
-        a.click();
-      }
+      const htmlContent = this.parseMarkdown(input.value);
+      const fullHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>body{font-family:sans-serif;line-height:1.6;padding:20px;max-width:800px;margin:0 auto;color:#333;}</style>
+</head>
+<body>
+${htmlContent}
+</body>
+</html>`;
+      const blob = new Blob([fullHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'markdown-export.html';
+      a.click();
     };
 
     update(); // Run initially
 
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools)
+
+  parseMarkdown(markdown) {
+    if (window.marked && typeof window.marked.parse === 'function') {
+      return window.marked.parse(markdown);
+    }
+    // Fallback Simple Parser
+    let html = markdown
+      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+      .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+      .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>')
+      .replace(/\*(.*)\*/gim, '<i>$1</i>')
+      .replace(/\`\`\`(.*?)\`\`\`/gs, '<pre><code>$1</code></pre>') // Code block often needs more care
+      .replace(/\`(.*)\`/gim, '<code>$1</code>')
+      .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
+      .replace(/\n$/gim, '<br />');
+
+    // Lists (Very basic check)
+    html = html.replace(/^- (.*$)/gim, '<ul><li>$1</li></ul>');
+    html = html.replace(/<\/ul>\s*<ul>/gim, ''); // Merge lists
+
+    // Paragraphs map
+    return html.replace(/\n\n/g, '<p></p>');
   }
 }
 

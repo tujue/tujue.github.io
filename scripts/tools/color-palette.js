@@ -190,7 +190,7 @@ class ColorPaletteTool extends BaseTool {
                         <div class="pal-hex-val" style="font-family: var(--font-mono); font-weight: 800; font-size: 1.2rem;">${c.toUpperCase()}</div>
                         <div style="font-size: 0.75rem; opacity: 0.7;">Color ${i + 1}</div>
                     </div>
-                    <button class="btn btn-sm btn-outline" style="border-color: currentColor; color: inherit;" onclick="window.DevTools.copyToClipboard('${c}', this)">Copy</button>
+                    <button class="btn btn-sm btn-outline" style="border-color: currentColor; color: inherit;" onclick="window.activeToolInstance.copyToClipboard('${c}')">Copy</button>
                 </div>
             `;
         }).join('');

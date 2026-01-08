@@ -123,7 +123,6 @@ class HealthCalculatorTool extends BaseTool {
             Object.values(tabs).forEach(t => t.classList.replace('btn-primary', 'btn-outline'));
             tabs[mode].classList.replace('btn-outline', 'btn-primary');
 
-            // Toggle input groups
             document.getElementById('hl-grp-common').style.display = mode === 'age' ? 'none' : 'block';
             document.getElementById('hl-div-age').style.display = (mode === 'bmi' || mode === 'water') ? 'none' : 'block';
             document.getElementById('hl-grp-cal').style.display = mode === 'cal' ? 'block' : 'none';
@@ -139,7 +138,7 @@ class HealthCalculatorTool extends BaseTool {
         btnRun.onclick = () => {
             empty.style.display = 'none';
             cont.style.display = 'block';
-            this._calculate();
+            this.calculate();
         };
     }
 
@@ -148,8 +147,7 @@ class HealthCalculatorTool extends BaseTool {
         document.getElementById('hl-div-hip').style.display = (this.currentMode === 'bf' && isFemale) ? 'block' : 'none';
     }
 
-    _calculate() {
-        const hc = window.DevTools.healthCalculator;
+    calculate() {
         const resVal = document.getElementById('hl-res-val');
         const resSub = document.getElementById('hl-res-sub');
         const resStats = document.getElementById('hl-res-stats');
@@ -160,47 +158,90 @@ class HealthCalculatorTool extends BaseTool {
         const gender = document.getElementById('hl-in-gen').value;
 
         resStats.innerHTML = '';
-
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
 
         if (this.currentMode === 'bmi') {
-            const res = hc.calculateBMI(w, h, gender);
-            resVal.textContent = res.bmi;
-            // Simple translation for BMI categories if needed
-            let cat = res.category;
+            const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+            let cat = 'Normal';
+            if (bmi < 18.5) cat = 'Underweight';
+            else if (bmi >= 25 && bmi < 30) cat = 'Overweight';
+            else if (bmi >= 30) cat = 'Obese';
+
             if (isTr) {
                 if (cat === 'Underweight') cat = 'Zayıf';
-                else if (cat === 'Normal weight') cat = 'Normal';
+                else if (cat === 'Normal') cat = 'Normal';
                 else if (cat === 'Overweight') cat = 'Kilolu';
                 else if (cat === 'Obese') cat = 'Obez';
             }
+            resVal.textContent = bmi;
             resSub.textContent = cat;
-            this._addStat(isTr ? 'İdeal Kilo' : 'Ideal Weight', `${res.idealWeightTarget} kg`);
-            this._addStat(isTr ? 'Sağlıklı Aralık' : 'Healthy Range', res.idealWeightRange);
+
+            const minW = (18.5 * ((h / 100) ** 2)).toFixed(1);
+            const maxW = (24.9 * ((h / 100) ** 2)).toFixed(1);
+
+            this._addStat(isTr ? 'İdeal Kilo' : 'Ideal Weight', `${((parseFloat(minW) + parseFloat(maxW)) / 2).toFixed(1)} kg`);
+            this._addStat(isTr ? 'Sağlıklı Aralık' : 'Healthy Range', `${minW} - ${maxW} kg`);
             this._addStat(isTr ? 'Metrik' : 'Metric', `${w}kg @ ${h}cm`);
-        } else if (this.currentMode === 'cal') {
+        }
+        else if (this.currentMode === 'cal') {
             const act = parseFloat(document.getElementById('hl-in-act').value);
-            const res = hc.calculateCalories(w, h, age, gender, act);
-            resVal.textContent = res.tdee;
+            // Mifflin-St Jeor Equation
+            let bmr = (10 * w) + (6.25 * h) - (5 * age);
+            bmr += (gender === 'male' ? 5 : -161);
+
+            const tdee = Math.round(bmr * act);
+            resVal.textContent = tdee;
             resVal.style.fontSize = '3rem';
             resSub.textContent = isTr ? 'Kalori / Gün' : 'Calories / Day';
-            this._addStat('BMR', res.bmr);
-            this._addStat(isTr ? 'Kilo Verme' : 'Loss', res.weightLoss);
-            this._addStat(isTr ? 'Kilo Alma' : 'Gain', res.weightGain);
-            this._addStat('Protein', res.macros.protein + 'g');
-        } else if (this.currentMode === 'water') {
-            const res = hc.calculateWaterIntake(w, 30);
-            resVal.textContent = res.liters + ' L';
+
+            this._addStat('BMR', Math.round(bmr));
+            this._addStat(isTr ? 'Kilo Verme' : 'Loss', Math.round(tdee * 0.8));
+            this._addStat(isTr ? 'Kilo Alma' : 'Gain', Math.round(tdee * 1.2));
+            this._addStat('Protein', Math.round(w * 1.8) + 'g');
+        }
+        else if (this.currentMode === 'water') {
+            // Basic: 35ml per kg
+            let liters = (w * 0.035).toFixed(1);
+            resVal.textContent = liters + ' L';
             resSub.textContent = isTr ? 'Günlük Su İhtiyacı' : 'Daily Hydration';
-            this._addStat(isTr ? 'Bardak' : 'Glasses', res.glasses);
-            this._addStat(isTr ? 'Mililitre' : 'Milliliters', res.ml);
-        } else if (this.currentMode === 'bf') {
+            this._addStat(isTr ? 'Bardak (200ml)' : 'Glasses', Math.ceil((w * 35) / 200));
+            this._addStat(isTr ? 'Mililitre' : 'Milliliters', Math.round(w * 35));
+        }
+        else if (this.currentMode === 'bf') {
             const neck = parseFloat(document.getElementById('hl-in-neck').value);
             const waist = parseFloat(document.getElementById('hl-in-waist').value);
-            const hip = parseFloat(document.getElementById('hl-in-hip').value);
-            const res = hc.calculateBodyFat(gender, w, h, neck, waist, hip);
-            resVal.textContent = res.bodyFat;
-            let cat = res.category;
+            const hip = parseFloat(document.getElementById('hl-in-hip').value) || 0;
+
+            // US Navy Method
+            // Male: 86.010 * log10(abdomen - neck) - 70.041 * log10(height) + 36.76
+            // Female: 163.205 * log10(waist + hip - neck) - 97.684 * log10(height) - 78.387
+
+            let bf = 0;
+            if (gender === 'male') {
+                bf = 86.010 * Math.log10(waist - neck) - 70.041 * Math.log10(h) + 36.76;
+            } else {
+                bf = 163.205 * Math.log10(waist + hip - neck) - 97.684 * Math.log10(h) - 78.387;
+            }
+            bf = Math.max(2, bf).toFixed(1); // Min 2%
+
+            resVal.textContent = bf + '%';
+
+            let cat = 'Average';
+            const f = parseFloat(bf);
+            if (gender === 'male') {
+                if (f < 6) cat = 'Essential fat';
+                else if (f < 14) cat = 'Athletes';
+                else if (f < 18) cat = 'Fitness';
+                else if (f < 25) cat = 'Average';
+                else cat = 'Obese';
+            } else {
+                if (f < 14) cat = 'Essential fat';
+                else if (f < 21) cat = 'Athletes';
+                else if (f < 25) cat = 'Fitness';
+                else if (f < 32) cat = 'Average';
+                else cat = 'Obese';
+            }
+
             if (isTr) {
                 if (cat === 'Essential fat') cat = 'Hayati Yağ';
                 else if (cat === 'Athletes') cat = 'Sporcu';
@@ -210,27 +251,53 @@ class HealthCalculatorTool extends BaseTool {
             }
             resSub.textContent = cat;
             this._addStat(isTr ? 'Yöntem' : 'Method', 'US Navy');
-        } else if (this.currentMode === 'age') {
-            const dob = document.getElementById('hl-in-dob').value;
-            if (!dob) return;
-            const res = hc.calculateAge(dob);
-            resVal.textContent = res.years;
+        }
+        else if (this.currentMode === 'age') {
+            const dobVal = document.getElementById('hl-in-dob').value;
+            if (!dobVal) return;
+            const dob = new Date(dobVal);
+            const now = new Date();
+            const diff = now - dob;
+            const ageDate = new Date(diff);
+            const years = Math.abs(ageDate.getUTCFullYear() - 1970);
+
+            const nextBirthday = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+            if (now > nextBirthday) nextBirthday.setFullYear(now.getFullYear() + 1);
+            const daysToBirthday = Math.ceil((nextBirthday - now) / (1000 * 60 * 60 * 24));
+
+            resVal.textContent = years;
             resSub.textContent = isTr ? 'Yaşında' : 'Years Old';
 
-            // Translate Zodiac Signs
-            let zodiacName = res.zodiac;
+            // Zodiac
+            const day = dob.getDate();
+            const month = dob.getMonth() + 1;
+            let zodiac = '';
+            if ((month == 1 && day <= 19) || (month == 12 && day >= 22)) zodiac = 'Capricorn';
+            else if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) zodiac = 'Aquarius';
+            else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) zodiac = 'Pisces';
+            else if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) zodiac = 'Aries';
+            else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) zodiac = 'Taurus';
+            else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) zodiac = 'Gemini';
+            else if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) zodiac = 'Cancer';
+            else if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) zodiac = 'Leo';
+            else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) zodiac = 'Virgo';
+            else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) zodiac = 'Libra';
+            else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) zodiac = 'Scorpio';
+            else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) zodiac = 'Sagittarius';
+
+            let zodiacName = zodiac;
             if (isTr) {
                 const zodiacMap = {
                     'Capricorn': 'Oğlak', 'Aquarius': 'Kova', 'Pisces': 'Balık', 'Aries': 'Koç',
                     'Taurus': 'Boğa', 'Gemini': 'İkizler', 'Cancer': 'Yengeç', 'Leo': 'Aslan',
                     'Virgo': 'Başak', 'Libra': 'Terazi', 'Scorpio': 'Akrep', 'Sagittarius': 'Yay'
                 };
-                zodiacName = zodiacMap[res.zodiac] || res.zodiac;
+                zodiacName = zodiacMap[zodiac] || zodiac;
             }
 
             this._addStat(isTr ? 'Burç' : 'Zodiac', zodiacName);
-            this._addStat(isTr ? 'Toplam Gün' : 'Total Days', res.totalDays);
-            this._addStat(isTr ? 'Doğum Gününe Kalan' : 'Days to Bday', res.nextBirthday);
+            this._addStat(isTr ? 'Toplam Gün' : 'Total Days', Math.floor(diff / (1000 * 60 * 60 * 24)).toLocaleString());
+            this._addStat(isTr ? 'Doğum Gününe Kalan' : 'Days to Bday', daysToBirthday);
         }
     }
 
