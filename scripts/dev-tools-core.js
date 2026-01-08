@@ -339,12 +339,53 @@
                     css += `.a4-page { background: white; color: ${color}; font-size: 0.85rem; } .res-header { text-align: center; border-bottom: 2px solid ${color}; padding-bottom: 15px; } .res-sec-title { background: ${color}; color: white; padding: 4px 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; } .res-item { border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 10px; }`;
                 }
                 else if (theme === 'cyber') {
-                    css += `.a4-page { background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; font-size: 0.8rem; } 
-                            .res-sec-title { border-bottom: 1px solid #00ff41; color: #00ff41; text-shadow: 0 0 5px #00ff41; font-size: 1rem; margin-bottom: 10px; } 
-                            .res-name { text-shadow: 2px 2px 0px #003300; font-size: 2.5rem; } 
-                            .res-role { color: white; text-shadow: 1px 1px 0 #000; font-size: 0.9rem; } 
-                            .res-comp { color: #008F11; font-size: 0.85rem; }
-                            .res-desc { color: #00ff41; opacity: 0.9; font-size: 0.8rem; }`;
+                    const c = color || '#00ff41';
+                    css += `
+                        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+                        .a4-page { background: #080808; color: #c0c0c0; font-family: 'Share Tech Mono', 'Courier New', monospace; font-size: 0.85rem; line-height: 1.5; }
+                        .res-header { border-bottom: 1px solid ${c}40; padding-bottom: 20px; margin-bottom: 25px; position: relative; text-align: left; }
+                        .res-header::after { content: "SYS.READY"; position: absolute; right: 0; top: 0; color: ${c}; font-size: 0.7rem; opacity: 0.7; border: 1px solid ${c}; padding: 2px 6px; }
+                        
+                        .res-name { color: #fff; font-size: 3rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px ${c}; line-height: 1; }
+                        .res-title { color: ${c}; background: ${c}10; display: inline-block; padding: 4px 12px; font-size: 1.1rem; border-left: 3px solid ${c}; letter-spacing: 1px; margin-bottom: 10px; }
+                        
+                        .res-contact { margin-top: 10px; color: #888; font-size: 0.8rem; display: flex; flex-wrap: wrap; gap: 15px; }
+                        .res-contact span { display: flex; align-items: center; }
+                        .res-contact span::before { content: "["; color: ${c}; margin-right: 5px; }
+                        .res-contact span::after { content: "]"; color: ${c}; margin-left: 5px; }
+
+                        .res-sec-title { 
+                            color: ${c}; 
+                            border-bottom: 1px solid ${c}60; 
+                            font-size: 1.2rem; 
+                            margin-bottom: 15px; 
+                            padding-bottom: 5px; 
+                            text-transform: uppercase; 
+                            letter-spacing: 1.5px;
+                            display: flex;
+                            align-items: center;
+                        }
+                        .res-sec-title::before { content: ">>"; margin-right: 10px; font-size: 0.8em; opacity: 0.8; }
+
+                        .res-item { margin-bottom: 12px; border-left: 1px solid #333; padding-left: 15px; }
+                        .res-item-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+                        .res-role { color: #fff; font-size: 1rem; font-weight: bold; }
+                        .res-date { color: ${c}; font-size: 0.8rem; opacity: 0.8; }
+                        .res-comp { color: #888; font-size: 0.9rem; margin-bottom: 4px; font-style: italic; }
+                        .res-desc { color: #b0b0b0; font-size: 0.85rem; }
+
+                        .res-skills .res-tag { 
+                            background: transparent; 
+                            color: ${c}; 
+                            border: 1px solid ${c}60; 
+                            padding: 3px 8px; 
+                            font-size: 0.8rem;
+                            position: relative;
+                            border-radius: 0;
+                        }
+                        .res-skills .res-tag::before { content: ""; position: absolute; top: -1px; left: -1px; width: 3px; height: 3px; background: ${c}; }
+                        .res-photo { border: 2px solid ${c}; filter: grayscale(100%) contrast(120%); }
+                    `;
                 }
                 else if (theme === 'brutal') {
                     if (!d.color || d.color === '#2d3748') color = 'black';
