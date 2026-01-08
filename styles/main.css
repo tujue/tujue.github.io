@@ -2298,5 +2298,18 @@ select option {
         position: fixed !important;
         z-index: 2000 !important;
         /* Force on top of everything including header */
+        padding: 10px 20px !important;
+        /* Sıkıştırılmış dolgu */
+    }
+
+    /* Compact Header for Resume Builder */
+    .workspace-content.full-width-workspace .workspace-header {
+        margin-bottom: 5px !important;
+        padding-bottom: 5px !important;
+    }
+
+    /* Smaller Title for more space */
+    .workspace-content.full-width-workspace .workspace-title {
+        font-size: 1.5rem !important;
     }
 }
