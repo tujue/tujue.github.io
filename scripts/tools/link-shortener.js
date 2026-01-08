@@ -2,6 +2,7 @@
 class LinkShortenerTool extends BaseTool {
     constructor(config) {
         super(config);
+        this.STORAGE_KEY = 'tulpar_short_links';
     }
 
     renderUI() {
@@ -88,22 +89,28 @@ class LinkShortenerTool extends BaseTool {
         const histIn = document.getElementById('ls-history-list');
 
         const renderHistory = () => {
-            const links = window.DevTools.linkShortener.getAllLinks();
+            const links = this._getHistory();
             histIn.innerHTML = links.map(l => `
                 <div style="padding: 1rem; background: var(--surface); border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
                     <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px; font-size: 0.95rem;">${l.shortUrl}</div>
                     <div style="font-size: 0.75rem; opacity: 0.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.originalUrl}</div>
                     <div style="margin-top: 10px; display: flex; gap: 8px;">
-                        <button class="btn btn-sm btn-outline" style="font-size: 0.6rem;" onclick="window.DevTools.copyToClipboard('${l.shortUrl}')">Copy</button>
-                        <button class="btn btn-sm btn-outline" style="font-size: 0.6rem; color: #ef4444;" onclick="window.deleteShortLink('${l.id}')">Del</button>
+                        <button class="btn btn-sm btn-outline ls-hist-copy" style="font-size: 0.6rem;" data-url="${l.shortUrl}">Copy</button>
+                        <button class="btn btn-sm btn-outline ls-hist-del" style="font-size: 0.6rem; color: #ef4444;" data-id="${l.id}">Del</button>
                     </div>
                 </div>
             `).join('');
-        };
 
-        window.deleteShortLink = (id) => {
-            window.DevTools.linkShortener.deleteLink(id);
-            renderHistory();
+            // Add events to history buttons
+            histIn.querySelectorAll('.ls-hist-copy').forEach(btn => {
+                btn.onclick = () => this.copyToClipboard(btn.dataset.url);
+            });
+            histIn.querySelectorAll('.ls-hist-del').forEach(btn => {
+                btn.onclick = () => {
+                    this._deleteFromHistory(btn.dataset.id);
+                    renderHistory();
+                };
+            });
         };
 
         btnRun.onclick = async () => {
@@ -114,7 +121,7 @@ class LinkShortenerTool extends BaseTool {
             btnRun.textContent = '⏳ ...';
 
             try {
-                const res = await window.DevTools.linkShortener.shorten(url, aliasIn.value, tokenIn.value);
+                const res = await this._shorten(url, aliasIn.value, tokenIn.value);
                 resCard.style.display = 'block';
                 outLink.textContent = res.shortUrl;
                 outLink.href = res.shortUrl;
@@ -125,19 +132,114 @@ class LinkShortenerTool extends BaseTool {
                     new QRious({ element: document.getElementById('ls-qr-cvs'), value: res.shortUrl, size: 180 });
                 }
 
+                this._saveToHistory(res.shortUrl, url);
                 renderHistory();
                 this.showNotification('Link Shortened!', 'success');
             } catch (err) {
                 this.showNotification(err.message, 'error');
             } finally {
                 btnRun.disabled = false;
-                btnRun.textContent = window.i18n.getCurrentLanguage() === 'tr' ? 'Bağlantıyı Kısalt 🔗' : 'Shorten Link 🔗';
+                const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+                btnRun.textContent = isTr ? 'Bağlantıyı Kısalt 🔗' : 'Shorten Link 🔗';
             }
         };
 
         document.getElementById('ls-btn-copy').onclick = () => this.copyToClipboard(outLink.textContent);
 
         renderHistory();
+    }
+
+    _getHistory() {
+        try {
+            return JSON.parse(localStorage.getItem(this.STORAGE_KEY)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    _saveToHistory(shortUrl, originalUrl) {
+        const history = this._getHistory();
+        history.unshift({
+            id: Date.now().toString(),
+            shortUrl,
+            originalUrl,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(history.slice(0, 50)));
+    }
+
+    _deleteFromHistory(id) {
+        const history = this._getHistory().filter(l => l.id !== id);
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(history));
+    }
+
+    async _shorten(url, alias, token) {
+        if (!url.startsWith('http')) url = 'https://' + url;
+
+        // 1. Bitly Strategy (If token provided)
+        if (token) {
+            try {
+                const response = await fetch('https://api-ssl.bitly.com/v4/shorten', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ long_url: url })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return { shortUrl: data.link };
+                } else {
+                    const err = await response.json();
+                    throw new Error(err.message || 'Bitly API Error');
+                }
+            } catch (e) {
+                throw new Error('Bitly Error: ' + e.message);
+            }
+        }
+
+        // 2. TinyURL Strategy (Public API via proxy if needed, or direct)
+        // TinyURL v1 is simple GET but might have CORS issues.
+        // We'll use a public anonymous shortener or a fallback.
+        try {
+            // Using TinyURL simple API (GET)
+            // Note: TinyURL doesn't always allow CORS. We might need a proxy.
+            const tinyUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}${alias ? `&alias=${encodeURIComponent(alias)}` : ''}`;
+
+            // Try direct first
+            try {
+                const res = await fetch(tinyUrl);
+                if (res.ok) {
+                    const short = await res.text();
+                    return { shortUrl: short };
+                }
+            } catch (corsErr) {
+                // Try via AllOrigins proxy
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(tinyUrl)}`;
+                const res = await fetch(proxyUrl);
+                if (res.ok) {
+                    const data = await res.json();
+                    return { shortUrl: data.contents };
+                }
+            }
+            throw new Error('Fallback shortening failed');
+        } catch (e) {
+            // Ultimate fallback: Is.gd or similar
+            try {
+                const isGdUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}${alias ? `&shorturl=${encodeURIComponent(alias)}` : ''}`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(isGdUrl)}`;
+                const res = await fetch(proxyUrl);
+                if (res.ok) {
+                    const data = await res.json();
+                    const jsonData = JSON.parse(data.contents);
+                    if (jsonData.shorturl) return { shortUrl: jsonData.shorturl };
+                    if (jsonData.errormessage) throw new Error(jsonData.errormessage);
+                }
+            } catch (e2) {
+                throw new Error('Link shortening service unavailable. Try using the Bitly token.');
+            }
+        }
     }
 }
 
