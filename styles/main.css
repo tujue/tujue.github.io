@@ -2316,8 +2316,7 @@ select option {
     z-index: 2000 !important;
 }
 
-/* Ensure body doesn't scroll behind */
+/* Ensure body scroll is managed without affecting hub scale */
 body.modal-open[data-tool="resume-builder"] {
-    position: fixed;
-    width: 100%;
+    overflow: hidden !important;
 }

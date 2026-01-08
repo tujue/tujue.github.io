@@ -106,7 +106,7 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; }
+                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 40px 0; width: 100%; scroll-behavior: smooth; }
                 .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: none; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; transition: 0.2s; }
                 .res-wizard-footer.active { display: flex !important; }
                 
@@ -124,12 +124,12 @@ class ResumeBuilderTool extends BaseTool {
                 .theme-item:hover { transform: translateY(-3px); background: rgba(var(--primary-rgb), 0.1); }
                 .theme-item.active { border-color: var(--primary); background: rgba(var(--primary-rgb), 0.1); font-weight: bold; color: var(--primary); }
                 
-                #res-preview-container { height: 100%; display: flex; justify-content: center; overflow: hidden; background: #525659; border-radius: 8px; padding: 0; position: relative; }
-                .a4-page { transition: transform 0.2s; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+                #res-preview-container { height: 100%; display: flex; justify-content: center; overflow: auto; background: #525659; border-radius: 8px; padding: 0; position: relative; }
+                .a4-page { transition: zoom 0.2s; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transform-origin: top center; image-rendering: -webkit-optimize-contrast; -webkit-font-smoothing: antialiased; }
 
                 /* Animations */
-                .fade-in { animation: fadeIn 0.3s ease-out; }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                .res-fade-in { animation: resFadeIn 0.3s ease-out; }
+                @keyframes resFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
             </style>
         </div>
         `;
@@ -319,7 +319,7 @@ class ResumeBuilderTool extends BaseTool {
         c.innerHTML = '';
         const d = this.data;
         const div = document.createElement('div');
-        div.className = 'fade-in';
+        div.className = 'res-fade-in';
         div.style.height = '100%';
         div.style.overflowY = 'auto'; // allow scroll within content
 
@@ -558,9 +558,9 @@ class ResumeBuilderTool extends BaseTool {
         }
         else if (this.currentTab === 'preview') {
             div.innerHTML = `
-                <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative;">
-                    <div id="res-page-wrapper" style="padding: 40px; display: flex; justify-content: center; min-height: 100%; transition: 0.2s;">
-                        <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; transform-origin: top center; flex-shrink: 0;"></div>
+                <div id="res-preview-container" style="flex:1; overflow:auto; background:#525659; position:relative; padding: 40px 0;">
+                    <div id="res-page-wrapper" style="display: flex; justify-content: center; min-height: min-content; width: 100%;">
+                        <div id="res-a4-page" class="a4-page" style="width: 794px; height: 1123px; flex-shrink: 0;"></div>
                     </div>
                     
                     <!-- Zoom Controls -->
@@ -673,14 +673,14 @@ class ResumeBuilderTool extends BaseTool {
         const page = document.getElementById('res-a4-page');
         if (!container || !page) return;
 
-        const contW = container.clientWidth; // Full width usage
+        const contW = container.clientWidth - 40; // Subtract padding room
         const pageW = 794;
         const pageH = 1123;
 
         if (this.zoom === 'fit') {
             // Smart Fit Strategy:
             // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
-            const availableH = window.innerHeight - 100;
+            const availableH = window.innerHeight - 150;
             const wScale = contW / pageW;
             const hScale = availableH / pageH;
 
@@ -688,7 +688,13 @@ class ResumeBuilderTool extends BaseTool {
             this.scaleValue = Math.min(wScale, hScale, 0.95);
         }
 
-        page.style.transform = `scale(${this.scaleValue})`;
+        // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
+        if ('zoom' in page.style) {
+            page.style.zoom = this.scaleValue;
+            page.style.transform = 'none';
+        } else {
+            page.style.transform = `scale(${this.scaleValue})`;
+        }
 
         // Ensure wrapper height accounts for the scaled content to allow proper scrolling
         const wrapper = document.getElementById('res-page-wrapper');
