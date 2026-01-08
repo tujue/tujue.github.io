@@ -86,12 +86,12 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow: hidden; position: relative; padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%; }
+                .res-wizard-content { flex: 1; overflow: hidden; position: relative; padding: 30px; margin: 0 auto; width: 100%; }
                 .res-wizard-footer { padding: 20px 40px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
-                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 1000px; margin: 0 auto; }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
