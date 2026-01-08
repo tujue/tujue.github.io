@@ -7,6 +7,7 @@ class AudioWaveformTool extends BaseTool {
         this.audioCtx = null;
         this.sourceNode = null;
         this.analyser = null;
+        this.animationFrameId = null;
     }
 
     renderUI() {
@@ -162,14 +163,14 @@ class AudioWaveformTool extends BaseTool {
                 play.disabled = true;
 
                 style.value = 'spectrogram';
-                window.DevTools.audioTools.drawSpectrogram(analyser, canvas, color.value);
+                this.drawSpectrogram(analyser, canvas, color.value);
             } catch (err) {
                 this.showNotification(msgMicErr, 'error');
             }
         };
 
         const updateVisuals = () => {
-            if (window.DevTools._audioAnim) cancelAnimationFrame(window.DevTools._audioAnim);
+            if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
 
             if (style.value !== 'spectrogram' && this.audioBuffer) {
                 this._draw();
@@ -179,7 +180,7 @@ class AudioWaveformTool extends BaseTool {
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.save();
-                ctx.font = 'bold 24px sans-serif'; // Removed 'Inter' to be safe
+                ctx.font = 'bold 24px sans-serif';
                 ctx.fillStyle = 'rgba(255,255,255,0.4)';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -220,7 +221,7 @@ class AudioWaveformTool extends BaseTool {
                 analyser.fftSize = 2048;
                 this.sourceNode.connect(analyser);
                 analyser.connect(this.audioCtx.destination);
-                window.DevTools.audioTools.drawSpectrogram(analyser, canvas, color.value);
+                this.drawSpectrogram(analyser, canvas, color.value);
             } else {
                 this.sourceNode.connect(this.audioCtx.destination);
             }
@@ -237,7 +238,7 @@ class AudioWaveformTool extends BaseTool {
             }
             play.style.display = 'block';
             stop.style.display = 'none';
-            if (window.DevTools._audioAnim) cancelAnimationFrame(window.DevTools._audioAnim);
+            if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
         };
 
         dl.onclick = () => {
@@ -251,7 +252,7 @@ class AudioWaveformTool extends BaseTool {
     _draw() {
         if (!this.audioBuffer) return;
         const canvas = document.getElementById('al-canvas');
-        window.DevTools.audioTools.drawWaveform(this.audioBuffer, canvas, {
+        this.drawWaveform(this.audioBuffer, canvas, {
             style: document.getElementById('al-in-style').value,
             color: document.getElementById('al-in-c').value,
             bgColor: document.getElementById('al-in-bg').value,
@@ -265,7 +266,119 @@ class AudioWaveformTool extends BaseTool {
         if (this.sourceNode) {
             try { this.sourceNode.stop(); } catch (e) { }
         }
-        if (window.DevTools._audioAnim) cancelAnimationFrame(window.DevTools._audioAnim);
+        if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.audioTools)
+
+    drawWaveform(buffer, canvas, options) {
+        const { style, color, bgColor, barWidth, barGap } = options;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+
+        const data = buffer.getChannelData(0); // Use first channel
+        const step = Math.ceil(data.length / width);
+        const amp = height / 2;
+
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2; // Curve width
+
+        if (style === 'lines') {
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            for (let i = 0; i < width; i++) {
+                let min = 1.0;
+                let max = -1.0;
+
+                for (let j = 0; j < step; j++) {
+                    const datum = data[i * step + j];
+                    if (datum < min) min = datum;
+                    if (datum > max) max = datum;
+                }
+
+                // Average amplitude for this pixel column
+                const val = Math.max(Math.abs(min), Math.abs(max));
+                ctx.lineTo(i, (1 + min) * amp); // Simplified drawing logic for demo, usually one draws min to max range
+                // A better line approach:
+            }
+            // Re-implement line drawing correctly roughly
+            ctx.beginPath();
+            for (let i = 0; i < width; i++) {
+                // Get some average
+                let sum = 0;
+                for (let j = 0; j < step; j++) {
+                    sum += Math.abs(data[i * step + j] || 0);
+                }
+                const avg = sum / step;
+                const y = (1 - avg) * amp; // draws from center? No, top down. 
+                // Center is height/2. 
+                ctx.lineTo(i, height / 2 - avg * amp);
+            }
+            ctx.stroke();
+            // Mirror bottom
+            ctx.beginPath();
+            for (let i = 0; i < width; i++) {
+                let sum = 0;
+                for (let j = 0; j < step; j++) {
+                    sum += Math.abs(data[i * step + j] || 0);
+                }
+                const avg = sum / step;
+                ctx.lineTo(i, height / 2 + avg * amp);
+            }
+            ctx.stroke();
+
+        } else {
+            // Bars (Default)
+            // Calculate bars count based on width
+            const totalBars = Math.floor(width / (barWidth + barGap));
+            // Recalculate step
+            const barStep = Math.floor(data.length / totalBars);
+
+            for (let i = 0; i < totalBars; i++) {
+                let sum = 0;
+                for (let j = 0; j < barStep; j++) {
+                    sum += Math.abs(data[i * barStep + j] || 0);
+                }
+                const avg = sum / barStep;
+
+                const barHeight = avg * height;
+                const x = i * (barWidth + barGap);
+                const y = (height - barHeight) / 2;
+
+                ctx.fillRect(x, y, barWidth, barHeight);
+            }
+        }
+    }
+
+    drawSpectrogram(analyser, canvas, color) {
+        const ctx = canvas.getContext('2d');
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+
+        const render = () => {
+            analyser.getByteFrequencyData(dataArray);
+
+            // Semi-transparent bg for trailing effect or clear
+            ctx.fillStyle = document.getElementById('al-in-bg')?.value || '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let x = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = dataArray[i] * 2; // Scale
+                ctx.fillStyle = color;
+                ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                x += barWidth + 1;
+            }
+
+            this.animationFrameId = requestAnimationFrame(render);
+        };
+        render();
     }
 }
 

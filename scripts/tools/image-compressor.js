@@ -242,7 +242,7 @@ class ImageCompressorTool extends BaseTool {
           if (w || h) resize = { width: w, height: h };
         }
 
-        const result = await window.DevTools.imageCompressor.compress(this.selectedFile, parseInt(inQ.value), format, resize);
+        const result = await this.compress(this.selectedFile, parseInt(inQ.value), format, resize);
         this.compressedData = result;
 
         // Update Stats
@@ -269,6 +269,69 @@ class ImageCompressorTool extends BaseTool {
       a.href = URL.createObjectURL(this.compressedData.blob);
       a.click();
     };
+  }
+
+  // INTERNAL LOGIC (Formerly in DevTools.imageCompressor)
+
+  compress(file, quality, outputFormat, resize) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          // Handle Resize logic
+          if (resize) {
+            if (resize.scale) {
+              width = Math.round(width * resize.scale);
+              height = Math.round(height * resize.scale);
+            } else if (resize.width || resize.height) {
+              // If one is missing and locked aspect ratio is implied by the UI, UI handles it.
+              // But if user sends only width, we should probably maintain aspect ratio if UI didn't calculate height.
+              // For simplicity, we assume we get what we get.
+              if (resize.width) width = parseInt(resize.width);
+              if (resize.height) height = parseInt(resize.height);
+
+              // Re-calculate undefined dimension to maintain aspect ratio if not explicit? 
+              // The UI code already sets both inputs if locked.
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const mimeType = outputFormat || file.type; // use original type if not specified
+          // Quality acts only on jpeg/webp. PNG is lossless usually but canvas API might support it loosely or ignore.
+
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              reject(new Error('Canvas toBlob failed'));
+              return;
+            }
+
+            const result = {
+              originalSize: file.size,
+              compressedSize: blob.size,
+              reduction: ((file.size - blob.size) / file.size * 100).toFixed(2),
+              dataUrl: URL.createObjectURL(blob), // Or canvas.toDataURL() but blob is better for large files
+              blob: blob,
+              width: width,
+              height: height
+            };
+            resolve(result);
+          }, mimeType, quality / 100);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 }
 

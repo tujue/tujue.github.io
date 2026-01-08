@@ -101,7 +101,7 @@ class SVGOptimizerTool extends BaseTool {
         btnRun.onclick = () => {
             const raw = inTxt.value.trim();
             if (!raw) return;
-            const opt = window.DevTools.svgTools.optimize(raw, parseInt(precIn.value));
+            const opt = this.optimize(raw, parseInt(precIn.value));
             outTxt.value = opt;
             prev.innerHTML = opt;
 
@@ -126,6 +126,40 @@ class SVGOptimizerTool extends BaseTool {
         };
 
         btnCopy.onclick = () => this.copyToClipboard(outTxt.value);
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools.svgTools)
+
+    optimize(svg, precision) {
+        let result = svg;
+
+        // 1. Remove comments
+        result = result.replace(/<!--[\s\S]*?-->/g, "");
+
+        // 2. Remove XML declaration
+        result = result.replace(/<\?xml.*?>/gi, "");
+
+        // 3. Remove doctype
+        result = result.replace(/<!DOCTYPE.*?>/gi, "");
+
+        // 4. Collapse whitespace
+        result = result.replace(/\s+/g, " ");
+        result = result.replace(/>\s+</g, "><");
+
+        // 5. Round numbers using regex callback
+        // Matches integers or decimals.
+        // We look for sequences of digits/dots that are likely coordinate values in attributes like 'd', 'points', 'x', 'y', 'width', 'height'
+        // This is a naive regex approach but works for mostly all numbers in SVG
+        result = result.replace(/(\d*\.?\d+)/g, (match) => {
+            const num = parseFloat(match);
+            if (isNaN(num)) return match;
+            // Use simple rounding
+            const p = Math.pow(10, precision);
+            return (Math.round(num * p) / p).toString();
+        });
+
+        // 6. Trim
+        return result.trim();
     }
 }
 
