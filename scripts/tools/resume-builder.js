@@ -340,9 +340,13 @@ class ResumeBuilderTool extends BaseTool {
             document.body.classList.add('pdf-mode');
             window.scrollTo(0, 0);
 
+            // Apply class directly to the captured element to ensure styles persist in html2canvas
+            page.classList.add('pdf-target');
+
             let theme = this.data.theme || 'modern';
             let pdfCss = `
-                body.pdf-mode .a4-page * { 
+                /* Scope to .pdf-target (The A4 Page itself) */
+                .pdf-target * { 
                     box-sizing: border-box !important; 
                     -webkit-font-smoothing: antialiased;
                     line-height: 1.5 !important;
@@ -350,89 +354,93 @@ class ResumeBuilderTool extends BaseTool {
                     box-shadow: none !important;
                     filter: none !important;
                 }
-                body.pdf-mode .a4-page { overflow: visible !important; }
+                .pdf-target { overflow: visible !important; }
                 
-                /* GENERAL TEXT STACKING (Safety First) */
-                body.pdf-mode .res-header, body.pdf-mode .e-header, body.pdf-mode .s-name-box {
+                /* STACKING RULES */
+                .pdf-target .res-header, .pdf-target .e-header, .pdf-target .s-name-box {
                     display: block !important;
                     height: auto !important;
                 }
-                body.pdf-mode .res-name, body.pdf-mode .res-title, body.pdf-mode .e-name, body.pdf-mode .e-title {
+                .pdf-target .res-name, .pdf-target .res-title, .pdf-target .e-name, .pdf-target .e-title {
                     display: block !important;
                     width: 100% !important;
                     margin-bottom: 5px !important;
                 }
-                body.pdf-mode .res-contact, body.pdf-mode .e-contact-item {
+                .pdf-target .res-contact, .pdf-target .e-contact-item {
                     display: block !important;
                     margin-bottom: 5px !important;
                 }
+                .pdf-target .res-contact > span, .pdf-target .res-contact > div {
+                    display: block !important;
+                    margin-bottom: 2px !important;
+                }
                 
-                /* ITEM HEADERS (Experience/Education) - STACK THEM */
-                body.pdf-mode .res-item-head, body.pdf-mode .e-item-head, body.pdf-mode .v-item-top {
+                /* ITEM HEADERS */
+                .pdf-target .res-item-head, .pdf-target .e-item-head, .pdf-target .v-item-top {
                     display: block !important;
                     height: auto !important;
                     margin-bottom: 5px !important;
                 }
-                body.pdf-mode .res-item-head > *, body.pdf-mode .e-item-head > *, body.pdf-mode .v-item-top > * {
+                .pdf-target .res-item-head > *, .pdf-target .e-item-head > *, .pdf-target .v-item-top > * {
                     float: none !important;
                     display: block !important;
                     text-align: left !important;
                     width: 100% !important;
                 }
                 
-                /* SKILLS & TAGS */
-                body.pdf-mode .res-skills { gap: 8px !important; display: flex !important; flex-wrap: wrap !important; }
-                body.pdf-mode .res-tag, body.pdf-mode .v-tag, body.pdf-mode .e-tag { 
+                /* SKILLS */
+                .pdf-target .res-skills { gap: 8px !important; display: flex !important; flex-wrap: wrap !important; }
+                .pdf-target .res-tag, .pdf-target .v-tag, .pdf-target .e-tag { 
                     margin: 4px !important; 
                     display: inline-block !important;
                     white-space: nowrap !important;
                 }
 
-                /* Layout Containers */
-                body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }
+                /* Clearfix */
+                .pdf-target::after { content: ""; display: table; clear: both; }
             `;
 
             // Theme Specific Fixes (LAYOUT COLUMNS ONLY)
             if (theme === 'nova') {
                 pdfCss += `
-                    body.pdf-mode .v-sidebar { float: left !important; width: 32% !important; min-height: 1000px; }
-                    body.pdf-mode .v-main { float: right !important; width: 64% !important; }
+                    .pdf-target .v-sidebar { float: left !important; width: 32% !important; min-height: 1000px; }
+                    .pdf-target .v-main { float: right !important; width: 64% !important; }
                 `;
             } else if (theme === 'orbit') {
                 pdfCss += `
-                    body.pdf-mode .e-sidebar { float: left !important; width: 30% !important; min-height: 1000px; }
-                    body.pdf-mode .e-main { float: right !important; width: 65% !important; }
+                    .pdf-target .e-sidebar { float: left !important; width: 30% !important; min-height: 1000px; }
+                    .pdf-target .e-main { float: right !important; width: 65% !important; }
                 `;
             } else if (theme === 'bloom') {
                 pdfCss += `
-                    body.pdf-mode .a-left { float: left !important; width: 35% !important; min-height: 1000px; }
-                    body.pdf-mode .a-right { float: right !important; width: 60% !important; }
-                    body.pdf-mode .a-container { display: block !important; }
+                    .pdf-target .a-left { float: left !important; width: 35% !important; min-height: 1000px; }
+                    .pdf-target .a-right { float: right !important; width: 60% !important; }
+                    .pdf-target .a-container { display: block !important; }
                 `;
             } else if (theme === 'wave') {
                 pdfCss += `
-                   body.pdf-mode .s-left { float: left !important; width: 32% !important; min-height: 1000px; }
-                   body.pdf-mode .s-right { float: right !important; width: 64% !important; }
+                   .pdf-target .s-left { float: left !important; width: 32% !important; min-height: 1000px; }
+                   .pdf-target .s-right { float: right !important; width: 64% !important; }
                 `;
             } else if (theme === 'bold') {
                 pdfCss += `
-                   body.pdf-mode .k-left { float: left !important; width: 35% !important; min-height: 1000px; }
-                   body.pdf-mode .k-right { float: right !important; width: 60% !important; }
+                   .pdf-target .k-left { float: left !important; width: 35% !important; min-height: 1000px; }
+                   .pdf-target .k-right { float: right !important; width: 60% !important; }
                 `;
             } else if (theme === 'prime') {
                 pdfCss += `
-                    body.pdf-mode .o-box { width: 100% !important; margin-bottom: 20px !important; display: block !important; }
-                    body.pdf-mode .o-grid { display: block !important; }
+                    .pdf-target .o-box { width: 100% !important; margin-bottom: 20px !important; display: block !important; }
+                    .pdf-target .o-grid { display: block !important; }
                 `;
             } else if (theme === 'leftside') {
                 pdfCss += `
-                    body.pdf-mode .res-left { float: left !important; width: 30% !important; min-height: 1000px; }
-                    body.pdf-mode .res-right { float: right !important; width: 66% !important; }
+                    .pdf-target .res-left { float: left !important; width: 30% !important; min-height: 1000px; }
+                    .pdf-target .res-right { float: right !important; width: 66% !important; }
                 `;
             } else {
                 // Standard (No Sidebar) - Linearize Bottom Grid
                 pdfCss += `
-                    body.pdf-mode div[style*="grid-template-columns"] { display: block !important; }
+                    .pdf-target div[style*="grid-template-columns"] { display: block !important; }
                 `;
             }
 
@@ -454,6 +462,7 @@ class ResumeBuilderTool extends BaseTool {
                 page.style.transform = originalTransform;
                 page.style.boxShadow = 'var(--shadow-lg)';
                 document.body.classList.remove('pdf-mode');
+                page.classList.remove('pdf-target');
                 if (pdfStyle) pdfStyle.remove();
 
                 const imgData = canvas.toDataURL('image/png');
