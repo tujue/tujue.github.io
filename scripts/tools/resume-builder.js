@@ -340,62 +340,65 @@ class ResumeBuilderTool extends BaseTool {
             document.body.classList.add('pdf-mode');
             window.scrollTo(0, 0);
 
-            // Inject PDF Specific Fixes (Line Height & Gap Fallback)
             let theme = this.data.theme || 'modern';
             let pdfCss = `
-                body.pdf-mode .a4-page * { line-height: 1.4 !important; }
-                body.pdf-mode .res-contact > div { margin-bottom: 10px !important; }
-                body.pdf-mode .res-skills { gap: 5px !important; }
-                body.pdf-mode .res-tag { margin: 2px !important; display: inline-block !important; }
+                body.pdf-mode .a4-page * { 
+                    line-height: 1.4 !important; 
+                    letter-spacing: normal !important;
+                    box-sizing: border-box !important;
+                    display: block !important; /* Killer Feature: Force Block Layout */
+                }
+                /* Restore Inline/Inline-Block for Text Elements */
+                body.pdf-mode span, body.pdf-mode strong, body.pdf-mode b, body.pdf-mode i, body.pdf-mode em, body.pdf-mode a, body.pdf-mode img, body.pdf-mode .res-tag { 
+                    display: inline-block !important; 
+                }
+                
+                /* Layout Containers - Use Floats instead of Flex/Grid */
+                body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }
+                
+                body.pdf-mode .res-contact > div { margin-bottom: 5px !important; }
+                body.pdf-mode .res-skills { gap: 0 !important; }
+                body.pdf-mode .res-tag { margin: 2px !important; }
             `;
 
-            // Theme Specific Fixes (Convert Grid/Flex to Floats for html2canvas)
+            // Theme Specific Fixes (Override the Global Block Force)
             if (theme === 'nova') {
                 pdfCss += `
-                    body.pdf-mode .v-sidebar { float: left !important; width: 33% !important; display: block !important; margin: 0 !important; }
-                    body.pdf-mode .v-main { float: right !important; width: 63% !important; display: block !important; margin: 0 !important; }
+                    body.pdf-mode .v-sidebar { float: left !important; width: 32% !important; min-height: 1000px; }
+                    body.pdf-mode .v-main { float: right !important; width: 64% !important; }
                 `;
             } else if (theme === 'orbit') {
                 pdfCss += `
-                    body.pdf-mode .e-sidebar { float: left !important; width: 30% !important; display: block !important; margin: 0 !important; }
-                    body.pdf-mode .e-main { float: right !important; width: 65% !important; display: block !important; margin: 0 !important; }
+                    body.pdf-mode .e-sidebar { float: left !important; width: 30% !important; min-height: 1000px; }
+                    body.pdf-mode .e-main { float: right !important; width: 65% !important; }
                 `;
             } else if (theme === 'bloom') {
                 pdfCss += `
-                    body.pdf-mode .a-container { display: block !important; }
-                    body.pdf-mode .a-left { float: left !important; width: 35% !important; display: block !important; }
-                    body.pdf-mode .a-right { float: right !important; width: 60% !important; display: block !important; }
+                    body.pdf-mode .a-left { float: left !important; width: 35% !important; min-height: 1000px; }
+                    body.pdf-mode .a-right { float: right !important; width: 60% !important; }
                 `;
             } else if (theme === 'wave') {
                 pdfCss += `
-                   body.pdf-mode .s-left { float: left !important; width: 32% !important; display: block !important; }
-                   body.pdf-mode .s-right { float: right !important; width: 64% !important; display: block !important; }
+                   body.pdf-mode .s-left { float: left !important; width: 32% !important; min-height: 1000px; }
+                   body.pdf-mode .s-right { float: right !important; width: 64% !important; }
                 `;
             } else if (theme === 'bold') {
                 pdfCss += `
-                   body.pdf-mode .k-left { float: left !important; width: 35% !important; display: block !important; }
-                   body.pdf-mode .k-right { float: right !important; width: 60% !important; display: block !important; }
+                   body.pdf-mode .k-left { float: left !important; width: 35% !important; min-height: 1000px; }
+                   body.pdf-mode .k-right { float: right !important; width: 60% !important; }
                 `;
             } else if (theme === 'prime') {
                 pdfCss += `
-                    body.pdf-mode .o-grid { display: block !important; }
-                    body.pdf-mode .o-box { display: block !important; width: 100% !important; margin-bottom: 20px !important; }
+                    body.pdf-mode .o-box { width: 100% !important; margin-bottom: 20px !important; }
                 `;
             } else if (theme === 'leftside') {
                 pdfCss += `
-                    body.pdf-mode .res-left { float: left !important; width: 30% !important; display: block !important; }
-                    body.pdf-mode .res-right { float: right !important; width: 66% !important; display: block !important; }
+                    body.pdf-mode .res-left { float: left !important; width: 30% !important; min-height: 1000px; }
+                    body.pdf-mode .res-right { float: right !important; width: 66% !important; }
                 `;
             } else {
-                // Standard Layouts (Linearize bottom grid)
-                pdfCss += `
-                    body.pdf-mode div[style*="display: grid"] { display: block !important; }
-                    body.pdf-mode div[style*="grid-template-columns"] { display: block !important; }
-                 `;
+                // Standard (No Sidebar) - Ensure correct widths
             }
-
-            // Clearfix
-            pdfCss += `body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }`;
 
             let pdfStyle = document.createElement('style');
             pdfStyle.id = 'res-pdf-fix';
@@ -403,7 +406,7 @@ class ResumeBuilderTool extends BaseTool {
             document.head.appendChild(pdfStyle);
 
             // Wait for layout reflow
-            await new Promise(r => setTimeout(r, 200));
+            await new Promise(r => setTimeout(r, 400));
 
             html2canvas(document.querySelector('.a4-page'), {
                 scale: 2,
