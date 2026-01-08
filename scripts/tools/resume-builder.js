@@ -346,6 +346,9 @@ class ResumeBuilderTool extends BaseTool {
                     box-sizing: border-box !important; 
                     -webkit-font-smoothing: antialiased;
                     line-height: 1.5 !important;
+                    text-shadow: none !important;
+                    box-shadow: none !important;
+                    filter: none !important;
                 }
                 body.pdf-mode .a4-page { overflow: visible !important; }
                 
