@@ -316,32 +316,31 @@ class PhotoEditorTool extends BaseTool {
 
         this.ctx.save();
 
-        // Apply Filters
+        // Apply Filters (blur will be handled by CSS filter on canvas context)
         this.ctx.filter = `brightness(${b('bright')}%) contrast(${b('contrast')}%) saturate(${b('saturate')}%) blur(${b('blur')}px) sepia(${b('sepia')}%) grayscale(${b('gray')}%)`;
 
-        // Clear and center
+        // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Apply transformations (rotation, flip)
         this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
         this.ctx.rotate((this.currentRotation * Math.PI) / 180);
         this.ctx.scale(this.flipH, this.flipV);
 
-        // Fix blur edge bleeding: Scale up slightly based on blur amount
-        const blurAmount = parseInt(b('blur'));
-        if (blurAmount > 0) {
-            // Increase scale factor to better hide fading edges.
-            // 0.03 coefficient means 10px blur -> 3% zoom.
-            const scaleFactor = 1 + (blurAmount * 0.04);
-            this.ctx.scale(scaleFactor, scaleFactor);
-        }
-
-        // Draw image centered (Always use original dimensions for offset)
-        this.ctx.drawImage(this.originalImage, -this.originalImage.width / 2, -this.originalImage.height / 2);
+        // Draw image centered at original size - no scaling
+        this.ctx.drawImage(
+            this.originalImage,
+            -this.originalImage.width / 2,
+            -this.originalImage.height / 2,
+            this.originalImage.width,
+            this.originalImage.height
+        );
 
         this.ctx.restore();
 
         // Layer Text
         if (this.textState.text) {
-            this.ctx.save(); // Save state for text
+            this.ctx.save();
             this.ctx.filter = 'none';
             this.ctx.font = `bold ${this.textState.size}px Inter, Arial`;
             this.ctx.fillStyle = this.textState.color;
@@ -349,11 +348,6 @@ class PhotoEditorTool extends BaseTool {
             this.ctx.textBaseline = 'middle';
             this.ctx.shadowColor = 'rgba(0,0,0,0.5)';
             this.ctx.shadowBlur = 10;
-
-            // Text position is relative to canvas (0,0 is top-left)
-            // No rotation applied to text layer itself in this simple implementation
-            // But if users want text to rotate WITH image, it needs complex matrix math.
-            // For now, we keep text on top of the final canvas view.
 
             this.ctx.fillText(this.textState.text, this.textState.x, this.textState.y);
 
