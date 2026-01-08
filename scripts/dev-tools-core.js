@@ -663,9 +663,14 @@
                             .res-name { font-weight: 800; color: #1e293b; font-size: 2.8rem; letter-spacing: -1px; } 
                             .res-title { color: ${c}; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; } 
                             .res-sec-title { color: #0f172a; border-bottom: 2px solid ${c}; font-weight: 800; padding-bottom: 5px; }
-                            .res-item-head { margin-bottom: 4px; }
-                            .res-role { color: ${c}; font-weight: 700; }
-                            .res-tag { background: #eff6ff; color: ${c}; border: 1px solid ${c}40; border-radius: 6px; }`;
+                            .res-exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+                            .res-item { background: white; padding: 10px; border-radius: 6px; border-left: 3px solid ${c}; }
+                            .res-item-head { margin-bottom: 3px; display: flex; justify-content: space-between; align-items: baseline; }
+                            .res-role { color: ${c}; font-weight: 700; font-size: 0.85rem; }
+                            .res-comp { font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 3px; }
+                            .res-date { font-size: 0.7rem; color: #94a3b8; }
+                            .res-desc { font-size: 0.7rem; color: #475569; line-height: 1.3; margin-top: 4px; }
+                            .res-tag { background: #eff6ff; color: ${c}; border: 1px solid ${c}40; border-radius: 6px; font-size: 0.75rem; padding: 4px 8px; }`;
                 }
 
                 // --- HTML STRUCTURE ---
