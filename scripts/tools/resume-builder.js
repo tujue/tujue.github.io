@@ -344,32 +344,52 @@ class ResumeBuilderTool extends BaseTool {
             let pdfCss = `
                 body.pdf-mode .a4-page * { 
                     box-sizing: border-box !important; 
-                    letter-spacing: normal !important;
                     -webkit-font-smoothing: antialiased;
+                    line-height: 1.5 !important;
                 }
                 body.pdf-mode .a4-page { overflow: visible !important; }
                 
-                /* Layout Containers */
-                body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }
+                /* GENERAL TEXT STACKING (Safety First) */
+                body.pdf-mode .res-header, body.pdf-mode .e-header, body.pdf-mode .s-name-box {
+                    display: block !important;
+                    height: auto !important;
+                }
+                body.pdf-mode .res-name, body.pdf-mode .res-title, body.pdf-mode .e-name, body.pdf-mode .e-title {
+                    display: block !important;
+                    width: 100% !important;
+                    margin-bottom: 5px !important;
+                }
+                body.pdf-mode .res-contact, body.pdf-mode .e-contact-item {
+                    display: block !important;
+                    margin-bottom: 5px !important;
+                }
                 
-                body.pdf-mode .res-contact > div { margin-bottom: 5px !important; }
-                body.pdf-mode .res-skills { gap: 0 !important; }
-                body.pdf-mode .res-tag { margin: 2px 4px 2px 0 !important; display: inline-block !important; }
-                
-                /* Fix Flex Space-Between sections (Experience Heads) */
+                /* ITEM HEADERS (Experience/Education) - STACK THEM */
                 body.pdf-mode .res-item-head, body.pdf-mode .e-item-head, body.pdf-mode .v-item-top {
                     display: block !important;
-                    overflow: hidden;
+                    height: auto !important;
+                    margin-bottom: 5px !important;
                 }
-                body.pdf-mode .res-item-head > *:first-child, body.pdf-mode .e-item-head > *:first-child, body.pdf-mode .v-item-top > *:first-child {
-                    float: left !important;
+                body.pdf-mode .res-item-head > *, body.pdf-mode .e-item-head > *, body.pdf-mode .v-item-top > * {
+                    float: none !important;
+                    display: block !important;
+                    text-align: left !important;
+                    width: 100% !important;
                 }
-                body.pdf-mode .res-item-head > *:last-child, body.pdf-mode .e-item-head > *:last-child, body.pdf-mode .v-item-top > *:last-child {
-                    float: right !important; text-align: right !important;
+                
+                /* SKILLS & TAGS */
+                body.pdf-mode .res-skills { gap: 8px !important; display: flex !important; flex-wrap: wrap !important; }
+                body.pdf-mode .res-tag, body.pdf-mode .v-tag, body.pdf-mode .e-tag { 
+                    margin: 4px !important; 
+                    display: inline-block !important;
+                    white-space: nowrap !important;
                 }
+
+                /* Layout Containers */
+                body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }
             `;
 
-            // Theme Specific Fixes (Override the Global Block Force)
+            // Theme Specific Fixes (LAYOUT COLUMNS ONLY)
             if (theme === 'nova') {
                 pdfCss += `
                     body.pdf-mode .v-sidebar { float: left !important; width: 32% !important; min-height: 1000px; }
@@ -419,7 +439,7 @@ class ResumeBuilderTool extends BaseTool {
             document.head.appendChild(pdfStyle);
 
             // Wait for layout reflow
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 600));
 
             html2canvas(document.querySelector('.a4-page'), {
                 scale: 2,
