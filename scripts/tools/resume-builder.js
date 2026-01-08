@@ -599,6 +599,22 @@ class ResumeBuilderTool extends BaseTool {
             `;
             c.appendChild(div);
         }
+        else if (this.currentTab === 'languages') {
+            div.innerHTML = `
+                ${renderStickyNav()}
+                <div class="res-scroll-container">
+                    <div class="res-card" style="max-width: 700px;">
+                        <h3 style="margin-bottom: 5px; font-size: 1.2rem;">${isTr ? 'Konuşulan Diller' : 'Languages'}</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
+                            ${isTr ? 'Bildiğiniz dilleri virgül ile ayırarak yazın.' : 'Write languages separated by commas.'}
+                        </p>
+                        <textarea oninput="window._upField('languages', this.value)" class="form-input" style="height: 180px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="${isTr ? 'Örn: Türkçe, İngilizce, Almanca...' : 'Ex: English, Spanish, German...'}">${d.languages || ''}</textarea>
+                    </div>
+                    <div style="height: 120px; flex-shrink: 0;"></div>
+                </div>
+            `;
+            c.appendChild(div);
+        }
         else if (this.currentTab === 'design') {
             const themes = [
                 { id: 'modern', name: 'Modern' },
@@ -741,7 +757,34 @@ class ResumeBuilderTool extends BaseTool {
                 if (!style) { style = document.createElement('style'); style.id = 'res-style-inj'; document.head.appendChild(style); }
                 style.textContent = res.css;
 
-                page.innerHTML = res.html;
+                // Auto Fit Mechanism
+                const rawHtml = res.html;
+                page.innerHTML = `<div class="res-scaler" style="transform-origin: top left; width: 100%;">${rawHtml}</div>`;
+
+                setTimeout(() => {
+                    const scaler = page.querySelector('.res-scaler');
+                    if (scaler) {
+                        const pStyle = window.getComputedStyle(page);
+                        const pT = parseFloat(pStyle.paddingTop) || 0;
+                        const pB = parseFloat(pStyle.paddingBottom) || 0;
+                        // Conservative height limit (A4 - padding - buffer)
+                        const availH = 1122 - pT - pB - 5;
+
+                        // Reset to measure natural height
+                        scaler.style.transform = 'none';
+                        scaler.style.width = '100%';
+
+                        if (scaler.scrollHeight > availH) {
+                            // Calculate necessary scale
+                            const scale = availH / scaler.scrollHeight;
+                            // Apply scale and compensate width to reflow text
+                            scaler.style.transform = `scale(${scale})`;
+                            scaler.style.width = `calc(100% / ${scale})`;
+                        }
+                    }
+                }, 10);
+
+                this.fitPreview();
             } else {
                 document.getElementById('res-a4-page').innerHTML = 'Core module update required.';
             }
@@ -769,28 +812,6 @@ class ResumeBuilderTool extends BaseTool {
             </div >
                 `).join('');
 
-        window._upItem = (t, idx, key, val) => {
-            const l = t === 'exp' ? this.data.experience : this.data.education;
-            l[idx][key] = val;
-            this._save();
-        };
-        window._addItem = (t) => {
-            if (t === 'exp') this.data.experience.push({ role: '', comp: '', date: '', desc: '' });
-            else this.data.education.push({ deg: '', sch: '', date: '' });
-            this._save();
-            this.renderTabContent();
-        };
-        window._delItem = (t, idx) => {
-            const l = t === 'exp' ? this.data.experience : this.data.education;
-            l.splice(idx, 1);
-            this._save();
-            this.renderTabContent();
-        };
-        window._setColor = (val) => {
-            this.data.color = val;
-            this._save();
-            if (this.currentTab === 'preview') this.renderTabContent();
-        };
     }
 
     onClose() {

@@ -310,12 +310,12 @@
                     ${fontImport}
                     .a4-page { font-family: ${bF}; color: #2d3748; line-height: 1.6; padding: 40px; background: white; box-sizing: border-box; font-size: 14px; }
                     .res-photo { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; margin-bottom: 20px; border: 3px solid ${color}; box-shadow: 0 4px 10px ${color}20; }
-                    .res-header { margin-bottom: 35px; }
-                    .res-name { font-size: 2.2rem; font-weight: 700; color: ${color}; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.02em; }
-                    .res-title { font-size: 1.05rem; color: ${color}80; margin-bottom: 16px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
-                    .res-contact { display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.9rem; color: #4a5568; align-items: center; }
-                    .res-section { margin-bottom: 18px; page-break-inside: avoid; }
-                    .res-sec-title { font-size: 0.75rem; font-weight: 700; color: ${color}; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1.5px solid ${color}60; padding-bottom: 3px; letter-spacing: 0.1em; }
+                    .res-header { margin-bottom: 25px; }
+                    .res-name { font-size: 1.8rem; font-weight: 700; color: ${color}; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.02em; }
+                    .res-title { font-size: 0.95rem; color: ${color}80; margin-bottom: 15px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+                    .res-contact { display: flex; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; color: #4a5568; align-items: center; }
+                    .res-section { margin-bottom: 16px; page-break-inside: avoid; }
+                    .res-sec-title { font-size: 0.7rem; font-weight: 700; color: ${color}; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1.5px solid ${color}60; padding-bottom: 2px; letter-spacing: 0.05em; }
                     .res-item { margin-bottom: 14px; }
                     .res-item-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; margin-bottom: 4px; font-size: 1.05rem; }
                     .res-role { color: ${color}; }
@@ -352,14 +352,13 @@
                            .res-sec-title { background: ${color}; color: white; padding: 4px 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; } 
                            .res-item { border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 10px; } 
                            .res-role { color: ${color}; font-weight: 700; }
-                           .res-tag { background: ${color}10; color: #2d3748; border: 1px solid ${color}30; }
+                           .res-tag { background: #f7fafc !important; color: #2d3748 !important; border: 1px solid #e2e8f0 !important; }
                            .res-skills { color: #2d3748; }`;
                 }
                 else if (theme === 'cyber') {
                     const c = color || '#06b6d4'; // Cyan
                     css += `
-                        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-                        .a4-page { background: #080808; color: #c0c0c0; font-family: 'Share Tech Mono', 'Courier New', monospace; font-size: 0.85rem; line-height: 1.5; }
+                        .a4-page { background: #080808; color: #c0c0c0; font-family: ${bF}; font-size: 0.85rem; line-height: 1.5; }
                         .res-header { border-bottom: 1px solid ${c}40; padding-bottom: 20px; margin-bottom: 25px; position: relative; text-align: left; }
                         
                         .res-name { color: #fff; font-size: 3rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px ${c}; line-height: 1; }
@@ -390,14 +389,14 @@
                         .res-comp { color: #888; font-size: 0.9rem; margin-bottom: 4px; font-style: italic; }
                         .res-desc { color: #b0b0b0; font-size: 0.85rem; }
 
-                        .res-skills .res-tag { 
-                            background: transparent; 
-                            color: #c0c0c0; 
-                            border: 1px solid #444; 
+                        .res-skills .res-tag, .res-tag { 
+                            background: #f7fafc !important; 
+                            color: #2d3748 !important; 
+                            border: 1px solid #e2e8f0 !important; 
                             padding: 3px 8px; 
-                            font-size: 0.8rem;
+                            font-size: 0.75rem;
                             position: relative;
-                            border-radius: 0;
+                            border-radius: 6px !important;
                         }
                         .res-skills .res-tag::before { content: ""; position: absolute; top: -1px; left: -1px; width: 3px; height: 3px; background: #666; }
                         .res-photo { border: 2px solid ${c}; box-shadow: 0 0 15px ${c}40; }
@@ -405,7 +404,7 @@
                 }
                 else if (theme === 'brutal') {
                     if (!d.color || d.color === '#2d3748') color = '#ef4444'; // Red default
-                    f = fonts.mono;
+
                     css += `.a4-page { background: #fff; border: 10px solid ${color}; font-size: 0.8rem; } 
                             .res-header { border-bottom: 4px solid ${color}; padding-bottom: 20px; margin-bottom: 20px; } 
                             .res-name { text-transform: uppercase; font-weight: 900; font-size: 2.2rem; background: white; color: ${color}; display: inline-block; padding: 5px 15px; border: 4px solid ${color}; box-shadow: 6px 6px 0 ${color}40; } 
@@ -414,7 +413,7 @@
                             .res-sec-title { background: ${color}; color: white; display: inline-block; padding: 5px 10px; font-weight: bold; text-transform: uppercase; border: 2px solid ${color}; margin-bottom: 10px; font-size: 0.9rem; box-shadow: 4px 4px 0 ${color}40; } 
                             .res-role { color: ${color}; font-weight: 900; }
                             .res-item { border-left: 3px solid ${color}; padding-left: 10px; }
-                            .res-tag { border: 2px solid #333; background: transparent; color: #1a1a1a; border-radius: 0; font-weight: bold; font-size: 0.75rem; }`
+                            .res-tag { background: #f7fafc !important; color: #2d3748 !important; border: 1px solid #e2e8f0 !important; border-radius: 6px !important; font-weight: 600; }`
                         ;
                 }
                 else if (theme === 'nova') {
@@ -540,7 +539,7 @@
                         .a-date { font-size: 0.7rem; color: #aab7b8; margin-bottom: 5px; display:block; }
                         .a-bullet-item { display: flex; gap: 8px; font-size: 0.75rem; color: #555; margin-bottom: 3px; line-height: 1.4; }
                         .a-bullet { min-width: 4px; height: 4px; background: ${color}; border-radius: 50%; margin-top: 7px; }
-                        .a-cert-badge { display: inline-block; background: ${color}15; border: 1px solid ${color}40; border-radius: 4px; padding: 4px 10px; margin: 0 6px 6px 0; font-size: 0.7rem; color: ${color}; font-weight: 600; }
+                        .a-cert-badge { display: inline-block; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px 10px; margin: 0 6px 6px 0; font-size: 0.7rem; color: #2d3748; font-weight: 600; }
                     `;
                 }
                 else if (theme === 'wave') {
@@ -661,7 +660,7 @@
                              .res-item { display: inline-block; width: 48%; vertical-align: top; margin-bottom: 12px; margin-right: 2%; }
                              .res-item:nth-child(2n) { margin-right: 0; }
                              .res-role { color: ${color}; font-weight: 700; }
-                             .res-tag { background: #f7fafc; color: #2d3748; border: 1px solid #e2e8f0; }
+                             .res-tag { background: #f7fafc !important; color: #2d3748 !important; border: 1px solid #e2e8f0 !important; }
                              .res-skills { color: #2d3748; }
                              @media print { .res-item { page-break-inside: avoid; } } `;
                 }
@@ -676,7 +675,7 @@
                              .res-sec-title { border: none; border-bottom: 2px solid ${color}30; font-size: 1.2rem; color: ${color}; }
                              .res-item-head { align-items: center; }
                              .res-role { font-weight: 700; font-size: 1.1rem; color: ${color}; } 
-                             .res-tag { background: #f7fafc; color: #2d3748; border: 1px solid #e2e8f0; font-weight: 600; }`;
+                             .res-tag { background: #f7fafc !important; color: #2d3748 !important; border: 1px solid #e2e8f0 !important; font-weight: 600; }`;
                 }
                 else if (theme === 'minimal') {
                     css += `.a4-page { padding: 30px 40px; } 
@@ -686,10 +685,10 @@
                            .res-sec-title { border: none; letter-spacing: 0.2em; font-size: 0.85rem; color: ${color}; margin-bottom: 20px; text-align: right; margin-right: -20px; padding-right: 20px; border-right: 3px solid ${color}; } 
                            .res-item-head { flex-direction: column; gap: 2px; } 
                            .res-role { color: ${color}; font-weight: 600; }
-                           .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; }                            .res-tag { background: #f7fafc; border: 1px solid #e2e8f0; color: #2d3748; font-weight: 500; } `;
+                           .res-date { font-style: italic; margin-left: 0; color: #cbd5e0; }                            .res-tag { background: #f7fafc !important; border: 1px solid #e2e8f0 !important; color: #2d3748 !important; font-weight: 500; } `;
                 }
                 else if (theme === 'skyline') {
-                    css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; background: #f7fafc; color: #2d3748; border: 1px solid #e2e8f0; }`;
+                    css += `.res-name { font-size: 3.5rem; text-transform: uppercase; color: #edf2f7; position: absolute; top: 20px; right: 30px; z-index: 0; pointer-events: none; font-weight: 900; } .res-header { position: relative; z-index: 1; padding-top: 30px; margin-bottom: 20px; } .res-sec-title { border-top: 3px solid ${color}; border-bottom: none; padding-top: 10px; display: flex; justify-content: space-between; border-color: ${color} 40; color: #2d3748; margin-bottom: 12px; } .res-sec-title::after { content: ''; width: 40px; height: 5px; background: ${color}; } .res-skills .res-tag { font-size: 0.75rem; padding: 2px 6px; background: #f7fafc !important; color: #2d3748 !important; border: 1px solid #e2e8f0 !important; }`;
                 }
                 else if (theme === 'leftside') {
                     css += `.a4-page { display: grid; grid-template-columns: 280px 1fr; padding: 0; min-height: 1123px; } 
@@ -718,7 +717,7 @@
                             .res-comp { font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 3px; }
                             .res-date { font-size: 0.7rem; color: #94a3b8; }
                             .res-desc { font-size: 0.7rem; color: #475569; line-height: 1.3; margin-top: 4px; }
-                            .res-tag { background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.75rem; padding: 4px 8px; }`;
+                            .res-tag { background: #f7fafc !important; color: #2d3748 !important; border: 1px solid #e2e8f0 !important; border-radius: 6px; font-size: 0.75rem; padding: 4px 8px; }`;
                 }
 
                 // --- GLOBAL FONT OVERRIDES ---
@@ -1287,18 +1286,6 @@
 
             <div class="o-box">
                 <div class="o-box-head">
-                    <div class="o-icon-box">💼</div>
-                    <div class="o-box-title">${isTr ? 'Deneyim' : 'Experience'}</div>
-                </div>
-                <div class="o-box-content">
-                    <ul class="o-list">
-                        ${d.experience.map(e => `<li><strong>${e.role}</strong> - ${e.comp} (${e.date})<br><span style="opacity:0.8; font-size:0.75rem;">${e.desc}</span></li>`).join('')}
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="o-box">
-                <div class="o-box-head">
                     <div class="o-icon-box">🎓</div>
                     <div class="o-box-title">${isTr ? 'Eğitim' : 'Education'}</div>
                 </div>
@@ -1309,6 +1296,18 @@
                     <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
                     <div style="font-weight:700; color:#555; margin-bottom:5px;">${isTr ? 'Yetenekler:' : 'Skills:'}</div>
                     <div>${(d.skills || '').split(',').map(s => `<span style="background:#f0f0f0; padding:2px 6px; border-radius:4px; margin-right:4px; font-size:0.7rem; display:inline-block; margin-bottom:4px;">${s.trim()}</span>`).join('')}</div>
+                </div>
+            </div>
+
+            <div class="o-box">
+                <div class="o-box-head">
+                    <div class="o-icon-box">💼</div>
+                    <div class="o-box-title">${isTr ? 'Deneyim' : 'Experience'}</div>
+                </div>
+                <div class="o-box-content">
+                    <ul class="o-list">
+                        ${d.experience.map(e => `<li><strong>${e.role}</strong> - ${e.comp} (${e.date})<br><span style="opacity:0.8; font-size:0.75rem;">${e.desc}</span></li>`).join('')}
+                    </ul>
                 </div>
             </div>
             
