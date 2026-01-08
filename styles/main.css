@@ -2284,43 +2284,40 @@ select option {
     box-shadow: 0 0 0 3px var(--accent-purple);
 }
 
-/* TULPAR Resume Builder - Specific Full Width Override */
-@media (min-width: 768px) {
-    .workspace-content.full-width-workspace {
-        max-width: 100vw !important;
-        max-height: 100vh !important;
-        /* Force removal of 90vh limit */
-        width: 100vw !important;
-        height: 100vh !important;
-        /* Full viewport height */
-        margin: 0 !important;
-        top: 0 !important;
-        left: 0 !important;
-        border-radius: 0 !important;
-        position: fixed !important;
-        z-index: 2000 !important;
-        /* Force on top of everything including header */
-        padding: 0 !important;
-        /* Remove internal padding to allow full stretch */
-    }
+/* ============================================================
+   RESUME BUILDER - ULTIMATE FULL SCREEN OVERRIDE
+   ============================================================ */
 
-    /* Compact Header for Resume Builder */
-    .workspace-content.full-width-workspace .workspace-header {
-        margin-bottom: 5px !important;
-        padding-bottom: 5px !important;
-    }
-
-    /* Smaller Title for more space */
-    .workspace-content.full-width-workspace .workspace-title {
-        font-size: 1.5rem !important;
-    }
-}
-
-/* Force Hide Header for Resume Builder via Data Attribute (Fix Cache/JS Issues) */
+/* 1. Hide the global workspace header */
 [data-tool="resume-builder"] .workspace-header {
     display: none !important;
 }
 
-[data-tool="resume-builder"] .workspace-content {
+/* 2. Force the workspace container to have no padding/margin */
+[data-tool="resume-builder"].workspace {
     padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* 3. Force the content area to stretch to all edges */
+[data-tool="resume-builder"] .workspace-content {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+    /* Eliminate outer scrollbar */
+    z-index: 2000 !important;
+}
+
+/* Ensure body doesn't scroll behind */
+body.modal-open[data-tool="resume-builder"] {
+    position: fixed;
+    width: 100%;
 }

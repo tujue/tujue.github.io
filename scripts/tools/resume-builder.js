@@ -53,7 +53,7 @@ class ResumeBuilderTool extends BaseTool {
         ];
 
         return `
-        <div class="tool-content resume-wizard" style="width: 100%; height: 100vh; background: var(--bg-primary); display: flex; flex-direction: column;">
+        <div class="tool-content resume-wizard" style="width: 100%; height: 100%; background: var(--bg-primary); display: flex; flex-direction: column;">
             
             <!-- Wizard Header -->
             <div class="res-wizard-nav" style="justify-content: space-between; padding-right: 10px;">
