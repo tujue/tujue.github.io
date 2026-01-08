@@ -15,7 +15,8 @@ class DiffCheckerTool extends BaseTool {
             identical: 'İçerikler tamamen aynı ✨',
             placeholder1: 'Eski metni buraya yapıştırın...',
             placeholder2: 'Yeni metni buraya yapıştırın...',
-            waiting: 'Sonuçlar burada görünecek...'
+            waiting: 'Sonuçlar burada görünecek...',
+            noDiffLib: 'Diff kütüphanesi yüklenemedi, basit karşılaştırma yapılıyor.'
         } : {
             original: 'Original Text',
             modified: 'Modified Text',
@@ -25,7 +26,8 @@ class DiffCheckerTool extends BaseTool {
             identical: 'Contents are identical ✨',
             placeholder1: 'Paste original text here...',
             placeholder2: 'Paste new text here...',
-            waiting: 'Results will appear here...'
+            waiting: 'Results will appear here...',
+            noDiffLib: 'Diff library not found, running simple comparison.'
         };
 
         return `
@@ -48,6 +50,7 @@ class DiffCheckerTool extends BaseTool {
 
             <div class="card" style="padding: 1.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px;">
                 <h4 style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">${txt.result}</h4>
+                <div id="diff-status" style="margin-bottom: 10px; font-size: 0.9rem; color: var(--warning); display: none;"></div>
                 <div id="diff-res-area" style="min-height: 200px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.9rem; overflow-x: auto;">
                     <div style="padding: 2rem; text-align: center; opacity: 0.3;">${txt.waiting}</div>
                 </div>
@@ -60,17 +63,24 @@ class DiffCheckerTool extends BaseTool {
         const in1 = document.getElementById('diff-in-1');
         const in2 = document.getElementById('diff-in-2');
         const out = document.getElementById('diff-res-area');
+        const status = document.getElementById('diff-status');
 
-        // Re-construct txt object inside localized scope or access it somehow?
-        // Actually, easiest is to check isTr again inside here or just use static check.
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const txtWaiting = isTr ? 'Sonuçlar burada görünecek...' : 'Results will appear here...';
         const txtIdentical = isTr ? 'İçerikler tamamen aynı ✨' : 'Contents are identical ✨';
 
-
         document.getElementById('diff-btn-run').onclick = () => {
             try {
-                const diffs = window.DevTools.diffTools.compare(in1.value, in2.value);
+                // Try using window.Diff (jsdiff) if available, otherwise use simple fallback
+                let diffs = [];
+                if (window.Diff) {
+                    diffs = window.Diff.diffLines(in1.value, in2.value);
+                } else {
+                    status.textContent = isTr ? 'Diff kütüphanesi eksik, basit karşılaştırma.' : 'Diff lib missing, using simple compare.';
+                    status.style.display = 'block';
+                    diffs = this.simpleDiff(in1.value, in2.value);
+                }
+
                 let identical = true;
                 let html = '<div style="padding: 1rem;">';
 
@@ -83,9 +93,9 @@ class DiffCheckerTool extends BaseTool {
                     const prefix = part.added ? '+' : part.removed ? '-' : ' ';
                     if (part.added || part.removed) identical = false;
 
-                    const lines = part.value.split('\n');
+                    const lines = part.value.replace(/\n$/, '').split('\n'); // Remove trailing newline
                     lines.forEach((line, idx) => {
-                        if (idx === lines.length - 1 && line === '') return;
+                        // if (idx === lines.length - 1 && line === '') return; // Skip empty last lines from split
 
                         let l1 = '', l2 = '';
                         if (part.removed) { l1 = lineNum1++; }
@@ -97,25 +107,51 @@ class DiffCheckerTool extends BaseTool {
                                 <span style="text-align: right; opacity: 0.3; user-select: none;">${l1}</span>
                                 <span style="text-align: right; opacity: 0.3; user-select: none;">${l2}</span>
                                 <span style="text-align: center; opacity: 0.5; user-select: none; color: ${border !== 'transparent' ? border : 'inherit'}; font-weight: 700;">${prefix}</span>
-                                <span style="white-space: pre-wrap;">${line || ' '}</span>
+                                <span style="white-space: pre-wrap; word-break: break-all;">${line || ' '}</span>
                             </div>`;
                     });
                 });
 
                 html += '</div>';
                 if (identical && in1.value) {
-                    html = `<div style="padding: 3rem; text-align: center; color: var(--success);">${txtIdentical}</div>`;
+                    html = `<div style="padding: 3rem; text-align: center; color: var(--success); font-size: 1.2rem;">${txtIdentical}</div>`;
                 }
                 out.innerHTML = html;
             } catch (e) {
                 this.showNotification(e.message, 'error');
+                console.error(e);
             }
         };
 
         document.getElementById('diff-btn-clear').onclick = () => {
             in1.value = ''; in2.value = '';
+            status.style.display = 'none';
             out.innerHTML = `<div style="padding: 2rem; text-align: center; opacity: 0.3;">${txtWaiting}</div>`;
         };
+    }
+
+    // Fallback simple line diff (not LCS, just equality)
+    simpleDiff(text1, text2) {
+        const lines1 = text1.split('\n');
+        const lines2 = text2.split('\n');
+        const diffs = [];
+
+        // Very naive: checks line by line. If different, shows removed then added.
+        // This is NOT true diff but better than nothing.
+        const max = Math.max(lines1.length, lines2.length);
+
+        for (let i = 0; i < max; i++) {
+            const l1 = lines1[i];
+            const l2 = lines2[i];
+
+            if (l1 === l2) {
+                diffs.push({ value: l1 + '\n', count: 1 });
+            } else {
+                if (l1 !== undefined) diffs.push({ value: l1 + '\n', removed: true, count: 1 });
+                if (l2 !== undefined) diffs.push({ value: l2 + '\n', added: true, count: 1 });
+            }
+        }
+        return diffs;
     }
 }
 

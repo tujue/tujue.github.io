@@ -93,22 +93,22 @@ class IPLookupTool extends BaseTool {
         const displayIP = (data) => {
             const fields = {
                 'ip-ip': data.ip,
-                'ip-country': `${data.country} (${data.countryCode})`,
+                'ip-country': `${data.country_name || data.country} (${data.country_code || data.countryCode})`,
                 'ip-city': data.city,
                 'ip-region': data.region,
                 'ip-timezone': data.timezone,
-                'ip-isp': data.isp || data.org,
+                'ip-isp': data.org || data.isp,
                 'ip-asn': data.asn,
-                'ip-coordinates': `${data.latitude.toFixed(4)}, ${data.longitude.toFixed(4)}`
+                'ip-coordinates': `${(data.latitude || 0).toFixed(4)}, ${(data.longitude || 0).toFixed(4)}`
             };
 
             Object.entries(fields).forEach(([id, val]) => {
                 const el = document.getElementById(id);
-                if (el) el.textContent = val;
+                if (el) el.textContent = val || '-';
             });
 
             if (data.latitude && data.longitude && mapIframe) {
-                mapIframe.src = window.DevTools.ipLookup.getMapEmbed(data.latitude, data.longitude);
+                mapIframe.src = this.getMapEmbed(data.latitude, data.longitude);
                 document.getElementById('ip-map-container').style.display = 'block';
             }
             resultsArea.style.display = 'block';
@@ -116,7 +116,7 @@ class IPLookupTool extends BaseTool {
 
         getMineBtn.onclick = async () => {
             updateStatus('📍 Detecting your IP...', 'info');
-            const result = await window.DevTools.ipLookup.getCurrentIP();
+            const result = await this.getCurrentIP();
             if (result.success) {
                 input.value = result.ip || (result.data ? result.data.ip : '');
                 input.disabled = false;
@@ -129,12 +129,12 @@ class IPLookupTool extends BaseTool {
 
         lookupBtn.onclick = async () => {
             const ip = input.value.trim();
-            if (!ip || !window.DevTools.ipLookup.validateIP(ip)) {
+            if (!ip || !this.validateIP(ip)) {
                 updateStatus('✗ Invalid IP format', 'error');
                 return;
             }
             updateStatus('🔍 Searching...', 'info');
-            const result = await window.DevTools.ipLookup.getIPInfo(ip);
+            const result = await this.getIPInfo(ip);
             if (result.success) {
                 displayIP(result.data);
                 updateStatus('✓ Success', 'success');
@@ -146,6 +146,53 @@ class IPLookupTool extends BaseTool {
                 lookupBtn.click();
             }
         };
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools)
+
+    validateIP(ip) {
+        if (!ip) return false;
+        // Simple IPv4 regex or IPv6 check
+        const ipv4 = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        return ipv4.test(ip) || ip.includes(':'); // Very basic
+    }
+
+    async getCurrentIP() {
+        try {
+            const resp = await fetch('https://ipapi.co/json/');
+            if (!resp.ok) throw new Error('API Error');
+            const data = await resp.json();
+            return {
+                success: true,
+                ip: data.ip,
+                data: data
+            };
+        } catch (e) {
+            return { success: false, message: 'Failed to detect IP. Adblocker might be blocking it.' };
+        }
+    }
+
+    async getIPInfo(ip) {
+        try {
+            const resp = await fetch(`https://ipapi.co/${ip}/json/`);
+            if (!resp.ok) throw new Error('API Error');
+            const data = await resp.json();
+            if (data.error) return { success: false, message: data.reason || 'IP Not Found' };
+            return {
+                success: true,
+                data: data
+            };
+        } catch (e) {
+            return { success: false, message: 'Failed to fetch IP info.' };
+        }
+    }
+
+    getMapEmbed(lat, lng) {
+        // Using OpenStreetMap Embed via iframe
+        // Bounding box calculation for zoom
+        const delta = 0.05;
+        const bbox = `${lng - delta},${lat - delta},${lng + delta},${lat + delta}`;
+        return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
     }
 }
 

@@ -158,7 +158,6 @@ class QRGeneratorTool extends BaseTool {
         const qrDownload = document.getElementById('qr-download');
         const generateBtn = document.getElementById('qr-generate-btn');
 
-        // Helper for localization inside callbacks
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const txtGenerating = isTr ? '⏳ Oluşturuluyor...' : '⏳ Generating...';
         const txtLibLoading = isTr ? '⚠️ QR kütüphanesi yükleniyor...' : '⚠️ QR library loading...';
@@ -179,10 +178,6 @@ class QRGeneratorTool extends BaseTool {
                 logoPreview.style.display = 'flex';
                 logoPreview.querySelector('img').src = e.target.result;
                 logoDrop.style.display = 'none';
-                // Auto-regenerate if QR exists
-                if (qrImage.style.display !== 'none') {
-                    generateQR();
-                }
             };
             reader.readAsDataURL(file);
         };
@@ -204,10 +199,6 @@ class QRGeneratorTool extends BaseTool {
             logoInput.value = '';
             logoPreview.style.display = 'none';
             logoDrop.style.display = 'block';
-            // Re-generate QR if one exists
-            if (qrImage.style.display !== 'none') {
-                generateQR();
-            }
         };
 
         const generateQR = async () => {
@@ -237,15 +228,13 @@ class QRGeneratorTool extends BaseTool {
                         qrPlaceholder.style.display = 'block';
                         qrImage.style.display = 'none';
                         qrDownload.style.display = 'none';
-                        qrPlaceholder.textContent = qrPlaceholder.getAttribute('data-original-text');
-                        qrPlaceholder.style.color = '#999';
                         return;
                     }
-                    result = await window.DevTools.qrGenerator.generate(txt, options);
+                    result = await this.generate(txt, options);
                 } else if (type === 'wifi') {
                     const ssid = document.getElementById('qr-wifi-ssid').value;
                     if (!ssid) throw new Error(txtErrorSSID);
-                    result = await window.DevTools.qrGenerator.generateWiFi(
+                    result = await this.generateWiFi(
                         ssid,
                         document.getElementById('qr-wifi-pass').value,
                         document.getElementById('qr-wifi-type').value,
@@ -253,7 +242,7 @@ class QRGeneratorTool extends BaseTool {
                         options
                     );
                 } else if (type === 'vcard') {
-                    result = await window.DevTools.qrGenerator.generateVCard({
+                    result = await this.generateVCard({
                         firstName: document.getElementById('qr-vcard-first').value,
                         lastName: document.getElementById('qr-vcard-last').value,
                         phone: document.getElementById('qr-vcard-phone').value,
@@ -280,15 +269,92 @@ class QRGeneratorTool extends BaseTool {
             }
         };
 
-        // Store original placeholder text
         qrPlaceholder.setAttribute('data-original-text', qrPlaceholder.textContent);
-
-        // Auto-generate removed as per user request to prevent premature generation on focus out or typing.
-        // Users must click the generation button.
-        const textInput = document.getElementById('qr-text');
-
-        // Manual generate button
         generateBtn.onclick = generateQR;
+    }
+
+    // INTERNAL LOGIC (Formerly in DevTools)
+
+    async generate(text, options = {}) {
+        return new Promise((resolve) => {
+            const qr = new window.QRious({
+                value: text,
+                size: options.size || 500,
+                level: 'H', // High error correction
+                foreground: options.foreground || '#000000',
+                background: options.background || '#ffffff'
+            });
+
+            const qrDataUrl = qr.toDataURL();
+
+            // If no logo, return early
+            if (!options.logo) {
+                resolve({ success: true, url: qrDataUrl });
+                return;
+            }
+
+            // Combine Logo
+            this._addLogoToQR(qrDataUrl, options.logo, resolve);
+        });
+    }
+
+    async generateWiFi(ssid, password, type, hidden, options) {
+        // WIFI:T:WPA;S:mynetwork;P:mypass;;
+        let wifiStr = `WIFI:S:${ssid};`;
+        if (type !== 'nopass') {
+            wifiStr += `T:${type};P:${password};`;
+        } else {
+            wifiStr += `T:nopass;`;
+        }
+        if (hidden) wifiStr += `H:true;`;
+        wifiStr += `;`;
+
+        return this.generate(wifiStr, options);
+    }
+
+    async generateVCard(info, options) {
+        const vcard = `BEGIN:VCARD
+VERSION:3.0
+N:${info.lastName};${info.firstName}
+FN:${info.firstName} ${info.lastName}
+TEL:${info.phone}
+EMAIL:${info.email}
+END:VCARD`;
+
+        return this.generate(vcard, options);
+    }
+
+    _addLogoToQR(qrDataUrl, logoFile, callback) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const qrImg = new Image();
+        const logoImg = new Image();
+
+        qrImg.onload = () => {
+            canvas.width = qrImg.width;
+            canvas.height = qrImg.height;
+            ctx.drawImage(qrImg, 0, 0);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                logoImg.onload = () => {
+                    // Logo size: 20% of QR
+                    const logoSize = canvas.width * 0.2;
+                    const logoX = (canvas.width - logoSize) / 2;
+                    const logoY = (canvas.height - logoSize) / 2;
+
+                    // Draw white background for logo
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(logoX - 5, logoY - 5, logoSize + 10, logoSize + 10);
+
+                    ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+                    callback({ success: true, url: canvas.toDataURL('image/png') });
+                };
+                logoImg.src = e.target.result;
+            };
+            reader.readAsDataURL(logoFile);
+        };
+        qrImg.src = qrDataUrl;
     }
 }
 
