@@ -2283,3 +2283,13 @@ select option {
     transform: translateY(-4px);
     box-shadow: 0 0 0 3px var(--accent-purple);
 }
+/* TULPAR Resume Builder - Specific Full Width Override */
+@media (min-width: 768px) {
+    .workspace-content.full-width-workspace {
+        max-width: 98vw !important;
+        width: 98vw !important;
+        height: 96vh !important;
+        margin: 2vh auto !important;
+        border-radius: 12px;
+    }
+}

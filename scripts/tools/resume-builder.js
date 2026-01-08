@@ -1,7 +1,12 @@
 /* TULPAR - Resume Builder Tool (Wizard UX) */
 class ResumeBuilderTool extends BaseTool {
-    constructor(config) {
-        super(config);
+    constructor(container) {
+        super(container);
+
+        // Enhance workspace size for Resume Builder
+        const ws = document.querySelector('.workspace-content');
+        if (ws) ws.classList.add('full-width-workspace');
+
         this.data = this._load() || this._getDefaults();
         this.currentTab = 'personal'; // personal, exp, edu, skills, design, preview
         this.scaleValue = 1;
@@ -519,6 +524,11 @@ class ResumeBuilderTool extends BaseTool {
             this._save();
             if (this.currentTab === 'preview') this.renderTabContent();
         };
+    }
+
+    onClose() {
+        const ws = document.querySelector('.workspace-content');
+        if (ws) ws.classList.remove('full-width-workspace');
     }
 
     fitPreview() {
