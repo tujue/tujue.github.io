@@ -343,22 +343,30 @@ class ResumeBuilderTool extends BaseTool {
             let theme = this.data.theme || 'modern';
             let pdfCss = `
                 body.pdf-mode .a4-page * { 
-                    line-height: 1.4 !important; 
+                    box-sizing: border-box !important; 
                     letter-spacing: normal !important;
-                    box-sizing: border-box !important;
-                    display: block !important; /* Killer Feature: Force Block Layout */
+                    -webkit-font-smoothing: antialiased;
                 }
-                /* Restore Inline/Inline-Block for Text Elements */
-                body.pdf-mode span, body.pdf-mode strong, body.pdf-mode b, body.pdf-mode i, body.pdf-mode em, body.pdf-mode a, body.pdf-mode img, body.pdf-mode .res-tag { 
-                    display: inline-block !important; 
-                }
+                body.pdf-mode .a4-page { overflow: visible !important; }
                 
-                /* Layout Containers - Use Floats instead of Flex/Grid */
+                /* Layout Containers */
                 body.pdf-mode .a4-page::after { content: ""; display: table; clear: both; }
                 
                 body.pdf-mode .res-contact > div { margin-bottom: 5px !important; }
                 body.pdf-mode .res-skills { gap: 0 !important; }
-                body.pdf-mode .res-tag { margin: 2px !important; }
+                body.pdf-mode .res-tag { margin: 2px 4px 2px 0 !important; display: inline-block !important; }
+                
+                /* Fix Flex Space-Between sections (Experience Heads) */
+                body.pdf-mode .res-item-head, body.pdf-mode .e-item-head, body.pdf-mode .v-item-top {
+                    display: block !important;
+                    overflow: hidden;
+                }
+                body.pdf-mode .res-item-head > *:first-child, body.pdf-mode .e-item-head > *:first-child, body.pdf-mode .v-item-top > *:first-child {
+                    float: left !important;
+                }
+                body.pdf-mode .res-item-head > *:last-child, body.pdf-mode .e-item-head > *:last-child, body.pdf-mode .v-item-top > *:last-child {
+                    float: right !important; text-align: right !important;
+                }
             `;
 
             // Theme Specific Fixes (Override the Global Block Force)
@@ -376,6 +384,7 @@ class ResumeBuilderTool extends BaseTool {
                 pdfCss += `
                     body.pdf-mode .a-left { float: left !important; width: 35% !important; min-height: 1000px; }
                     body.pdf-mode .a-right { float: right !important; width: 60% !important; }
+                    body.pdf-mode .a-container { display: block !important; }
                 `;
             } else if (theme === 'wave') {
                 pdfCss += `
@@ -389,7 +398,8 @@ class ResumeBuilderTool extends BaseTool {
                 `;
             } else if (theme === 'prime') {
                 pdfCss += `
-                    body.pdf-mode .o-box { width: 100% !important; margin-bottom: 20px !important; }
+                    body.pdf-mode .o-box { width: 100% !important; margin-bottom: 20px !important; display: block !important; }
+                    body.pdf-mode .o-grid { display: block !important; }
                 `;
             } else if (theme === 'leftside') {
                 pdfCss += `
@@ -397,7 +407,10 @@ class ResumeBuilderTool extends BaseTool {
                     body.pdf-mode .res-right { float: right !important; width: 66% !important; }
                 `;
             } else {
-                // Standard (No Sidebar) - Ensure correct widths
+                // Standard (No Sidebar) - Linearize Bottom Grid
+                pdfCss += `
+                    body.pdf-mode div[style*="grid-template-columns"] { display: block !important; }
+                `;
             }
 
             let pdfStyle = document.createElement('style');
@@ -406,7 +419,7 @@ class ResumeBuilderTool extends BaseTool {
             document.head.appendChild(pdfStyle);
 
             // Wait for layout reflow
-            await new Promise(r => setTimeout(r, 400));
+            await new Promise(r => setTimeout(r, 500));
 
             html2canvas(document.querySelector('.a4-page'), {
                 scale: 2,
