@@ -106,12 +106,12 @@ class ResumeBuilderTool extends BaseTool {
                 .res-step.active { border-bottom-color: var(--primary); opacity: 1; color: var(--primary); font-weight: 600; }
                 .step-icon { font-size: 1.2rem; }
                 
-                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 40px 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+                .res-wizard-content { flex: 1; overflow-y: auto !important; position: relative; padding: 0; width: 100%; scroll-behavior: smooth; }
                 .res-wizard-footer { padding: 5px 15px; background: var(--surface); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-shrink: 0; min-height: 45px; }
                 
                 .res-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .res-full-width { grid-column: span 2; }
-                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin-bottom: 40px; }
+                .res-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; margin: 30px auto; }
                 
                 .res-photo-upload { width: 120px; height: 120px; border-radius: 50%; background: #eee; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #ccc; transition: 0.2s; position: relative; margin: 0 auto 20px; }
                 .res-photo-upload:hover { border-color: var(--primary); }
@@ -586,10 +586,10 @@ class ResumeBuilderTool extends BaseTool {
 
         if (this.zoom === 'fit') {
             // Smart Fit Strategy:
-            // Consider both orientation (Width and Height)
-            const contH = container.clientHeight;
+            // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
+            const availableH = window.innerHeight - 100;
             const wScale = contW / pageW;
-            const hScale = (contH - 40) / pageH; // Leave 40px breathing room for height
+            const hScale = availableH / pageH;
 
             // Choose the smaller scale to ensure it fits entirely on screen
             this.scaleValue = Math.min(wScale, hScale, 0.95);
