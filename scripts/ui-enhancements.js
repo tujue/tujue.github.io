@@ -359,9 +359,16 @@ Ctrl/Cmd + C  →  Copy output
         `;
         document.head.appendChild(style);
 
-        // Insert before tools grid
-        const toolsGrid = document.getElementById('tools-grid');
-        toolsGrid.parentElement.insertBefore(categoryFilter, toolsGrid);
+        // Insert into placeholder to prevent CLS
+        const filterContainer = document.getElementById('category-filter-container');
+        if (filterContainer) {
+            filterContainer.innerHTML = ''; // Clear placeholder
+            filterContainer.appendChild(categoryFilter);
+        } else {
+            // Fallback
+            const toolsGrid = document.getElementById('tools-grid');
+            toolsGrid.parentElement.insertBefore(categoryFilter, toolsGrid);
+        }
 
         // Initial translation update
         updateCategoryText();

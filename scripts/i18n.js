@@ -351,7 +351,18 @@ const translations = {
 // Language Manager
 class I18n {
     constructor() {
-        this.currentLang = localStorage.getItem('app-language') || 'en';
+        // Priority: Saved > Browser > Default (en)
+        const savedLang = localStorage.getItem('app-language');
+
+        let defaultLang = 'en';
+        if (typeof navigator !== 'undefined') {
+            const browserLang = navigator.language || navigator.userLanguage;
+            if (browserLang && browserLang.toLowerCase().startsWith('tr')) {
+                defaultLang = 'tr';
+            }
+        }
+
+        this.currentLang = savedLang || defaultLang;
         this.translations = translations;
     }
 

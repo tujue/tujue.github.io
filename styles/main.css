@@ -2323,3 +2323,37 @@ select option {
 body.modal-open[data-tool="resume-builder"] {
     overflow: hidden !important;
 }
+/* ========== LANGUAGE SELECTOR & MOBILE HEADER FIX ========== */
+.language-dropdown {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.language-dropdown:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-alpha);
+}
+
+/* Hide stats on mobile to prevent overflow and focus on language selector */
+@media (max-width: 768px) {
+    .header-stats .stat-item:not(.language-selector) {
+        display: none;
+    }
+
+    .header-stats {
+        gap: 0;
+    }
+
+    /* Ensure dropdown is large enough to tap */
+    .language-dropdown {
+        padding: 0.5rem;
+        font-size: 1rem; /* Better for mobile readability */
+    }
+}
