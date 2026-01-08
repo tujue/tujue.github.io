@@ -313,60 +313,56 @@ class ResumeBuilderTool extends BaseTool {
 
         loadLibraries().then(async () => {
             try {
-                const page = document.querySelector('.a4-page');
-                const container = page.parentElement;
-                if (!page) {
+                const originalPage = document.querySelector('.a4-page');
+                if (!originalPage) {
                     throw new Error('CV sayfası bulunamadı');
                 }
 
-                // Store original styles
-                const originalContainerTransform = container.style.transform;
-                const originalContainerShadow = container.style.boxShadow;
-
-                // Clean up for capture
-                container.style.transform = 'none';
-                container.style.boxShadow = 'none';
-
-                // Inject capture-safe CSS
-                const captureStyle = document.createElement('style');
-                captureStyle.id = 'capture-safe-css';
-                captureStyle.textContent = `
-                    .a4-page,
-                    .a4-page * {
-                        transform: none !important;
-                        text-shadow: none !important;
-                        box-shadow: none !important;
-                        filter: none !important;
-                        -webkit-font-smoothing: antialiased !important;
-                        -moz-osx-font-smoothing: grayscale !important;
-                    }
-                    
-                    .a4-page::before,
-                    .a4-page::after,
-                    .a4-page *::before,
-                    .a4-page *::after {
-                        display: none !important;
-                    }
-                `;
-                document.head.appendChild(captureStyle);
-
-                // Wait for fonts and layout
+                // Wait for fonts
                 await document.fonts.ready;
-                await new Promise(r => setTimeout(r, 500));
+                await new Promise(r => setTimeout(r, 200));
 
-                // Capture
-                const canvas = await html2canvas(page, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#ffffff',
-                    removeContainer: false
+                // Create a clean clone at ORIGINAL SIZE (no zoom/scale)
+                const clone = originalPage.cloneNode(true);
+                clone.style.position = 'fixed';
+                clone.style.left = '-99999px';
+                clone.style.top = '0';
+                clone.style.width = '794px';  // A4 width in pixels
+                clone.style.height = '1123px'; // A4 height in pixels
+                clone.style.zoom = '1';        // Force no zoom
+                clone.style.transform = 'none'; // Force no transform
+                document.body.appendChild(clone);
+
+                // Clean problematic CSS from ALL elements in clone
+                const cleanElements = clone.querySelectorAll('*');
+                cleanElements.forEach(el => {
+                    el.style.textShadow = 'none';
+                    el.style.boxShadow = 'none';
+                    el.style.filter = 'none';
+                    el.style.transform = 'none';
+                    el.style.zoom = '1';
                 });
 
-                // Restore original styles
-                container.style.transform = originalContainerTransform;
-                container.style.boxShadow = originalContainerShadow;
-                captureStyle.remove();
+                // Clone itself also needs cleaning
+                clone.style.textShadow = 'none';
+                clone.style.boxShadow = 'none';
+
+                // Wait for clone to fully render
+                await new Promise(r => setTimeout(r, 300));
+
+                // Capture the clean clone at 1:1 scale
+                const canvas = await html2canvas(clone, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    width: 794,
+                    height: 1123
+                });
+
+                // Remove clone
+                document.body.removeChild(clone);
 
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new window.jspdf.jsPDF({
@@ -380,7 +376,6 @@ class ResumeBuilderTool extends BaseTool {
                 const imgWidth = pdfWidth;
                 const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-                // If content is taller than one page, scale it down
                 if (imgHeight > pdfHeight) {
                     const scale = pdfHeight / imgHeight;
                     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth * scale, pdfHeight);
