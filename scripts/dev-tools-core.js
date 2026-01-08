@@ -300,7 +300,7 @@
                     if (!d.color || d.color === '#2d3748') color = '#ef4444';
                 }
 
-                const photoHtml = d.photo ? `<img src="${d.photo}" class="res-photo" alt="Profile">` : '';
+                const photoHtml = d.photo ? `<img src="${d.photo}" crossorigin="anonymous" class="res-photo" alt="Profile">` : '';
 
                 // Import Google Fonts
                 const fontImport = `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600;700;800&family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Roboto+Condensed:wght@400;700&family=Nunito:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700;900&family=Lato:wght@300;400;700&display=swap');`;
@@ -737,7 +737,7 @@
                 if (theme === 'nova') {
                     html = `
         <div class="v-sidebar">
-            ${d.photo ? `<img src="${d.photo}" class="v-photo">` : ''}
+            ${d.photo ? `<img src="${d.photo}" crossorigin="anonymous" class="v-photo">` : ''}
             <div class="v-name-side">${d.name}</div>
             <div class="v-title-side">${d.title}</div>
 
@@ -823,7 +823,7 @@
                 else if (theme === 'orbit') {
                     html = `
         <div class="e-sidebar">
-            ${d.photo ? `<div class="e-photo-frame"><img src="${d.photo}" class="e-photo"></div>` : ''}
+            ${d.photo ? `<div class="e-photo-frame"><img src="${d.photo}" crossorigin="anonymous" class="e-photo"></div>` : ''}
                         
                         <div class="e-side-sec">
                             <div class="e-side-title">${isTr ? 'İLETİŞİM BİLGİLERİ' : 'CONTACT INFO'}</div>
@@ -923,7 +923,7 @@
                     <div class="a-blob-2"></div>
                     <div class="a-container">
                         <div class="a-left">
-                            ${d.photo ? `<img src="${d.photo}" class="a-photo">` : ''}
+                            ${d.photo ? `<img src="${d.photo}" crossorigin="anonymous" class="a-photo">` : ''}
                             
                             ${d.summary ? `
                             <div class="a-sec-title">${isTr ? 'HAKKINDA' : 'ABOUT'}</div>
@@ -995,7 +995,7 @@
                         <div class="s-top-wave"></div>
                         <div class="s-bottom-wave"></div>
                         <div class="s-bottom-wave2"></div>
-                        ${d.photo ? `<div class="s-photo-frame"><img src="${d.photo}" class="s-photo"></div>` : ''}
+                        ${d.photo ? `<div class="s-photo-frame"><img src="${d.photo}" crossorigin="anonymous" class="s-photo"></div>` : ''}
                         <div class="s-name-box">
                             <div class="s-name">${d.name}</div>
                             <div class="s-title">${d.title}</div>
@@ -1074,7 +1074,7 @@
                 else if (false) { // Duplicate Erdem removed (was causing issues)
                     html = `
         < div class="e-sidebar" >
-            ${d.photo ? `<div class="e-photo-frame"><img src="${d.photo}" class="e-photo"></div>` : ''}
+            ${d.photo ? `<div class="e-photo-frame"><img src="${d.photo}" crossorigin="anonymous" class="e-photo"></div>` : ''}
                         
                         <div class="e-side-sec">
                             <div class="e-side-title">${lbl.contact || 'İletişim'}</div>
@@ -1145,7 +1145,7 @@
                     html = `
         <div class="k-left">
             <div class="k-top-yellow"></div>
-                        ${d.photo ? `<div class="k-photo-container"><img src="${d.photo}" class="k-photo"></div>` : ''}
+                        ${d.photo ? `<div class="k-photo-container"><img src="${d.photo}" crossorigin="anonymous" class="k-photo"></div>` : ''}
                         <div class="k-name-box">
                             <div class="k-name">${d.name}</div>
                             <div class="k-title">${d.title}</div>
@@ -1270,7 +1270,7 @@
 
             </div>
             <div class="o-circle-yellow">
-                ${d.photo ? `<img src="${d.photo}" class="o-photo">` : ''}
+                ${d.photo ? `<img src="${d.photo}" crossorigin="anonymous" class="o-photo">` : ''}
             </div>
         </div>
         
