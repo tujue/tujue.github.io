@@ -157,13 +157,13 @@ class ResumeBuilder {
                         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     }
 
-                    /* Firefox Specific Fix - Overrides strict dimensions with fluid layout */
+                    /* Firefox Specific Fix - Strict A4 Sizing like Chrome */
                     @-moz-document url-prefix() {
                         @media print {
-                            @page { margin: 0; size: auto; }
-                            html, body { width: 100% !important; height: auto !important; overflow: visible !important; }
-                            .a4-page { width: 100% !important; height: auto !important; min-height: 297mm; transform: none !important; margin: 0 auto !important; }
-                            .cv-studio-wrapper, .studio-preview { width: 100% !important; height: auto !important; overflow: visible !important; display: block !important; margin: 0 !important; padding: 0 !important; }
+                            @page { margin: 0; size: A4; }
+                            html, body { width: 210mm !important; height: 297mm !important; overflow: hidden !important; }
+                            .cv-studio-wrapper, .studio-preview { display: block !important; width: 210mm !important; height: 297mm !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+                            .a4-page { width: 210mm !important; height: 297mm !important; margin: 0 !important; overflow: hidden !important; page-break-after: avoid !important; }
                         }
                     }
                 </style>
