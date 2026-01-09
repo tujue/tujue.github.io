@@ -847,6 +847,8 @@ class ResumeBuilderTool extends BaseTool {
             /* Core Reset */
             .res-container * { box-sizing: border-box; margin: 0; padding: 0; }
             .res-container { 
+                position: absolute;
+                top: 0; left: 0;
                 width: 794px; height: 1123px; 
                 margin: 0; padding: 0;
                 font-family: ${fontFam}; 
@@ -856,7 +858,6 @@ class ResumeBuilderTool extends BaseTool {
                 overflow: hidden; 
                 display: flex; 
                 flex-direction: ${isSplit ? 'row' : 'column'};
-                position: relative;
             }
             
             /* Typography */
@@ -1000,7 +1001,7 @@ class ResumeBuilderTool extends BaseTool {
             return {
                 css,
                 html: `
-                    <div class="res-container">
+                    <div class="res-container ${t}-theme">
                         <div class="res-left">${leftContent}</div>
                         <div class="res-right">${rightContent}</div>
                     </div>
@@ -1011,7 +1012,7 @@ class ResumeBuilderTool extends BaseTool {
             return {
                 css,
                 html: `
-                <div class="res-container">
+                <div class="res-container ${t}-theme">
                     <div class="res-main" style="width:100%;">
                         <div class="res-header" style="display:flex; gap:20px; align-items:center; border-bottom:2px solid ${cols.accent}; padding-bottom:20px; margin-bottom:20px;">
                              ${photoBlock}
@@ -1239,14 +1240,17 @@ class ResumeBuilderTool extends BaseTool {
         const pageH = 1123;
 
         if (this.zoom === 'fit') {
-            // Smart Fit Strategy:
-            // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
-            const availableH = window.innerHeight - 150;
+            // Restore generous scaling logic to prevent the "tiny" view
             const wScale = contW / pageW;
-            const hScale = availableH / pageH;
+            // Use a higher multiplier for available height to avoid excessive shrinking
+            this.scaleValue = Math.min(wScale, 0.98);
 
-            // Choose the smaller scale to ensure it fits entirely on screen
-            this.scaleValue = Math.min(wScale, hScale, 0.95);
+            // If height is really a problem, allow it to scroll rather than making it unreadable
+            if (pageH * this.scaleValue > container.clientHeight - 20) {
+                // But don't let it be taller than the view area if we can avoid it
+                const hScale = (container.clientHeight - 40) / pageH;
+                this.scaleValue = Math.max(hScale, this.scaleValue * 0.85);
+            }
         }
 
         // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
