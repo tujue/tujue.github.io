@@ -14,6 +14,9 @@ class VirtualPianoTool extends BaseTool {
         this.audioChunks = [];
         this.recordedAudioBlob = null;
         this.demoTimeouts = [];
+        this.masterGain = null;
+        this._boundKeyDown = null;
+        this._boundKeyUp = null;
     }
 
     renderUI() {
@@ -247,16 +250,25 @@ class VirtualPianoTool extends BaseTool {
         });
 
         // Keyboard controls
-        window.addEventListener('keydown', (e) => {
-            if (e.repeat) return;
+        this._boundKeyDown = (e) => {
+            if (!this.active || e.repeat) return;
+            // Prevent piano if typing in an input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
             const n = this.notes.find(x => x.key === e.key.toUpperCase());
-            if (n) this._playNote(n);
-        });
+            if (n) {
+                e.preventDefault();
+                this._playNote(n);
+            }
+        };
 
-        window.addEventListener('keyup', (e) => {
+        this._boundKeyUp = (e) => {
+            if (!this.active) return;
             const n = this.notes.find(x => x.key === e.key.toUpperCase());
             if (n) this._stopNote(n.note);
-        });
+        };
+
+        window.addEventListener('keydown', this._boundKeyDown);
+        window.addEventListener('keyup', this._boundKeyUp);
 
         // Control listeners
         document.getElementById('p-volume').oninput = (e) => {
@@ -315,9 +327,12 @@ class VirtualPianoTool extends BaseTool {
         this.analyser = this.audioCtx.createAnalyser();
         this.analyser.fftSize = 2048;
 
+        this.masterGain = this.audioCtx.createGain();
+        this.masterGain.connect(this.audioCtx.destination);
+
         // Create a destination for recording
         this.recordDest = this.audioCtx.createMediaStreamDestination();
-        this.analyser.connect(this.audioCtx.destination);
+        this.analyser.connect(this.masterGain);
         this.analyser.connect(this.recordDest);
     }
 
@@ -366,18 +381,27 @@ class VirtualPianoTool extends BaseTool {
         }
     }
 
-    _stopNote(noteName) {
+    _stopNote(noteName, immediate = false) {
         if (this.oscMap.has(noteName)) {
             const { osc, gain } = this.oscMap.get(noteName);
-            const relEl = document.getElementById('p-release');
-            if (!relEl) return;
-            const release = parseFloat(relEl.value);
 
-            gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + release);
-            setTimeout(() => {
+            if (immediate) {
+                gain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                gain.gain.setValueAtTime(0, this.audioCtx.currentTime);
                 osc.stop();
                 osc.disconnect();
-            }, release * 1000);
+            } else {
+                const relEl = document.getElementById('p-release');
+                const release = relEl ? parseFloat(relEl.value) : 0.1;
+
+                gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + release);
+                setTimeout(() => {
+                    try {
+                        osc.stop();
+                        osc.disconnect();
+                    } catch (e) { }
+                }, release * 1000);
+            }
 
             this.oscMap.delete(noteName);
 
@@ -594,7 +618,7 @@ class VirtualPianoTool extends BaseTool {
         this.demoTimeouts = [];
 
         // Stop all currently playing oscillators
-        [...this.oscMap.keys()].forEach(noteName => this._stopNote(noteName));
+        [...this.oscMap.keys()].forEach(noteName => this._stopNote(noteName, true));
     }
 
     _drawViz() {
@@ -662,10 +686,34 @@ class VirtualPianoTool extends BaseTool {
     }
 
     onClose() {
+        console.log("🎹 Piano shutting down...");
         this.active = false;
+
+        // Kill all demo timeouts
         this._stopDemo();
+
+        // Immediate silence via master gain
+        if (this.masterGain) {
+            this.masterGain.gain.cancelScheduledValues(0);
+            this.masterGain.gain.setValueAtTime(0, 0);
+        }
+
+        // Stop all active oscillators
+        this.oscMap.forEach(({ osc, gain }) => {
+            try {
+                osc.stop();
+                osc.disconnect();
+            } catch (e) { }
+        });
+        this.oscMap.clear();
+
+        // Remove global listeners
+        if (this._boundKeyDown) window.removeEventListener('keydown', this._boundKeyDown);
+        if (this._boundKeyUp) window.removeEventListener('keyup', this._boundKeyUp);
+
+        // Close context
         if (this.audioCtx) {
-            this.audioCtx.close();
+            this.audioCtx.close().catch(e => console.warn("AudioContext close error:", e));
             this.audioCtx = null;
         }
     }
