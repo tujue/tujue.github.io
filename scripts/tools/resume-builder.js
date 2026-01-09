@@ -156,6 +156,16 @@ class ResumeBuilder {
                         /* Force background prints */
                         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     }
+
+                    /* Firefox Specific Fix - Overrides strict dimensions with fluid layout */
+                    @-moz-document url-prefix() {
+                        @media print {
+                            @page { margin: 0; size: auto; }
+                            html, body { width: 100% !important; height: auto !important; overflow: visible !important; }
+                            .a4-page { width: 100% !important; height: auto !important; min-height: 297mm; transform: none !important; margin: 0 auto !important; }
+                            .cv-studio-wrapper, .studio-preview { width: 100% !important; height: auto !important; overflow: visible !important; display: block !important; margin: 0 !important; padding: 0 !important; }
+                        }
+                    }
                 </style>
 
                 <div class="studio-sidebar">
