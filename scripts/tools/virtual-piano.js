@@ -321,6 +321,7 @@ class VirtualPianoTool extends BaseTool {
     }
 
     _playNote(n) {
+        if (!this.active) return;
         this._initAudio();
         if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
         this._stopNote(n.note);
@@ -328,11 +329,17 @@ class VirtualPianoTool extends BaseTool {
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
 
-        osc.type = document.getElementById('p-wave').value;
+        const waveEl = document.getElementById('p-wave');
+        if (!waveEl) return;
+        osc.type = waveEl.value;
         osc.frequency.setValueAtTime(n.freq, this.audioCtx.currentTime);
 
-        const volume = parseFloat(document.getElementById('p-volume').value) / 100;
-        const attack = parseFloat(document.getElementById('p-attack').value) / 1000;
+        const volEl = document.getElementById('p-volume');
+        const attEl = document.getElementById('p-attack');
+        if (!volEl || !attEl) return;
+
+        const volume = parseFloat(volEl.value) / 100;
+        const attack = parseFloat(attEl.value) / 1000;
 
         gain.gain.setValueAtTime(0, this.audioCtx.currentTime);
         gain.gain.linearRampToValueAtTime(volume * 0.3, this.audioCtx.currentTime + attack);
@@ -346,8 +353,10 @@ class VirtualPianoTool extends BaseTool {
         const el = document.querySelector(`[data-note="${n.note}"]`);
         if (el) el.classList.add('active');
 
-        document.getElementById('p-note-display').textContent = `${n.note} - ${Math.round(n.freq)}Hz`;
-        document.getElementById('p-status').textContent = 'PLAYING';
+        const noteDisp = document.getElementById('p-note-display');
+        const statusDisp = document.getElementById('p-status');
+        if (noteDisp) noteDisp.textContent = `${n.note} - ${Math.round(n.freq)}Hz`;
+        if (statusDisp) statusDisp.textContent = 'PLAYING';
 
         // Record if recording
         if (this.isRecording) {
@@ -359,7 +368,9 @@ class VirtualPianoTool extends BaseTool {
     _stopNote(noteName) {
         if (this.oscMap.has(noteName)) {
             const { osc, gain } = this.oscMap.get(noteName);
-            const release = parseFloat(document.getElementById('p-release').value);
+            const relEl = document.getElementById('p-release');
+            if (!relEl) return;
+            const release = parseFloat(relEl.value);
 
             gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + release);
             setTimeout(() => {
@@ -373,8 +384,10 @@ class VirtualPianoTool extends BaseTool {
             if (el) el.classList.remove('active');
 
             if (this.oscMap.size === 0) {
-                document.getElementById('p-status').textContent = 'READY';
-                document.getElementById('p-note-display').textContent = '--';
+                const statusDisp = document.getElementById('p-status');
+                const noteDisp = document.getElementById('p-note-display');
+                if (statusDisp) statusDisp.textContent = 'READY';
+                if (noteDisp) noteDisp.textContent = '--';
             }
 
             // Record if recording
@@ -557,10 +570,13 @@ class VirtualPianoTool extends BaseTool {
 
         melody.forEach(m => {
             setTimeout(() => {
+                if (!this.active) return;
                 const n = this.notes.find(x => x.note === m.note);
                 if (n) {
                     this._playNote(n);
-                    setTimeout(() => this._stopNote(n.note), m.duration);
+                    setTimeout(() => {
+                        if (this.active) this._stopNote(n.note);
+                    }, m.duration);
                 }
             }, m.delay);
         });
