@@ -866,7 +866,7 @@ class ResumeBuilderTool extends BaseTool {
             }
             
             /* Typography */
-            h1, h2, h3, h4, .res-name, .res-title, .res-section-title, .res-item-head { font-family: ${headFont}; }
+            h1, h2, h3, h4, .res-name, .res-title, .res-section-title, .res-item-head { font-family: ${headFont} !important; }
             .res-item-desc, .res-contact-item, .res-item-sub, .res-skill-tag, .res-container { font-family: ${fontFam}; }
             
             /* Helper Classes */
@@ -1112,8 +1112,8 @@ class ResumeBuilderTool extends BaseTool {
         } else if (theme === 'tech') {
             css += `
                 .res-container { background: #0f172a; color: #94a3b8; }
-                .res-name { color: ${cols.primary}; font-family: 'JetBrains Mono', monospace; font-size: 28px; }
-                .res-section-title { font-family: 'JetBrains Mono', monospace; border-left: 4px solid ${cols.primary}; border-bottom: none; padding-left: 10px; }
+                .res-name { color: ${cols.primary}; font-size: 28px; }
+                .res-section-title { border-left: 4px solid ${cols.primary}; border-bottom: none; padding-left: 10px; }
                 .res-skill-tag { background: #1e293b; color: ${cols.primary}; border: 1px solid ${cols.primary}33; }
             `;
         } else if (theme === 'leftside' || theme === 'nova') {
