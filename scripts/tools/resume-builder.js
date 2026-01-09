@@ -698,7 +698,7 @@ class ResumeBuilderTool extends BaseTool {
             ];
 
             div.innerHTML = `
-                < div class="res-card" >
+                <div class="res-card">
                     <h3>Görünüm Ayarları</h3>
                     <div class="res-form-grid" style="margin-top:20px;">
                         <div>
@@ -753,7 +753,7 @@ class ResumeBuilderTool extends BaseTool {
                             </div>
                         `).join('')}
                     </div>
-                </div >
+                </div>
                 `;
             c.appendChild(div);
 
@@ -837,9 +837,11 @@ class ResumeBuilderTool extends BaseTool {
         const fontFam = this._getFontFamily(data.font || data.bodyFont);
         const headFont = this._getFontFamily(data.headerFont || data.font);
 
-        // Core Layout Strategy: 'modern' (left/right split) or 'classic' (top/down)
-        const isSplit = ['modern', 'leftside', 'skyline', 'tech', 'orbit', 'cyber'].includes(t);
-        const isDark = ['orbit', 'cyber'].includes(t);
+        // Core Layout Strategy
+        const isSplit = ['modern', 'leftside', 'skyline', 'tech', 'orbit', 'cyber', 'nova', 'bloom', 'wave', 'titan'].includes(t);
+        const isDark = ['orbit', 'cyber', 'titan'].includes(t);
+        const isExec = t === 'executive';
+        const isBrutal = t === 'brutal';
 
         const css = `
             /* Core Reset */
@@ -1029,13 +1031,24 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     _getThemeColors(theme, baseColor) {
-        // baseColor is user selected color
         const c = baseColor || '#2d3748';
         switch (theme) {
             case 'modern': return { primary: c, accent: c, bgSide: '#f7fafc', textSide: '#2d3748' };
+            case 'nova': return { primary: c, accent: '#cbd5e0', bgSide: '#1a202c', textSide: '#ffffff' };
             case 'orbit': return { primary: '#63b3ed', accent: '#4a5568', bgSide: '#1a202c', textSide: '#e2e8f0' };
+            case 'bloom': return { primary: '#6b46c1', accent: '#fbb6ce', bgSide: '#fff5f7', textSide: '#44337a' };
+            case 'wave': return { primary: '#3182ce', accent: '#bee3f8', bgSide: '#ebf8ff', textSide: '#2a4365' };
+            case 'bold': return { primary: '#000000', accent: c, bgSide: '#ffffff', textSide: '#000000' };
+            case 'prime': return { primary: '#2c5282', accent: '#2c5282', bgSide: '#f7fafc', textSide: '#2d3748' };
+            case 'elegant': return { primary: '#b794f4', accent: '#b794f4', bgSide: '#faf5ff', textSide: '#553c9a' };
+            case 'titan': return { primary: '#f6ad55', accent: '#4a5568', bgSide: '#171923', textSide: '#cbd5e0' };
+            case 'cyber': return { primary: '#00ff41', accent: '#003b00', bgSide: '#000000', textSide: '#00ff41' };
+            case 'brutal': return { primary: '#000000', accent: '#000000', bgSide: '#ffff00', textSide: '#000000' };
+            case 'executive': return { primary: '#1a365d', accent: '#c0c0c0', bgSide: '#ffffff', textSide: '#1a365d' };
+            case 'minimal': return { primary: '#000', accent: '#e2e8f0', bgSide: '#fff', textSide: '#000' };
             case 'leftside': return { primary: c, accent: '#e2e8f0', bgSide: c, textSide: '#ffffff' };
-            case 'minimal': return { primary: '#000', accent: '#000', bgSide: '#fff', textSide: '#000' };
+            case 'skyline': return { primary: '#2b6cb0', accent: '#cbd5e0', bgSide: '#f7fafc', textSide: '#2d3748' };
+            case 'tech': return { primary: '#38b2ac', accent: '#2d3748', bgSide: '#1a202c', textSide: '#e6fffa' };
             default: return { primary: c, accent: c, bgSide: '#f7fafc', textSide: '#333' };
         }
     }
@@ -1052,31 +1065,55 @@ class ResumeBuilderTool extends BaseTool {
     }
 
     _getThemeCSS(theme, cols) {
-        if (theme === 'leftside') {
-            return `
-                .res-left { background: ${cols.primary} !important; color: white !important; }
-                .res-left .res-section-title { color: white; border-color: rgba(255,255,255,0.3); }
-                .res-name { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; color: ${cols.primary}; }
-                .res-photo { width: 140px; height: 140px; border-radius: 50%; border: 4px solid white; overflow:hidden; margin-bottom: 20px; margin-left: auto; margin-right: auto; }
-                .res-photo img { width: 100%; height: 100%; object-fit: cover; }
-                .res-skill-tag { display:inline-block; background:rgba(255,255,255,0.2); padding: 4px 8px; border-radius:4px; margin:0 4px 4px 0; font-size:11px; }
-            `;
-        }
-        if (theme === 'modern') {
-            return `
-                .res-name { font-size: 36px; font-weight: 800; letter-spacing: -1px; text-transform:uppercase; color: ${cols.primary}; }
-                .res-title { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; }
-                .res-photo { width: 100%; height: 200px; object-fit: cover; margin-bottom: 20px; border-radius: 8px; overflow:hidden; }
-                .res-photo img { width: 100%; height: 100%; object-fit: cover; }
-                .res-skill-tag { display:block; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size:12px; }
-            `;
-        }
-        // Classic / Default fallback CSS
-        return `
-            .res-photo { width: 120px; height: 120px; border-radius: 12px; overflow: hidden; }
+        let css = `
+            .res-photo { width: 100px; height: 100px; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
             .res-photo img { width: 100%; height: 100%; object-fit: cover; }
-            .res-skill-tag { display: inline-block; background: #edf2f7; color: #4a5568; padding: 4px 10px; border-radius: 100px; margin: 0 5px 5px 0; font-size: 11px; font-weight:600; }
+            .res-skill-tag { display: inline-block; background: #edf2f7; color: #4a5568; padding: 4px 10px; border-radius: 4px; margin: 0 4px 4px 0; font-size: 11px; font-weight:600; }
         `;
+
+        if (theme === 'modern' || theme === 'skyline' || theme === 'tech') {
+            css += `
+                .res-name { font-size: 32px; font-weight: 800; text-transform:uppercase; color: ${cols.primary}; line-height: 1; margin-bottom: 5px; }
+                .res-title { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; opacity: 0.8; }
+            `;
+        } else if (theme === 'leftside' || theme === 'nova') {
+            css += `
+                .res-left { background: ${cols.bgSide} !important; color: ${cols.textSide} !important; }
+                .res-left .res-section-title { color: ${cols.textSide}; border-color: rgba(255,255,255,0.3); }
+                .res-photo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2); margin: 0 auto 20px; }
+                .res-name { font-size: 28px; font-weight: 800; color: ${cols.primary}; }
+                .res-skill-tag { background: rgba(255,255,255,0.15); color: ${cols.textSide}; }
+            `;
+        } else if (theme === 'orbit' || theme === 'cyber') {
+            css += `
+                .res-container { background: #000; color: ${cols.primary}; }
+                .res-section-title { border-color: ${cols.primary}; color: ${cols.primary}; }
+                .res-name { font-size: 36px; font-weight: 900; color: ${cols.primary}; text-shadow: 0 0 10px ${cols.primary}44; }
+                .res-skill-tag { background: ${cols.accent}; color: ${cols.primary}; border: 1px solid ${cols.primary}44; }
+            `;
+        } else if (theme === 'bloom' || theme === 'wave') {
+            css += `
+                .res-container { background: ${cols.bgSide}; }
+                .res-section-title { border-radius: 20px; background: ${cols.accent}; border: none; padding: 5px 15px; color: ${cols.primary}; }
+                .res-photo { border-radius: 20px; }
+            `;
+        } else if (theme === 'brutal') {
+            css += `
+                .res-container { background: #fff; border: 4px solid #000; }
+                .res-section-title { background: #ffff00; border: 3px solid #000; color: #000; padding: 5px 10px; transform: rotate(-1deg); }
+                .res-item { border-left: 5px solid #000; padding-left: 10px; }
+                .res-name { font-size: 40px; font-weight: 900; text-transform: uppercase; -webkit-text-stroke: 1px #000; }
+            `;
+        } else if (theme === 'executive') {
+            css += `
+                .res-container { padding: 40px; }
+                .res-header { text-align: center; border-bottom: 4px double ${cols.primary}; padding-bottom: 20px; margin-bottom: 30px; }
+                .res-name { font-size: 32px; font-weight: 700; color: ${cols.primary}; }
+                .res-section-title { border-bottom: 1px solid ${cols.primary}; text-align: center; width: 60%; margin: 0 auto 20px; }
+            `;
+        }
+
+        return css;
     }
 
     _renderList(container, type) {
