@@ -1,84 +1,107 @@
-/* TULPAR - Color Palette Tool OOP Implementation */
-class ColorPaletteTool extends BaseTool {
+/* TULPAR - Professional Color Palette Studio */
+class ColorPaletteProTool extends BaseTool {
     constructor(config) {
         super(config);
+        this.locked = new Set();
+        this.currentPalette = [];
     }
 
     renderUI() {
         const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
         const txt = isTr ? {
-            settings: 'Palet Ayarları',
-            baseColor: 'Temel Renk',
-            harmony: 'Uyum Tipi',
-            copyAll: 'CSS Olarak Kopyala',
-            results: 'Oluşturulan Palet',
+            title: 'Profesyonel Renk Paleti Stüdyosu',
+            base: 'Ana Renk',
+            generate: 'Üret',
+            random: 'Rastgele Palet',
+            export: 'Dışa Aktar',
+            harmony: 'Uyum',
             modes: {
-                mono: 'Tek Renkli', comp: 'Zıt (Tamamlayıcı)', triad: 'Üçlü',
-                analog: 'Bitişik (Analog)', shades: 'Gölgeler', tints: 'Tonlar'
+                mono: 'Tek Ton', comp: 'Tamamlayıcı', split: 'Bölünmüş', triad: 'Üçlü',
+                tetrad: 'Dörtlü', analog: 'Bitişik', shades: 'Gölgeler'
             }
         } : {
-            settings: 'Palette Settings',
-            baseColor: 'Base Color',
-            harmony: 'Harmony Type',
-            copyAll: 'Copy as CSS',
-            results: 'Generated Palette',
+            title: 'Professional Color Palette Studio',
+            base: 'Base Color',
+            generate: 'Generate',
+            random: 'Random Palette',
+            export: 'Export',
+            harmony: 'Harmony',
             modes: {
-                mono: 'Monochromatic', comp: 'Complementary', triad: 'Triadic',
-                analog: 'Analogous', shades: 'Shades', tints: 'Tints'
+                mono: 'Monochromatic', comp: 'Complementary', split: 'Split-Comp', triad: 'Triadic',
+                tetrad: 'Tetradic', analog: 'Analogous', shades: 'Shades'
             }
         };
 
         return `
-        <div class="tool-content" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
-            <div class="grid-layout" style="display: grid; grid-template-columns: 320px 1fr; gap: 2rem;">
-                <!-- Control Panel -->
-                <div class="sidebar">
-                    <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px;">
-                        <h4 style="margin-bottom: 1.5rem; color: var(--primary);">${txt.settings}</h4>
+        <div class="tool-content color-pal-pro" style="max-width: 1300px; margin: 0 auto; padding: 20px;">
+            <div style="display: grid; grid-template-columns: 340px 1fr; gap: 2.5rem; align-items: start;">
+                
+                <!-- Sidebar -->
+                <div style="position: sticky; top: 20px;">
+                    <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
+                        <h4 style="margin-bottom: 1.5rem; color: var(--primary); font-size: 0.85rem; text-transform: uppercase;">${txt.title}</h4>
                         
+                        <!-- Base Color -->
                         <div class="form-group">
-                            <label class="form-label">${txt.baseColor}</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="color" id="pal-base" value="#3b82f6" style="width: 60px; height: 50px; border: none; padding: 0; background: none; cursor: pointer;">
-                                <input type="text" id="pal-hex" class="form-input" value="#3B82F6" style="text-align: center; font-family: var(--font-mono); font-weight: 700;">
+                            <label class="form-label">${txt.base}</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="color" id="cp-base" value="#6366f1" style="width: 70px; height: 50px; border-radius: 8px; border: 2px solid var(--border-color); cursor: pointer;">
+                                <input type="text" id="cp-hex" class="form-input" value="#6366F1" style="flex: 1; text-align: center; font-family: var(--font-mono); font-weight: 700;">
                             </div>
                         </div>
 
+                        <!-- Harmony Mode -->
                         <div class="form-group">
                             <label class="form-label">${txt.harmony}</label>
-                            <select id="pal-type" class="form-select">
-                                <option value="monochromatic">${txt.modes.mono}</option>
-                                <option value="complementary">${txt.modes.comp}</option>
-                                <option value="triadic">${txt.modes.triad}</option>
-                                <option value="analogous">${txt.modes.analog}</option>
-                                <option value="shades">${txt.modes.shades}</option>
-                                <option value="tints">${txt.modes.tints}</option>
+                            <select id="cp-mode" class="form-select">
+                                ${Object.entries(txt.modes).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}
                             </select>
                         </div>
 
+                        <!-- Palette Count -->
                         <div class="form-group">
-                            <label class="form-label">Export Format</label>
-                            <select id="pal-fmt" class="form-select">
+                            <label class="form-label">Colors: <span id="v-cp-count">5</span></label>
+                            <input type="range" id="cp-count" min="3" max="10" value="5" style="width: 100%;">
+                        </div>
+
+                        <button id="cp-gen" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">${txt.generate} ✨</button>
+                        <button id="cp-random" class="btn btn-outline" style="width: 100%;">${txt.random} 🎲</button>
+
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+                        <!-- Export Format -->
+                        <div class="form-group">
+                            <label class="form-label">${txt.export}</label>
+                            <select id="cp-fmt" class="form-select">
                                 <option value="css">CSS Variables</option>
-                                <option value="scss">SCSS Variables</option>
+                                <option value="scss">SCSS</option>
                                 <option value="json">JSON</option>
-                                <option value="tailwind">Tailwind Config</option>
+                                <option value="tailwind">Tailwind</option>
+                                <option value="swift">Swift</option>
                             </select>
                         </div>
 
-                        <button id="pal-copy-all" class="btn btn-outline" style="width: 100%; margin-top: 1rem;">📋 ${txt.copyAll}</button>
+                        <button id="cp-copy" class="btn btn-secondary" style="width: 100%;">📋 Copy Code</button>
                     </div>
                 </div>
 
-                <!-- Palette Display -->
-                <div class="main-region">
-                    <div class="card" style="padding: 1.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px;">
-                        <h4 style="margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">${txt.results}</h4>
-                        <div id="pal-output" style="display: grid; gap: 12px;"></div>
-                        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                            <label style="font-size:0.75rem; opacity:0.6; text-transform:uppercase;">Export Code</label>
-                            <pre id="pal-export-code" style="margin-top:10px; background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px; font-family:var(--font-mono); font-size:0.8rem; color:#a5d6ff; max-height:200px; overflow-y:auto;"></pre>
-                        </div>
+                <!-- Main Area -->
+                <div>
+                    <!-- Color Palette Grid -->
+                    <div id="cp-palette" style="display: grid; gap: 12px; margin-bottom: 2rem;"></div>
+
+                    <!-- Gradient Preview -->
+                    <div id="cp-gradient" style="height: 100px; border-radius: 16px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+
+                    <!-- WCAG Contrast Checker -->
+                    <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 2rem;">
+                        <h5 style="margin-bottom: 1rem; font-size: 0.85rem; text-transform: uppercase; opacity: 0.7;">WCAG Contrast Checker</h5>
+                        <div id="cp-contrast"></div>
+                    </div>
+
+                    <!-- Export Code -->
+                    <div class="card" style="padding: 1.5rem; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;">
+                        <pre id="cp-code" style="margin: 0; color: #a5b4fc; font-family: var(--font-mono); font-size: 0.85rem; white-space: pre-wrap; line-height: 1.6;"></pre>
                     </div>
                 </div>
             </div>
@@ -87,124 +110,214 @@ class ColorPaletteTool extends BaseTool {
     }
 
     setupListeners() {
-        const base = document.getElementById('pal-base');
-        const hex = document.getElementById('pal-hex');
-        const type = document.getElementById('pal-type');
-        const output = document.getElementById('pal-output');
+        const base = document.getElementById('cp-base');
+        const hex = document.getElementById('cp-hex');
+        const mode = document.getElementById('cp-mode');
+        const count = document.getElementById('cp-count');
 
-        const validHex = /^#[0-9A-F]{6}$/i;
-
-        const updateHex = () => {
+        base.oninput = () => {
             hex.value = base.value.toUpperCase();
             this.generate();
         };
 
-        const updateBase = () => {
-            let val = hex.value;
-            if (!val.startsWith('#')) val = '#' + val;
-            if (validHex.test(val)) {
+        hex.oninput = () => {
+            const val = hex.value.startsWith('#') ? hex.value : '#' + hex.value;
+            if (/^#[0-9A-F]{6}$/i.test(val)) {
                 base.value = val;
                 this.generate();
             }
         };
 
-        base.oninput = updateHex;
-        hex.oninput = updateBase;
-        type.onchange = () => this.generate();
-        document.getElementById('pal-fmt').onchange = () => this.generate(); // Update on format change
+        mode.onchange = () => this.generate();
 
-        document.getElementById('pal-copy-all').onclick = () => {
-            const code = document.getElementById('pal-export-code').textContent;
-            this.copyToClipboard(code);
+        count.oninput = () => {
+            document.getElementById('v-cp-count').textContent = count.value;
+            this.generate();
         };
 
-        this.generate(); // Initial
+        document.getElementById('cp-gen').onclick = () => this.generate();
+        document.getElementById('cp-random').onclick = () => this.randomPalette();
+        document.getElementById('cp-copy').onclick = () => this.copyToClipboard(document.getElementById('cp-code').textContent);
+        document.getElementById('cp-fmt').onchange = () => this.updateExport();
+
+        this.generate();
     }
 
     generate() {
-        const base = document.getElementById('pal-base').value;
-        const mode = document.getElementById('pal-type').value;
-        const hsl = this._hexToHsl(base);
-        let palette = [base];
+        const base = document.getElementById('cp-base').value;
+        const mode = document.getElementById('cp-mode').value;
+        const count = parseInt(document.getElementById('cp-count').value);
+
+        const hsl = this.hexToHsl(base);
+        let palette = [];
 
         switch (mode) {
-            case 'monochromatic':
-                [15, 30, -15, -30].forEach(d => palette.push(this._hslToHex(hsl.h, hsl.s, Math.max(0, Math.min(100, hsl.l + d)))));
+            case 'mono':
+                for (let i = 0; i < count; i++) {
+                    const l = 20 + (60 / (count - 1)) * i;
+                    palette.push(this.hslToHex(hsl.h, hsl.s, l));
+                }
                 break;
-            case 'complementary':
-                palette.push(this._hslToHex((hsl.h + 180) % 360, hsl.s, hsl.l));
-                palette.push(this._hslToHex((hsl.h + 150) % 360, hsl.s, hsl.l));
-                palette.push(this._hslToHex((hsl.h + 210) % 360, hsl.s, hsl.l));
+            case 'comp':
+                palette = [base, this.hslToHex((hsl.h + 180) % 360, hsl.s, hsl.l)];
+                while (palette.length < count) {
+                    const h = (hsl.h + (120 * palette.length)) % 360;
+                    palette.push(this.hslToHex(h, hsl.s, hsl.l));
+                }
                 break;
-            case 'triadic':
-                palette.push(this._hslToHex((hsl.h + 120) % 360, hsl.s, hsl.l));
-                palette.push(this._hslToHex((hsl.h + 240) % 360, hsl.s, hsl.l));
+            case 'split':
+                palette = [
+                    base,
+                    this.hslToHex((hsl.h + 150) % 360, hsl.s, hsl.l),
+                    this.hslToHex((hsl.h + 210) % 360, hsl.s, hsl.l)
+                ];
+                while (palette.length < count) palette.push(this.hslToHex(Math.random() * 360, hsl.s, hsl.l));
                 break;
-            case 'analogous':
-                [-30, -15, 15, 30].forEach(d => palette.push(this._hslToHex((hsl.h + d + 360) % 360, hsl.s, hsl.l)));
+            case 'triad':
+                palette = [base, this.hslToHex((hsl.h + 120) % 360, hsl.s, hsl.l), this.hslToHex((hsl.h + 240) % 360, hsl.s, hsl.l)];
+                while (palette.length < count) palette.push(this.hslToHex((hsl.h + 60 * palette.length) % 360, hsl.s, hsl.l));
+                break;
+            case 'tetrad':
+                palette = [
+                    base,
+                    this.hslToHex((hsl.h + 90) % 360, hsl.s, hsl.l),
+                    this.hslToHex((hsl.h + 180) % 360, hsl.s, hsl.l),
+                    this.hslToHex((hsl.h + 270) % 360, hsl.s, hsl.l)
+                ];
+                while (palette.length < count) palette.push(this.hslToHex((hsl.h + 45 * palette.length) % 360, hsl.s, hsl.l));
+                break;
+            case 'analog':
+                const step = 30;
+                for (let i = 0; i < count; i++) {
+                    const h = (hsl.h + (i - Math.floor(count / 2)) * step + 360) % 360;
+                    palette.push(this.hslToHex(h, hsl.s, hsl.l));
+                }
                 break;
             case 'shades':
-                [10, 20, 30, 40].forEach(d => palette.push(this._hslToHex(hsl.h, hsl.s, Math.max(0, hsl.l - d))));
-                break;
-            case 'tints':
-                [10, 20, 30, 40].forEach(d => palette.push(this._hslToHex(hsl.h, hsl.s, Math.min(100, hsl.l + d))));
-                break;
-        }
-
-        this._renderPalette(palette);
-
-        const fmt = document.getElementById('pal-fmt').value;
-        const code = this._generateExportCode(palette, fmt);
-        document.getElementById('pal-export-code').textContent = code;
-    }
-
-    _generateExportCode(colors, format) {
-        if (format === 'css') {
-            return ':root {\n' + colors.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n') + '\n}';
-        } else if (format === 'scss') {
-            return colors.map((c, i) => `$color-${i + 1}: ${c};`).join('\n');
-        } else if (format === 'json') {
-            return JSON.stringify(colors, null, 2);
-        } else if (format === 'tailwind') {
-            const config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            custom: colors.reduce((acc, c, i) => ({ ...acc, [i === 0 ? 'base' : (i * 100)]: c }), {})
-                        }
-                    }
+                for (let i = 0; i < count; i++) {
+                    const l = 80 - (60 / (count - 1)) * i;
+                    palette.push(this.hslToHex(hsl.h, hsl.s, l));
                 }
-            };
-            return `// tailwind.config.js\nmodule.exports = ${JSON.stringify(config, null, 2)}`;
+                break;
         }
-        return '';
+
+        this.currentPalette = palette.slice(0, count);
+        this.renderPalette();
+        this.updateGradient();
+        this.updateContrast();
+        this.updateExport();
     }
 
-    _renderPalette(colors) {
-        const out = document.getElementById('pal-output');
-        out.innerHTML = colors.map((c, i) => {
-            const isDark = this._isDark(c);
+    randomPalette() {
+        const randomHex = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        document.getElementById('cp-base').value = randomHex();
+        document.getElementById('cp-hex').value = randomHex().toUpperCase();
+        this.generate();
+    }
+
+    renderPalette() {
+        const container = document.getElementById('cp-palette');
+        container.innerHTML = this.currentPalette.map((color, i) => {
+            const isDark = this.isDark(color);
+            const rgb = this.hexToRgb(color);
+            const hsl = this.hexToHsl(color);
+
             return `
-                <div class="swatch" style="background: ${c}; color: ${isDark ? '#fff' : '#000'}; padding: 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1);">
-                    <div>
-                        <div class="pal-hex-val" style="font-family: var(--font-mono); font-weight: 800; font-size: 1.2rem;">${c.toUpperCase()}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.7;">Color ${i + 1}</div>
+                <div style="background: ${color}; color: ${isDark ? '#fff' : '#000'}; padding: 2rem 1.5rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}; position: relative; overflow: hidden; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-family: var(--font-mono); font-weight: 800; font-size: 1.3rem; margin-bottom: 4px;">${color.toUpperCase()}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.7; font-family: var(--font-mono);">RGB(${rgb.r}, ${rgb.g}, ${rgb.b})</div>
+                            <div style="font-size: 0.75rem; opacity: 0.7; font-family: var(--font-mono);">HSL(${Math.round(hsl.h)}°, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)</div>
+                        </div>
+                        <button onclick="window.activeToolInstance.copyToClipboard('${color}')" class="btn btn-sm" style="background: ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}; border: none; color: inherit; padding: 6px 12px; font-size: 0.7rem;">Copy</button>
                     </div>
-                    <button class="btn btn-sm btn-outline" style="border-color: currentColor; color: inherit;" onclick="window.activeToolInstance.copyToClipboard('${c}')">Copy</button>
                 </div>
             `;
         }).join('');
     }
 
-    _hexToHsl(hex) {
-        let r = parseInt(hex.slice(1, 3), 16) / 255;
-        let g = parseInt(hex.slice(3, 5), 16) / 255;
-        let b = parseInt(hex.slice(5, 7), 16) / 255;
-        let max = Math.max(r, g, b), min = Math.min(r, g, b);
+    updateGradient() {
+        const grad = document.getElementById('cp-gradient');
+        const gradient = `linear-gradient(90deg, ${this.currentPalette.join(', ')})`;
+        grad.style.background = gradient;
+    }
+
+    updateContrast() {
+        const container = document.getElementById('cp-contrast');
+        if (this.currentPalette.length < 2) {
+            container.innerHTML = '<p style="opacity:0.5; font-size:0.85rem;">Need at least 2 colors</p>';
+            return;
+        }
+
+        const getBadge = (ratio) => {
+            if (ratio >= 7) return '<span style="background:#22c55e; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem;font-weight:700;">AAA</span>';
+            if (ratio >= 4.5) return '<span style="background:#3b82f6; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem;font-weight:700;">AA</span>';
+            return '<span style="background:#ef4444; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem;font-weight:700;">FAIL</span>';
+        };
+
+        const c1 = this.currentPalette[0];
+        const c2 = this.currentPalette[1];
+        const ratio = this.getContrastRatio(c1, c2).toFixed(2);
+
+        container.innerHTML = `
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div style="width: 40px; height: 40px; background: ${c1}; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2);"></div>
+                <span style="font-weight: 700;">vs</span>
+                <div style="width: 40px; height: 40px; background: ${c2}; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2);"></div>
+                <div style="flex:1; font-family: var(--font-mono);">Ratio: <strong>${ratio}:1</strong></div>
+                ${getBadge(ratio)}
+            </div>
+        `;
+    }
+
+    updateExport() {
+        const fmt = document.getElementById('cp-fmt').value;
+        const code = document.getElementById('cp-code');
+        let output = '';
+
+        switch (fmt) {
+            case 'css':
+                output = ':root {\n' + this.currentPalette.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n') + '\n}';
+                break;
+            case 'scss':
+                output = this.currentPalette.map((c, i) => `$color-${i + 1}: ${c};`).join('\n');
+                break;
+            case 'json':
+                output = JSON.stringify(this.currentPalette, null, 2);
+                break;
+            case 'tailwind':
+                output = `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n        custom: {\n${this.currentPalette.map((c, i) => `          ${(i + 1) * 100}: '${c}',`).join('\n')}\n        }\n      }\n    }\n  }\n}`;
+                break;
+            case 'swift':
+                output = this.currentPalette.map((c, i) => {
+                    const rgb = this.hexToRgb(c);
+                    return `let color${i + 1} = UIColor(red: ${(rgb.r / 255).toFixed(3)}, green: ${(rgb.g / 255).toFixed(3)}, blue: ${(rgb.b / 255).toFixed(3)}, alpha: 1.0)`;
+                }).join('\n');
+                break;
+        }
+
+        code.textContent = output;
+    }
+
+    hexToRgb(hex) {
+        return {
+            r: parseInt(hex.slice(1, 3), 16),
+            g: parseInt(hex.slice(3, 5), 16),
+            b: parseInt(hex.slice(5, 7), 16)
+        };
+    }
+
+    hexToHsl(hex) {
+        let { r, g, b } = this.hexToRgb(hex);
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
         let h, s, l = (max + min) / 2;
-        if (max === min) h = s = 0;
-        else {
-            let d = max - min;
+
+        if (max === min) {
+            h = s = 0;
+        } else {
+            const d = max - min;
             s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
             switch (max) {
                 case r: h = (g - b) / d + (g < b ? 6 : 0); break;
@@ -213,10 +326,11 @@ class ColorPaletteTool extends BaseTool {
             }
             h /= 6;
         }
+
         return { h: h * 360, s: s * 100, l: l * 100 };
     }
 
-    _hslToHex(h, s, l) {
+    hslToHex(h, s, l) {
         l /= 100;
         const a = s * Math.min(l, 1 - l) / 100;
         const f = n => {
@@ -227,13 +341,28 @@ class ColorPaletteTool extends BaseTool {
         return `#${f(0)}${f(8)}${f(4)}`;
     }
 
-    _isDark(hex) {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
+    isDark(hex) {
+        const { r, g, b } = this.hexToRgb(hex);
         return (r * 0.299 + g * 0.587 + b * 0.114) < 128;
+    }
+
+    getLuminance(hex) {
+        const { r, g, b } = this.hexToRgb(hex);
+        const [rs, gs, bs] = [r, g, b].map(c => {
+            c /= 255;
+            return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+    }
+
+    getContrastRatio(hex1, hex2) {
+        const l1 = this.getLuminance(hex1);
+        const l2 = this.getLuminance(hex2);
+        const lighter = Math.max(l1, l2);
+        const darker = Math.min(l1, l2);
+        return (lighter + 0.05) / (darker + 0.05);
     }
 }
 
 // Register tool
-window.initColorPaletteLogic = ColorPaletteTool;
+window.initColorPaletteLogic = ColorPaletteProTool;
