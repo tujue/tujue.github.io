@@ -195,19 +195,26 @@ class MetadataViewerTool extends BaseTool {
     const output = document.getElementById('meta-output');
     const mapBtn = document.getElementById('meta-btn-map');
 
-    // Flatten for view
-    const flatten = {};
-    const groups = {
-      '0th': exifData['0th'],
-      'Exif': exifData['Exif'],
-      'GPS': exifData['GPS'],
-      '1st': exifData['1st']
+    // Tag Name Mappings (Common EXIF tags)
+    const tagNames = {
+      '271': 'Make', '272': 'Model', '274': 'Orientation', '282': 'XResolution', '283': 'YResolution',
+      '296': 'ResolutionUnit', '305': 'Software', '306': 'DateTime', '315': 'Artist',
+      '33432': 'Copyright', '33434': 'ExposureTime', '33437': 'FNumber', '34850': 'ExposureProgram',
+      '34855': 'ISOSpeedRatings', '36867': 'DateTimeOriginal', '36868': 'DateTimeDigitized',
+      '37377': 'ShutterSpeedValue', '37378': 'ApertureValue', '37380': 'ExposureBias',
+      '37383': 'MeteringMode', '37385': 'Flash', '37386': 'FocalLength', '37510': 'UserComment',
+      '40961': 'ColorSpace', '40962': 'PixelXDimension', '40963': 'PixelYDimension',
+      '41486': 'FocalPlaneXResolution', '41487': 'FocalPlaneYResolution', '41495': 'SensingMethod',
+      '1': 'GPSLatitudeRef', '2': 'GPSLatitude', '3': 'GPSLongitudeRef', '4': 'GPSLongitude',
+      '5': 'GPSAltitudeRef', '6': 'GPSAltitude', '7': 'GPSTimeStamp', '29': 'GPSDateStamp'
     };
 
-    // Helper to get tag name (piexif uses tag IDs)
-    // We will just list raw IDs or try to map common ones if possible
-    // Piexif doesn't provide names built-in.
-    // For now we list keys (IDs) and values.
+    const groups = {
+      '0th': exifData['0th'] || {},
+      'Exif': exifData['Exif'] || {},
+      'GPS': exifData['GPS'] || {},
+      '1st': exifData['1st'] || {}
+    };
 
     let gpsLat = null;
     let gpsLng = null;
@@ -250,25 +257,58 @@ class MetadataViewerTool extends BaseTool {
     if (zeroth[this.piexif.ImageIFD.Artist]) document.getElementById('ed-artist').value = zeroth[this.piexif.ImageIFD.Artist];
     if (exif[this.piexif.ExifIFD.DateTimeOriginal]) document.getElementById('ed-date').value = exif[this.piexif.ExifIFD.DateTimeOriginal];
 
-    // Show raw table
-    html += `<table style="width:100%; font-size:0.75rem; border-collapse:collapse;">`;
-    const addRow = (section, id, val) => {
-      html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:6px; color:var(--primary); font-weight:700;">${section}</td><td style="padding:6px; color:#aaa;">Tag:${id}</td><td style="padding:6px; word-break:break-all;">${val}</td></tr>`;
+    // Format value for display
+    const formatValue = (val) => {
+      if (val === null || val === undefined) return 'N/A';
+      if (typeof val === 'string') return val;
+      if (typeof val === 'number') return val.toString();
+      if (Array.isArray(val)) {
+        // Check if it's a rational number array [[num, denom]]
+        if (val.length === 2 && Array.isArray(val[0]) && val[0].length === 2) {
+          return `${val[0][0]}/${val[0][1]}`;
+        }
+        // Check if it's GPS coordinate
+        if (val.length === 3 && Array.isArray(val[0])) {
+          return `${val[0][0]}/${val[0][1]}° ${val[1][0]}/${val[1][1]}' ${val[2][0]}/${val[2][1]}"`;
+        }
+        if (val.length > 10) return '[Array Data]';
+        return JSON.stringify(val);
+      }
+      if (typeof val === 'object') return '[Object Data]';
+      return String(val);
     };
 
-    for (let g in groups) {
-      if (!groups[g]) continue;
-      for (let tag in groups[g]) {
-        if (tag == 'thumbnail') continue; // skip thumb binary
-        let val = groups[g][tag];
-        if (val.length > 50 && typeof val !== 'string') val = '[Binary Data]';
-        addRow(g, tag, val);
+    // Show metadata table
+    html += `<table style="width:100%; font-size:0.75rem; border-collapse:collapse;">`;
+
+    let totalTags = 0;
+    for (let groupName in groups) {
+      const group = groups[groupName];
+      if (!group || Object.keys(group).length === 0) continue;
+
+      for (let tagId in group) {
+        if (tagId === 'thumbnail') continue; // skip binary thumbnail
+
+        const tagName = tagNames[tagId] || `Tag-${tagId}`;
+        const value = formatValue(group[tagId]);
+
+        html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+          <td style="padding:8px; color:var(--primary); font-weight:700; white-space:nowrap;">${groupName}</td>
+          <td style="padding:8px; color:#888; font-size:0.7rem;">${tagName}</td>
+          <td style="padding:8px; word-break:break-all; color:var(--text-primary);">${value}</td>
+        </tr>`;
+        totalTags++;
       }
+    }
+
+    if (totalTags === 0) {
+      html += `<tr><td colspan="3" style="padding:2rem; text-align:center; opacity:0.5;">No metadata found in this image</td></tr>`;
     }
 
     html += `</table>`;
     output.innerHTML = html;
   }
+
 
   _updateExif() {
     // Create new exif obj
