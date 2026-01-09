@@ -15,6 +15,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// State Cache for UI Persistence
+let cachedToolCount = '...';
+let cachedCopyCount = '...';
+
+// UI Sync Helper - Ensures stats persist even if DOM is refreshed
+const syncUI = () => {
+    const toolEl = document.getElementById('tools-used');
+    const copyEl = document.getElementById('total-copies');
+
+    // Update only if value is valid and different
+    if (toolEl && cachedToolCount !== '...' && toolEl.innerText !== cachedToolCount) {
+        toolEl.innerText = cachedToolCount;
+    }
+    if (copyEl && cachedCopyCount !== '...' && copyEl.innerText !== cachedCopyCount) {
+        copyEl.innerText = cachedCopyCount;
+    }
+};
+
+// Run sync periodically to fix any DOM resets caused by tools/routers
+setInterval(syncUI, 500);
+
 // Global Firebase Manager
 window.tulparFirebase = {
     // Increment total tools used count
@@ -34,50 +55,20 @@ window.tulparFirebase = {
     }
 };
 
-// Listen for Realtime Updates and Update UI
-// Wait for DOM to be ready to attach listeners
-const updateStatsUI = () => {
-    // Tools Used Listener
-    const toolsRef = ref(db, 'stats/toolsUsed');
-    onValue(toolsRef, (snapshot) => {
-        const count = snapshot.val() || 0;
-        // Update DOM elements - targeting elements by ID or Class
-        const toolEls = document.querySelectorAll('#tools-used');
-        toolEls.forEach(el => {
-            // Animate number change
-            animateValue(el, parseInt(el.innerText.replace(/,/g, '')) || 0, count, 1000);
-        });
-    });
-
-    // Copies Listener
-    const copiesRef = ref(db, 'stats/copies');
-    onValue(copiesRef, (snapshot) => {
-        const count = snapshot.val() || 0;
-        const copyEls = document.querySelectorAll('#total-copies');
-        copyEls.forEach(el => {
-            animateValue(el, parseInt(el.innerText.replace(/,/g, '')) || 0, count, 1000);
-        });
-    });
-};
-
-function animateValue(obj, start, end, duration) {
-    if (start === end) return;
-    let startTimestamp = null;
-    const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
-        if (progress < 1) {
-            window.requestAnimationFrame(step);
-        } else {
-            obj.innerHTML = end.toLocaleString();
-        }
-    };
-    window.requestAnimationFrame(step);
-}
-
-// Start listening immediately
-updateStatsUI();
-
-console.log('🔥 Tulpar Stats: Firebase initialized');
+// Signal that Firebase is ready
 window.tulparFirebaseLoaded = true;
+
+// Listen for Realtime Updates
+const toolsRef = ref(db, 'stats/toolsUsed');
+onValue(toolsRef, (snapshot) => {
+    cachedToolCount = (snapshot.val() || 0).toLocaleString();
+    syncUI();
+});
+
+const copiesRef = ref(db, 'stats/copies');
+onValue(copiesRef, (snapshot) => {
+    cachedCopyCount = (snapshot.val() || 0).toLocaleString();
+    syncUI();
+});
+
+console.log('🔥 Tulpar Stats: Live & Auto-Sync Active');
