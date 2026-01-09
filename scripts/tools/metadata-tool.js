@@ -180,18 +180,31 @@ class MetadataViewerTool extends BaseTool {
       document.getElementById('meta-prompt').style.display = 'none';
       document.getElementById('meta-edit-panel').style.display = 'block';
 
-      try {
-        // Read Exif
-        const exifObj = this.piexif.load(this.currentDataUrl);
-        this._renderResults(exifObj);
-      } catch (err) {
-        output.innerHTML = `<div style="color:var(--danger); padding:2rem;">Error: ${err.message}</div>`;
-      }
+      const img = new Image();
+      img.onload = () => {
+        const basicInfo = {
+          width: img.width,
+          height: img.height,
+          name: file.name,
+          size: (file.size / 1024).toFixed(2) + ' KB',
+          type: file.type
+        };
+
+        try {
+          // Read Exif
+          const exifObj = this.piexif.load(this.currentDataUrl);
+          this._renderResults(exifObj, basicInfo);
+        } catch (err) {
+          // Fallback if piexif fails (e.g. for PNGs)
+          this._renderResults({}, basicInfo);
+        }
+      };
+      img.src = this.currentDataUrl;
     };
     reader.readAsDataURL(file);
   }
 
-  _renderResults(exifData) {
+  _renderResults(exifData, basicInfo) {
     const output = document.getElementById('meta-output');
     const mapBtn = document.getElementById('meta-btn-map');
 
@@ -223,6 +236,7 @@ class MetadataViewerTool extends BaseTool {
     // Parse GPS
     if (groups.GPS && groups.GPS[this.piexif.GPSIFD.GPSLatitude] && groups.GPS[this.piexif.GPSIFD.GPSLongitude]) {
       const toDecimal = (gpsArr, ref) => {
+        if (!gpsArr || gpsArr.length < 3) return 0;
         const d = gpsArr[0][0] / gpsArr[0][1];
         const m = gpsArr[1][0] / gpsArr[1][1];
         const s = gpsArr[2][0] / gpsArr[2][1];
@@ -236,6 +250,21 @@ class MetadataViewerTool extends BaseTool {
     }
 
     let html = '';
+
+    // Show Basic Info always
+    if (basicInfo) {
+      html += `
+      <div style="margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.1);">
+        <h5 style="color:var(--primary); margin-bottom:0.5rem; font-size:0.8rem;">📦 FILE ASSETS Info</h5>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.7rem;">
+          <div style="opacity:0.6;">Name: <span style="color:var(--text-primary);">${basicInfo.name}</span></div>
+          <div style="opacity:0.6;">Size: <span style="color:var(--text-primary);">${basicInfo.size}</span></div>
+          <div style="opacity:0.6;">Resolution: <span style="color:var(--text-primary);">${basicInfo.width} x ${basicInfo.height} px</span></div>
+          <div style="opacity:0.6;">Type: <span style="color:var(--text-primary);">${basicInfo.type}</span></div>
+        </div>
+      </div>`;
+    }
+
     if (gpsLat != null) {
       mapBtn.style.display = 'block';
       mapBtn.onclick = () => window.open(`https://www.google.com/maps?q=${gpsLat},${gpsLng}`, '_blank');
@@ -250,8 +279,8 @@ class MetadataViewerTool extends BaseTool {
     }
 
     // Populate common fields
-    const zeroth = groups['0th'] || {};
-    const exif = groups['Exif'] || {};
+    const zeroth = exifData['0th'] || {};
+    const exif = exifData['Exif'] || {};
 
     if (zeroth[this.piexif.ImageIFD.Make]) document.getElementById('ed-make').value = zeroth[this.piexif.ImageIFD.Make];
     if (zeroth[this.piexif.ImageIFD.Model]) document.getElementById('ed-model').value = zeroth[this.piexif.ImageIFD.Model];
@@ -264,25 +293,17 @@ class MetadataViewerTool extends BaseTool {
       if (typeof val === 'string') return val;
       if (typeof val === 'number') return val.toString();
       if (Array.isArray(val)) {
-        // Check if it's a rational number array [[num, denom]]
-        if (val.length === 2 && !Array.isArray(val[0])) {
-          return `${val[0]}/${val[1]}`;
+        if (val.length === 0) return '[]';
+        // Handle rational: [num, den]
+        if (val.length === 2 && typeof val[0] === 'number' && typeof val[1] === 'number') {
+          return val[1] === 1 ? val[0].toString() : (val[0] / val[1]).toFixed(4);
         }
-        if (val.length === 2 && Array.isArray(val[0]) && val[0].length === 2) {
-          return `${val[0][0]}/${val[0][1]}`;
+        // Handle rational array: [[num, den], ...]
+        if (Array.isArray(val[0]) && val[0].length === 2) {
+          return val.map(v => (v[0] / v[1]).toFixed(2)).join(', ');
         }
-        // Check if it's GPS coordinate
-        if (val.length === 3 && Array.isArray(val[0])) {
-          try {
-            return `${val[0][0]}/${val[0][1]}° ${val[1][0]}/${val[1][1]}' ${val[2][0]}/${val[2][1]}"`;
-          } catch (e) {
-            return JSON.stringify(val);
-          }
-        }
-        if (val.length > 10) return '[Array Data]';
         return JSON.stringify(val);
       }
-      if (typeof val === 'object') return '[Object Data]';
       return String(val);
     };
 
@@ -290,25 +311,22 @@ class MetadataViewerTool extends BaseTool {
     html += `<table style="width:100%; font-size:0.75rem; border-collapse:collapse;">`;
 
     let totalTags = 0;
-    for (let groupName in groups) {
-      const group = groups[groupName];
-      if (!group || typeof group !== 'object') continue;
+    for (let groupName in exifData) {
+      if (groupName === 'thumbnail' || groupName === '0th' || groupName === 'Exif' || groupName === 'GPS' || groupName === '1st' || groupName === 'Interop') {
+        const group = exifData[groupName];
+        if (!group || typeof group !== 'object') continue;
 
-      const keys = Object.keys(group);
-      if (keys.length === 0) continue;
+        for (let tagId in group) {
+          const tagName = tagNames[tagId] || `Tag-${tagId}`;
+          const value = formatValue(group[tagId]);
 
-      for (let tagId of keys) {
-        if (tagId === 'thumbnail') continue; // skip binary thumbnail
-
-        const tagName = tagNames[tagId] || `Tag-${tagId}`;
-        const value = formatValue(group[tagId]);
-
-        html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-          <td style="padding:8px; color:var(--primary); font-weight:700; white-space:nowrap;">${groupName}</td>
-          <td style="padding:8px; color:#888; font-size:0.7rem;">${tagName}</td>
-          <td style="padding:8px; word-break:break-all; color:var(--text-primary);">${value}</td>
-        </tr>`;
-        totalTags++;
+          html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:8px; color:var(--primary); font-weight:700; white-space:nowrap;">${groupName}</td>
+            <td style="padding:8px; color:#888; font-size:0.7rem;">${tagName}</td>
+            <td style="padding:8px; word-break:break-all; color:var(--text-primary);">${value}</td>
+          </tr>`;
+          totalTags++;
+        }
       }
     }
 
@@ -316,10 +334,10 @@ class MetadataViewerTool extends BaseTool {
       const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
       html += `<tr><td colspan="3" style="padding:2rem; text-align:center;">
         <div style="opacity:0.5; margin-bottom:1rem;">
-          ${isTr ? '⚠️ Bu resimde EXIF metadata bulunamadı' : '⚠️ No EXIF metadata found in this image'}
+          ${isTr ? '⚠️ Bu resimde detaylı EXIF metadata bulunamadı' : '⚠️ No detailed EXIF metadata found in this image'}
         </div>
         <div style="font-size:0.7rem; opacity:0.4; line-height:1.5;">
-          ${isTr ? 'Not: Screenshot\'lar, web\'den indirilen resimler veya düzenlenmiş görseller genellikle metadata içermez.' : 'Note: Screenshots, web images, or edited photos often don\'t contain metadata.'}
+          ${isTr ? 'Not: Genel bilgiler yukarıda gösterilmiştir. Screenshot\'lar genellikle detaylı metadata içermez.' : 'Note: General info is shown above. Screenshots often don\'t contain detailed metadata.'}
         </div>
       </td></tr>`;
     }
@@ -327,71 +345,73 @@ class MetadataViewerTool extends BaseTool {
     html += `</table>`;
     output.innerHTML = html;
   }
+}
 
 
-  _updateExif() {
-    // Create new exif obj
-    const exifObj = this.piexif.load(this.currentDataUrl);
-    const zeroth = exifObj['0th'] || {};
-    const exif = exifObj['Exif'] || {};
-    const gps = exifObj['GPS'] || {};
 
-    // Get values
-    const artist = document.getElementById('ed-artist').value;
-    const make = document.getElementById('ed-make').value;
-    const model = document.getElementById('ed-model').value;
-    const date = document.getElementById('ed-date').value;
+_updateExif() {
+  // Create new exif obj
+  const exifObj = this.piexif.load(this.currentDataUrl);
+  const zeroth = exifObj['0th'] || {};
+  const exif = exifObj['Exif'] || {};
+  const gps = exifObj['GPS'] || {};
 
-    if (artist) zeroth[this.piexif.ImageIFD.Artist] = artist;
-    if (make) zeroth[this.piexif.ImageIFD.Make] = make;
-    if (model) zeroth[this.piexif.ImageIFD.Model] = model;
-    if (date) zeroth[this.piexif.ImageIFD.DateTime] = date;
-    if (date) exif[this.piexif.ExifIFD.DateTimeOriginal] = date;
+  // Get values
+  const artist = document.getElementById('ed-artist').value;
+  const make = document.getElementById('ed-make').value;
+  const model = document.getElementById('ed-model').value;
+  const date = document.getElementById('ed-date').value;
 
-    // Update GPS (Simplified)
-    // Converting Decimal to DMS is required for Exif
-    const toDMS = (deg) => {
-      const d = Math.floor(Math.abs(deg));
-      const m = Math.floor((Math.abs(deg) - d) * 60);
-      const s = Math.round(((Math.abs(deg) - d) * 60 - m) * 60 * 100);
-      return [[d, 1], [m, 1], [s, 100]]; // rational
-    };
+  if (artist) zeroth[this.piexif.ImageIFD.Artist] = artist;
+  if (make) zeroth[this.piexif.ImageIFD.Make] = make;
+  if (model) zeroth[this.piexif.ImageIFD.Model] = model;
+  if (date) zeroth[this.piexif.ImageIFD.DateTime] = date;
+  if (date) exif[this.piexif.ExifIFD.DateTimeOriginal] = date;
 
-    const lat = parseFloat(document.getElementById('ed-lat').value);
-    const lng = parseFloat(document.getElementById('ed-lng').value);
+  // Update GPS (Simplified)
+  // Converting Decimal to DMS is required for Exif
+  const toDMS = (deg) => {
+    const d = Math.floor(Math.abs(deg));
+    const m = Math.floor((Math.abs(deg) - d) * 60);
+    const s = Math.round(((Math.abs(deg) - d) * 60 - m) * 60 * 100);
+    return [[d, 1], [m, 1], [s, 100]]; // rational
+  };
 
-    if (!isNaN(lat) && !isNaN(lng)) {
-      gps[this.piexif.GPSIFD.GPSLatitudeRef] = lat < 0 ? 'S' : 'N';
-      gps[this.piexif.GPSIFD.GPSLatitude] = toDMS(lat);
-      gps[this.piexif.GPSIFD.GPSLongitudeRef] = lng < 0 ? 'W' : 'E';
-      gps[this.piexif.GPSIFD.GPSLongitude] = toDMS(lng);
-    }
+  const lat = parseFloat(document.getElementById('ed-lat').value);
+  const lng = parseFloat(document.getElementById('ed-lng').value);
 
-    exifObj['0th'] = zeroth;
-    exifObj['Exif'] = exif;
-    exifObj['GPS'] = gps;
-
-    const exifStr = this.piexif.dump(exifObj);
-    const newUrl = this.piexif.insert(exifStr, this.currentDataUrl);
-    return newUrl;
+  if (!isNaN(lat) && !isNaN(lng)) {
+    gps[this.piexif.GPSIFD.GPSLatitudeRef] = lat < 0 ? 'S' : 'N';
+    gps[this.piexif.GPSIFD.GPSLatitude] = toDMS(lat);
+    gps[this.piexif.GPSIFD.GPSLongitudeRef] = lng < 0 ? 'W' : 'E';
+    gps[this.piexif.GPSIFD.GPSLongitude] = toDMS(lng);
   }
 
-  _download(url, filename) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-  }
+  exifObj['0th'] = zeroth;
+  exifObj['Exif'] = exif;
+  exifObj['GPS'] = gps;
 
-  _loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = src;
-      s.onload = resolve;
-      s.onerror = reject;
-      document.head.appendChild(s);
-    });
-  }
+  const exifStr = this.piexif.dump(exifObj);
+  const newUrl = this.piexif.insert(exifStr, this.currentDataUrl);
+  return newUrl;
+}
+
+_download(url, filename) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+}
+
+_loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
 }
 
 // Register tool
