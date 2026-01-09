@@ -307,9 +307,18 @@ h4 {
 
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--space-lg);
     animation: fadeInUp 0.8s ease 0.6s backwards;
+}
+
+/* Pyramid layout - center the last 2 items */
+.tools-grid>.tool-card:nth-child(5) {
+    grid-column: 2 / 3;
+}
+
+.tools-grid>.tool-card:nth-child(6) {
+    grid-column: 3 / 4;
 }
 
 /* Tool Card - Glassmorphism design */
@@ -800,6 +809,18 @@ select option {
 }
 
 /* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 1024px) {
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Reset pyramid on tablets - just 2 columns */
+    .tools-grid>.tool-card:nth-child(5),
+    .tools-grid>.tool-card:nth-child(6) {
+        grid-column: auto;
+    }
+}
+
 @media (max-width: 768px) {
     :root {
         --text-5xl: 2rem;
@@ -2323,6 +2344,7 @@ select option {
 body.modal-open[data-tool="resume-builder"] {
     overflow: hidden !important;
 }
+
 /* ========== LANGUAGE SELECTOR & MOBILE HEADER FIX ========== */
 .language-dropdown {
     background: var(--surface);
@@ -2354,6 +2376,7 @@ body.modal-open[data-tool="resume-builder"] {
     /* Ensure dropdown is large enough to tap */
     .language-dropdown {
         padding: 0.5rem;
-        font-size: 1rem; /* Better for mobile readability */
+        font-size: 1rem;
+        /* Better for mobile readability */
     }
 }

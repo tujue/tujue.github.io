@@ -109,7 +109,7 @@ class BGRemoverTool extends BaseTool {
 
                 <!-- Main Display: Canvas -->
                 <div class="bgr-main" style="position: relative;">
-                    <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 24px; min-height: 600px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0), linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0); background-size: 20px 20px; background-position: 0 0, 10px 10px; overflow: hidden;">
+                    <div class="card" style="padding: 1.5rem; background: #f8f9fb; border: 1px solid var(--border-color); border-radius: 24px; min-height: 600px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #f0f1f4 25%, transparent 25%, transparent 75%, #f0f1f4 75%, #f0f1f4), linear-gradient(45deg, #f0f1f4 25%, transparent 25%, transparent 75%, #f0f1f4 75%, #f0f1f4); background-color: #fafbfc; background-size: 16px 16px; background-position: 0 0, 8px 8px; overflow: hidden;">
                         
                         <div id="bgr-can-wrap" style="position: relative; display: inline-block;">
                             <canvas id="bgr-canvas" style="max-width: 100%; max-height: 700px; cursor: crosshair; display: none; box-shadow: 0 20px 50px rgba(0,0,0,0.4);"></canvas>

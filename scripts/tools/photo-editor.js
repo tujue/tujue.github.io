@@ -39,7 +39,7 @@ class PhotoEditorTool extends BaseTool {
             reset: 'Sıfırla',
             placeholder: 'Düzenlemeye başlamak için bir fotoğraf yükleyin',
             tips: { rotL: 'Sola Döndür', rotR: 'Sağa Döndür', flH: 'Yatay Çevir', flV: 'Dikey Çevir' },
-            presetNames: { cin: 'Sinematik 🎬', vin: 'Vintage 🎞️', neon: 'Neon ⚡', bnw: 'Siyah Beyaz 🌑', warm: 'Sıcak ☀️' }
+            presetNames: { cin: 'Sinematik 🎬', vin: 'Vintage 🎞️', neon: 'Neon ⚡', bnw: 'Siyah Beyaz 🌑', warm: 'Sıcak ☀️', cool: 'Soğuk ❄️', drama: 'Dramatik 🎭', sunset: 'Gün Batımı 🌅', retro: 'Retro 📻', dream: 'Rüya 💭' }
         } : {
             title: 'Advanced Photo Editor',
             upload: 'Upload Photo 📸',
@@ -51,7 +51,7 @@ class PhotoEditorTool extends BaseTool {
             reset: 'Reset All',
             placeholder: 'Upload a photo to start editing',
             tips: { rotL: 'Rotate L', rotR: 'Rotate R', flH: 'Flip H', flV: 'Flip V' },
-            presetNames: { cin: 'Cinematic 🎬', vin: 'Vintage 🎞️', neon: 'Neon ⚡', bnw: 'B&W 🌑', warm: 'Warm ☀️' }
+            presetNames: { cin: 'Cinematic 🎬', vin: 'Vintage 🎞️', neon: 'Neon ⚡', bnw: 'B&W 🌑', warm: 'Warm ☀️', cool: 'Cool ❄️', drama: 'Dramatic 🎭', sunset: 'Sunset 🌅', retro: 'Retro 📻', dream: 'Dreamy 💭' }
         };
 
         const filterControls = [
@@ -133,6 +133,11 @@ class PhotoEditorTool extends BaseTool {
                         <button class="btn btn-sm btn-outline pe-preset" data-preset="neon">${txt.presetNames.neon}</button>
                         <button class="btn btn-sm btn-outline pe-preset" data-preset="bnw">${txt.presetNames.bnw}</button>
                         <button class="btn btn-sm btn-outline pe-preset" data-preset="warm">${txt.presetNames.warm}</button>
+                        <button class="btn btn-sm btn-outline pe-preset" data-preset="cool">${txt.presetNames.cool}</button>
+                        <button class="btn btn-sm btn-outline pe-preset" data-preset="drama">${txt.presetNames.drama}</button>
+                        <button class="btn btn-sm btn-outline pe-preset" data-preset="sunset">${txt.presetNames.sunset}</button>
+                        <button class="btn btn-sm btn-outline pe-preset" data-preset="retro">${txt.presetNames.retro}</button>
+                        <button class="btn btn-sm btn-outline pe-preset" data-preset="dream">${txt.presetNames.dream}</button>
                     </div>
                 </div>
             </div>
@@ -257,6 +262,11 @@ class PhotoEditorTool extends BaseTool {
                 else if (p === 'neon') { set('saturate', 180); set('contrast', 120); set('bright', 110); }
                 else if (p === 'bnw') { set('gray', 100); set('contrast', 110); }
                 else if (p === 'warm') { set('sepia', 30); set('bright', 105); set('saturate', 120); }
+                else if (p === 'cool') { set('saturate', 60); set('contrast', 105); set('bright', 95); }
+                else if (p === 'drama') { set('contrast', 160); set('saturate', 70); set('bright', 80); }
+                else if (p === 'sunset') { set('sepia', 40); set('saturate', 140); set('bright', 108); set('contrast', 110); }
+                else if (p === 'retro') { set('sepia', 45); set('contrast', 90); set('saturate', 110); set('bright', 95); }
+                else if (p === 'dream') { set('blur', 2); set('bright', 115); set('saturate', 130); set('contrast', 90); }
 
                 this._apply();
             };
@@ -302,13 +312,17 @@ class PhotoEditorTool extends BaseTool {
         const angle = Math.abs(this.currentRotation % 360);
         const isVertical = angle === 90 || angle === 270;
 
-        // Resize canvas to fit the rotated image
+        // Get blur value for padding calculation
+        const blurValue = parseInt(document.getElementById('pe-in-blur').value || 0);
+        const padding = blurValue * 2; // Padding proportional to blur
+
+        // Resize canvas with padding for blur
         if (isVertical) {
-            this.canvas.width = this.originalImage.height;
-            this.canvas.height = this.originalImage.width;
+            this.canvas.width = this.originalImage.height + padding * 2;
+            this.canvas.height = this.originalImage.width + padding * 2;
         } else {
-            this.canvas.width = this.originalImage.width;
-            this.canvas.height = this.originalImage.height;
+            this.canvas.width = this.originalImage.width + padding * 2;
+            this.canvas.height = this.originalImage.height + padding * 2;
         }
 
         // Get filter values
@@ -316,18 +330,18 @@ class PhotoEditorTool extends BaseTool {
 
         this.ctx.save();
 
-        // Apply Filters (blur will be handled by CSS filter on canvas context)
+        // Apply Filters
         this.ctx.filter = `brightness(${b('bright')}%) contrast(${b('contrast')}%) saturate(${b('saturate')}%) blur(${b('blur')}px) sepia(${b('sepia')}%) grayscale(${b('gray')}%)`;
 
         // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Apply transformations (rotation, flip)
+        // Apply transformations (rotation, flip) - with padding offset
         this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
         this.ctx.rotate((this.currentRotation * Math.PI) / 180);
         this.ctx.scale(this.flipH, this.flipV);
 
-        // Draw image centered at original size - no scaling
+        // Draw image centered
         this.ctx.drawImage(
             this.originalImage,
             -this.originalImage.width / 2,

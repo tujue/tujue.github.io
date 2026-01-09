@@ -424,19 +424,80 @@ class JSONMasterTool extends BaseTool {
             const delim = opts.delimiter || ',';
             const lines = csvStr.trim().split('\n');
             if (lines.length < 1) return { success: false, message: 'Empty CSV' };
-            const headers = opts.header ? lines[0].split(delim).map(h => h.trim()) : null;
-            const start = opts.header ? 1 : 0;
+
+            // Proper CSV parsing with quoted field support
+            const parseCsvLine = (line) => {
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    const next = line[i + 1];
+
+                    if (char === '"') {
+                        if (inQuotes && next === '"') {
+                            // Escaped quote
+                            current += '"';
+                            i++; // Skip next quote
+                        } else {
+                            // Toggle quotes
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === delim && !inQuotes) {
+                        // Field separator
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+                return values;
+            };
+
+            // Unflatten dot notation keys
+            const unflatten = (obj) => {
+                const result = {};
+                for (const key in obj) {
+                    const parts = key.split('.');
+                    let current = result;
+
+                    for (let i = 0; i < parts.length; i++) {
+                        const part = parts[i];
+                        if (i === parts.length - 1) {
+                            // Last part - assign value
+                            current[part] = obj[key];
+                        } else {
+                            // Intermediate part - ensure object exists
+                            if (!current[part]) current[part] = {};
+                            current = current[part];
+                        }
+                    }
+                }
+                return result;
+            };
+
+            const headers = opts.header !== false ? parseCsvLine(lines[0]) : null;
+            const start = opts.header !== false ? 1 : 0;
             const result = [];
+
             for (let i = start; i < lines.length; i++) {
-                const values = lines[i].split(delim);
+                if (!lines[i].trim()) continue;
+                const values = parseCsvLine(lines[i]);
+
                 if (headers) {
-                    const obj = {};
-                    headers.forEach((h, idx) => obj[h] = values[idx]?.trim());
-                    result.push(obj);
+                    const flatObj = {};
+                    headers.forEach((h, idx) => {
+                        flatObj[h] = values[idx] || '';
+                    });
+                    // Unflatten to nested structure
+                    result.push(unflatten(flatObj));
                 } else {
                     result.push(values);
                 }
             }
+
             return { success: true, result: JSON.stringify(result, null, 2) };
         } catch (e) { return { success: false, message: e.message }; }
     }
@@ -490,41 +551,72 @@ class JSONMasterTool extends BaseTool {
         try {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+
             const xmlToJson = (xml) => {
                 let obj = {};
-                if (xml.nodeType === 1) { // element
-                    if (xml.attributes.length > 0) {
-                        obj["@attributes"] = {};
-                        for (let j = 0; j < xml.attributes.length; j++) {
-                            let attribute = xml.attributes.item(j);
-                            obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
-                        }
+
+                // Handle attributes
+                if (xml.nodeType === 1 && xml.attributes.length > 0) {
+                    for (let j = 0; j < xml.attributes.length; j++) {
+                        const attr = xml.attributes.item(j);
+                        obj['@' + attr.nodeName] = attr.nodeValue;
                     }
-                } else if (xml.nodeType === 3) { // text
-                    obj = xml.nodeValue;
                 }
+
+                // Handle child nodes
                 if (xml.hasChildNodes()) {
-                    for (let i = 0; i < xml.childNodes.length; i++) {
-                        let item = xml.childNodes.item(i);
-                        let nodeName = item.nodeName;
-                        if (typeof (obj[nodeName]) == "undefined") {
-                            obj[nodeName] = xmlToJson(item);
-                        } else {
-                            if (typeof (obj[nodeName].push) == "undefined") {
-                                let old = obj[nodeName];
-                                obj[nodeName] = [];
-                                obj[nodeName].push(old);
+                    const children = Array.from(xml.childNodes);
+
+                    // Filter out whitespace-only text nodes
+                    const meaningfulChildren = children.filter(node => {
+                        if (node.nodeType === 3) { // text node
+                            return node.nodeValue.trim() !== '';
+                        }
+                        return true;
+                    });
+
+                    // If only one text node, return its value directly
+                    if (meaningfulChildren.length === 1 && meaningfulChildren[0].nodeType === 3) {
+                        return convertType(meaningfulChildren[0].nodeValue.trim());
+                    }
+
+                    // Process element nodes
+                    for (const child of meaningfulChildren) {
+                        if (child.nodeType === 1) { // element node
+                            const nodeName = child.nodeName;
+                            const childValue = xmlToJson(child);
+
+                            if (obj[nodeName] === undefined) {
+                                obj[nodeName] = childValue;
+                            } else {
+                                // Multiple nodes with same name -> array
+                                if (!Array.isArray(obj[nodeName])) {
+                                    obj[nodeName] = [obj[nodeName]];
+                                }
+                                obj[nodeName].push(childValue);
                             }
-                            obj[nodeName].push(xmlToJson(item));
                         }
                     }
                 }
+
                 return obj;
             };
-            const json = xmlToJson(xmlDoc);
+
+            // Convert string values to proper types
+            const convertType = (val) => {
+                if (val === 'true') return true;
+                if (val === 'false') return false;
+                if (val === 'null') return null;
+                if (!isNaN(val) && val.trim() !== '') return Number(val);
+                return val;
+            };
+
+            const json = xmlToJson(xmlDoc.documentElement);
+
             return { success: true, result: JSON.stringify(json, null, 2) };
         } catch (e) { return { success: false, message: e.message }; }
     }
+
 
     generateTypes(jsonStr, rootName, lang) {
         let obj;

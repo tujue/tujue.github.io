@@ -205,6 +205,7 @@ class MetadataViewerTool extends BaseTool {
       '37383': 'MeteringMode', '37385': 'Flash', '37386': 'FocalLength', '37510': 'UserComment',
       '40961': 'ColorSpace', '40962': 'PixelXDimension', '40963': 'PixelYDimension',
       '41486': 'FocalPlaneXResolution', '41487': 'FocalPlaneYResolution', '41495': 'SensingMethod',
+      '256': 'ImageWidth', '257': 'ImageLength',
       '1': 'GPSLatitudeRef', '2': 'GPSLatitude', '3': 'GPSLongitudeRef', '4': 'GPSLongitude',
       '5': 'GPSAltitudeRef', '6': 'GPSAltitude', '7': 'GPSTimeStamp', '29': 'GPSDateStamp'
     };
@@ -264,12 +265,19 @@ class MetadataViewerTool extends BaseTool {
       if (typeof val === 'number') return val.toString();
       if (Array.isArray(val)) {
         // Check if it's a rational number array [[num, denom]]
+        if (val.length === 2 && !Array.isArray(val[0])) {
+          return `${val[0]}/${val[1]}`;
+        }
         if (val.length === 2 && Array.isArray(val[0]) && val[0].length === 2) {
           return `${val[0][0]}/${val[0][1]}`;
         }
         // Check if it's GPS coordinate
         if (val.length === 3 && Array.isArray(val[0])) {
-          return `${val[0][0]}/${val[0][1]}° ${val[1][0]}/${val[1][1]}' ${val[2][0]}/${val[2][1]}"`;
+          try {
+            return `${val[0][0]}/${val[0][1]}° ${val[1][0]}/${val[1][1]}' ${val[2][0]}/${val[2][1]}"`;
+          } catch (e) {
+            return JSON.stringify(val);
+          }
         }
         if (val.length > 10) return '[Array Data]';
         return JSON.stringify(val);
@@ -284,9 +292,12 @@ class MetadataViewerTool extends BaseTool {
     let totalTags = 0;
     for (let groupName in groups) {
       const group = groups[groupName];
-      if (!group || Object.keys(group).length === 0) continue;
+      if (!group || typeof group !== 'object') continue;
 
-      for (let tagId in group) {
+      const keys = Object.keys(group);
+      if (keys.length === 0) continue;
+
+      for (let tagId of keys) {
         if (tagId === 'thumbnail') continue; // skip binary thumbnail
 
         const tagName = tagNames[tagId] || `Tag-${tagId}`;
@@ -302,7 +313,15 @@ class MetadataViewerTool extends BaseTool {
     }
 
     if (totalTags === 0) {
-      html += `<tr><td colspan="3" style="padding:2rem; text-align:center; opacity:0.5;">No metadata found in this image</td></tr>`;
+      const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+      html += `<tr><td colspan="3" style="padding:2rem; text-align:center;">
+        <div style="opacity:0.5; margin-bottom:1rem;">
+          ${isTr ? '⚠️ Bu resimde EXIF metadata bulunamadı' : '⚠️ No EXIF metadata found in this image'}
+        </div>
+        <div style="font-size:0.7rem; opacity:0.4; line-height:1.5;">
+          ${isTr ? 'Not: Screenshot\'lar, web\'den indirilen resimler veya düzenlenmiş görseller genellikle metadata içermez.' : 'Note: Screenshots, web images, or edited photos often don\'t contain metadata.'}
+        </div>
+      </td></tr>`;
     }
 
     html += `</table>`;
