@@ -126,18 +126,21 @@ class PhotoEditorTool extends BaseTool {
                         <canvas id="pe-canvas" style="max-width: 100%; max-height: 80vh; border-radius: 4px; display: none; box-shadow: 0 30px 60px rgba(0,0,0,0.8);"></canvas>
                     </div>
 
-                    <div class="card" style="margin-top: 1.5rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; display: flex; gap: 10px; overflow-x: auto; white-space: nowrap;">
-                        <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-right: 10px; display: flex; align-items: center;">${txt.presets}:</span>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="cinematic">${txt.presetNames.cin}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="vintage">${txt.presetNames.vin}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="neon">${txt.presetNames.neon}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="bnw">${txt.presetNames.bnw}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="warm">${txt.presetNames.warm}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="cool">${txt.presetNames.cool}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="drama">${txt.presetNames.drama}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="sunset">${txt.presetNames.sunset}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="retro">${txt.presetNames.retro}</button>
-                        <button class="btn btn-sm btn-outline pe-preset" data-preset="dream">${txt.presetNames.dream}</button>
+
+                    <div class="card" style="margin-top: 1.5rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px;">
+                        <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; display: block;">${txt.presets}:</span>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="cinematic">${txt.presetNames.cin}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="vintage">${txt.presetNames.vin}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="neon">${txt.presetNames.neon}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="bnw">${txt.presetNames.bnw}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="warm">${txt.presetNames.warm}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="cool">${txt.presetNames.cool}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="drama">${txt.presetNames.drama}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="sunset">${txt.presetNames.sunset}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="retro">${txt.presetNames.retro}</button>
+                            <button class="btn btn-sm btn-outline pe-preset" data-preset="dream">${txt.presetNames.dream}</button>
+                        </div>
                     </div>
                 </div>
             </div>
