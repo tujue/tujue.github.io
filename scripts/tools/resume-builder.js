@@ -1573,6 +1573,12 @@ class ResumeBuilder {
         const originalTitle = document.title;
         const name = this.state.personal.name || 'CV';
         document.title = `CV_${name.replace(/\s+/g, '_')}`;
+
+        // Firefox specific hint
+        if (navigator.userAgent.toLowerCase().includes('firefox')) {
+            alert(this.t('resume.firefoxHint') || 'Firefox Tip: Set Margins to "None" in Print Settings.');
+        }
+
         window.print();
         setTimeout(() => { document.title = originalTitle; }, 1000);
     }

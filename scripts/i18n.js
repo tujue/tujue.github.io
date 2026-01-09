@@ -120,6 +120,7 @@ const translations = {
         'resume.year': 'Year',
         'resume.edit': 'EDIT',
         'resume.version': 'Premium Resume Builder',
+        'resume.firefoxHint': '⚠️ Firefox Compatibility Warning\n\nYou may experience layout issues due to Firefox rendering.\n\nTo fix:\n• In Print Settings, set "Margins" to "NONE".\n\n✅ For the best experience, we recommend using Chrome or Edge.',
 
         // Theme Names
         'resume.theme.modern': 'Modern',
@@ -479,6 +480,7 @@ const translations = {
         'resume.year': 'Yıl',
         'resume.edit': 'DÜZENLE',
         'resume.version': 'Premium CV Oluşturucu',
+        'resume.firefoxHint': '⚠️ Firefox Uyumluluk Uyarısı\n\nFirefox tarayıcısından kaynaklı yazdırma sorunları yaşayabilirsiniz.\n\nÇözüm için yazdırma ekranında:\n• "Daha Fazla Ayar" > "Kenar Boşlukları"nı "YOK (NONE)" olarak seçin.\n\n✅ En iyi ve hatasız deneyim için Chrome veya Edge tarayıcılarını öneririz.',
 
         // Tema İsimleri
         'resume.theme.modern': 'Modern',
