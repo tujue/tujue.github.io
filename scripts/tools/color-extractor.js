@@ -423,7 +423,16 @@ class ImageStudioTool extends BaseTool {
             // Transforms
             ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate(ops.transform.rotate * Math.PI / 180);
-            ctx.scale(ops.transform.flipH, ops.transform.flipV);
+
+            // Fix blur edges by scaling up (cropping transparent edges)
+            const blurVal = parseInt(f.blur) || 0;
+            let s = 1;
+            if (blurVal > 0) {
+                const minDim = Math.min(w, h);
+                s = (minDim + blurVal * 4) / minDim;
+            }
+
+            ctx.scale(ops.transform.flipH * s, ops.transform.flipV * s);
 
             // Draw
             ctx.drawImage(img, -w / 2, -h / 2, w, h);

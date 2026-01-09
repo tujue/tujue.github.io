@@ -216,6 +216,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         }
     }, 500);
+
+    // Check if we should auto-reopen CV Builder after reset
+    if (sessionStorage.getItem('reopen_cv_builder') === 'true') {
+        sessionStorage.removeItem('reopen_cv_builder');
+        // Wait for renderer to be ready, then open the tool
+        setTimeout(() => {
+            if (window.loadTool) {
+                window.loadTool('resume-builder');
+            }
+        }, 1000);
+    }
 });
 
 

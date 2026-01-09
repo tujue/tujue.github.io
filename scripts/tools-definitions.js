@@ -187,10 +187,10 @@ const TOOLS = [
     },
     {
         id: 'resume-builder',
-        name: 'CV Builder',
+        name: 'CV Studio PRO',
         icon: '👔',
-        description: 'Create professional resumes instantly with live preview and PDF export',
-        tags: ['Resume', 'CV', 'Builder', 'PDF'],
+        description: 'Create professional resumes instantly with 15+ Premium Themes, advanced typography, and PDF export.',
+        tags: ['Resume', 'CV', 'Builder', 'PDF', 'Design'],
         color: 'primary',
         category: 'document'
     },

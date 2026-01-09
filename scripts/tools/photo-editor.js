@@ -315,17 +315,13 @@ class PhotoEditorTool extends BaseTool {
         const angle = Math.abs(this.currentRotation % 360);
         const isVertical = angle === 90 || angle === 270;
 
-        // Get blur value for padding calculation
-        const blurValue = parseInt(document.getElementById('pe-in-blur').value || 0);
-        const padding = blurValue * 2; // Padding proportional to blur
-
-        // Resize canvas with padding for blur
+        // Resize canvas (no padding to prevent transparency borders)
         if (isVertical) {
-            this.canvas.width = this.originalImage.height + padding * 2;
-            this.canvas.height = this.originalImage.width + padding * 2;
+            this.canvas.width = this.originalImage.height;
+            this.canvas.height = this.originalImage.width;
         } else {
-            this.canvas.width = this.originalImage.width + padding * 2;
-            this.canvas.height = this.originalImage.height + padding * 2;
+            this.canvas.width = this.originalImage.width;
+            this.canvas.height = this.originalImage.height;
         }
 
         // Get filter values

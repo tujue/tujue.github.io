@@ -15,6 +15,8 @@ class ColorPaletteProTool extends BaseTool {
             random: 'Rastgele Palet',
             export: 'Dışa Aktar',
             harmony: 'Uyum',
+            checker: 'WCAG Kontrast Kontrolü',
+            copyCode: 'Kodu Kopyala',
             modes: {
                 mono: 'Tek Ton', comp: 'Tamamlayıcı', split: 'Bölünmüş', triad: 'Üçlü',
                 tetrad: 'Dörtlü', analog: 'Bitişik', shades: 'Gölgeler'
@@ -26,6 +28,8 @@ class ColorPaletteProTool extends BaseTool {
             random: 'Random Palette',
             export: 'Export',
             harmony: 'Harmony',
+            checker: 'WCAG Contrast Checker',
+            copyCode: 'Copy Code',
             modes: {
                 mono: 'Monochromatic', comp: 'Complementary', split: 'Split-Comp', triad: 'Triadic',
                 tetrad: 'Tetradic', analog: 'Analogous', shades: 'Shades'
@@ -81,7 +85,7 @@ class ColorPaletteProTool extends BaseTool {
                             </select>
                         </div>
 
-                        <button id="cp-copy" class="btn btn-secondary" style="width: 100%;">📋 Copy Code</button>
+                        <button id="cp-copy" class="btn btn-secondary" style="width: 100%;">📋 ${txt.copyCode}</button>
                     </div>
                 </div>
 
@@ -95,7 +99,7 @@ class ColorPaletteProTool extends BaseTool {
 
                     <!-- WCAG Contrast Checker -->
                     <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 2rem;">
-                        <h5 style="margin-bottom: 1rem; font-size: 0.85rem; text-transform: uppercase; opacity: 0.7;">WCAG Contrast Checker</h5>
+                        <h5 style="margin-bottom: 1rem; font-size: 0.85rem; text-transform: uppercase; opacity: 0.7;">${txt.checker}</h5>
                         <div id="cp-contrast"></div>
                     </div>
 
@@ -245,8 +249,10 @@ class ColorPaletteProTool extends BaseTool {
 
     updateContrast() {
         const container = document.getElementById('cp-contrast');
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+
         if (this.currentPalette.length < 2) {
-            container.innerHTML = '<p style="opacity:0.5; font-size:0.85rem;">Need at least 2 colors</p>';
+            container.innerHTML = `<p style="opacity:0.5; font-size:0.85rem;">${isTr ? 'En az 2 renk gerekli' : 'Need at least 2 colors'}</p>`;
             return;
         }
 
@@ -265,7 +271,7 @@ class ColorPaletteProTool extends BaseTool {
                 <div style="width: 40px; height: 40px; background: ${c1}; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2);"></div>
                 <span style="font-weight: 700;">vs</span>
                 <div style="width: 40px; height: 40px; background: ${c2}; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2);"></div>
-                <div style="flex:1; font-family: var(--font-mono);">Ratio: <strong>${ratio}:1</strong></div>
+                <div style="flex:1; font-family: var(--font-mono);">${isTr ? 'Oran' : 'Ratio'}: <strong>${ratio}:1</strong></div>
                 ${getBadge(ratio)}
             </div>
         `;

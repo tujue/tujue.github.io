@@ -17,13 +17,37 @@ class MetaTagsSEOTool extends BaseTool {
       tabs: { basic: 'Temel', advanced: 'Gelişmiş', schema: 'Schema.org', analytics: 'Analytics' },
       generate: 'Kod Üret',
       copy: 'Kopyala',
-      download: 'HTML İndir'
+      download: 'HTML İndir',
+      lbl: {
+        t: 'SAYFA BAŞLIĞI', d: 'AÇIKLAMA', k: 'ANAHTAR KELİMELER', u: 'SAYFA URL', i: 'GÖRSEL URL',
+        r: 'ROBOT AYARLARI', c: 'CANONICAL URL', l: 'DİL KODU', th: 'TEMA RENGİ',
+        st: 'ŞEMA TÜRÜ', on: 'KURUM ADI', ol: 'KURUM LOGOSU',
+        ga: 'GOOGLE ANALYTICS ID', gtm: 'GTM KİMLİĞİ'
+      },
+      pl: {
+        t: 'Örn: Harika Sayfa Başlığı', d: 'Sayfa içeriği hakkında kısa açıklama...', k: 'seo, meta, etiket, araç',
+        u: 'https://site.com/sayfa', i: 'https://site.com/gorsel.jpg',
+        c: 'https://site.com/orijinal-sayfa', on: 'Şirket Adı', ol: 'https://site.com/logo.png',
+        ga: 'G-XXXXXXXXXX', gtm: 'GTM-XXXXXXX'
+      }
     } : {
       title: 'Advanced SEO Meta Manager',
       tabs: { basic: 'Basic SEO', advanced: 'Advanced', schema: 'Schema.org', analytics: 'Analytics' },
       generate: 'Generate Code',
       copy: 'Copy',
-      download: 'Download HTML'
+      download: 'Download HTML',
+      lbl: {
+        t: 'TITLE', d: 'DESCRIPTION', k: 'KEYWORDS', u: 'URL', i: 'IMAGE_URL',
+        r: 'ROBOTS', c: 'CANONICAL', l: 'LANG', th: 'THEME_COLOR',
+        st: 'SCHEMA_TYPE', on: 'ORG_NAME', ol: 'ORG_LOGO',
+        ga: 'GOOGLE_ANALYTICS', gtm: 'GTM_ID'
+      },
+      pl: {
+        t: 'Your Page Title', d: 'Page description...', k: 'keyword1, keyword2',
+        u: 'https://example.com/page', i: 'https://example.com/image.jpg',
+        c: 'https://example.com/canonical', on: 'Your Company', ol: 'https://example.com/logo.png',
+        ga: 'G-XXXXXXXXXX', gtm: 'GTM-XXXXXXX'
+      }
     };
 
     return `
@@ -50,7 +74,7 @@ class MetaTagsSEOTool extends BaseTool {
 
             <!-- Content -->
             <div style="padding: 1.5rem; max-height: 70vh; overflow-y: auto;">
-              ${this._renderTabs()}
+              ${this._renderTabs(txt)}
             </div>
 
             <!-- Footer Actions -->
@@ -69,8 +93,8 @@ class MetaTagsSEOTool extends BaseTool {
                 <span style="color: #58a6ff;">➜</span> ~/${this.currentTab}.html
               </span>
               <div style="display: flex; gap: 8px;">
-                <button id="seo-copy-quick" class="btn btn-sm" style="background: #21262d; border: 1px solid #30363d; color: #c9d1d9; font-size: 0.7rem; padding: 4px 10px;">Copy</button>
-                <button id="seo-dl-html" class="btn btn-sm" style="background: #238636; border: none; color: white; font-size: 0.7rem; padding: 4px 10px;">Download</button>
+                <button id="seo-copy-quick" class="btn btn-sm" style="background: #21262d; border: 1px solid #30363d; color: #c9d1d9; font-size: 0.7rem; padding: 4px 10px;">${txt.copy}</button>
+                <button id="seo-dl-html" class="btn btn-sm" style="background: #238636; border: none; color: white; font-size: 0.7rem; padding: 4px 10px;">${txt.download}</button>
               </div>
             </div>
             <pre id="seo-output" style="margin: 0; padding: 1.5rem; background: #0d1117; color: #c9d1d9; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.75rem; line-height: 1.6; overflow-x: auto; min-height: 500px; max-height: 75vh; overflow-y: auto;"><!-- Generated meta tags will appear here --></pre>
@@ -89,37 +113,37 @@ class MetaTagsSEOTool extends BaseTool {
     `;
   }
 
-  _renderTabs() {
+  _renderTabs(txt) {
     return `
       <!-- Basic SEO -->
       <div id="seo-cont-basic" class="seo-cont">
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">TITLE:</label><input type="text" id="seo-title" class="form-input" placeholder="Your Page Title" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">DESCRIPTION:</label><textarea id="seo-desc" class="form-input" rows="3" placeholder="Page description..." style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace; resize: none;"></textarea></div>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">KEYWORDS:</label><input type="text" id="seo-keywords" class="form-input" placeholder="keyword1, keyword2" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">URL:</label><input type="text" id="seo-url" class="form-input" placeholder="https://example.com/page" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">IMAGE_URL:</label><input type="text" id="seo-image" class="form-input" placeholder="https://example.com/image.jpg" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.t}:</label><input type="text" id="seo-title" class="form-input" placeholder="${txt.pl.t}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.d}:</label><textarea id="seo-desc" class="form-input" rows="3" placeholder="${txt.pl.d}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace; resize: none;"></textarea></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.k}:</label><input type="text" id="seo-keywords" class="form-input" placeholder="${txt.pl.k}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.u}:</label><input type="text" id="seo-url" class="form-input" placeholder="${txt.pl.u}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.i}:</label><input type="text" id="seo-image" class="form-input" placeholder="${txt.pl.i}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
       </div>
 
       <!-- Advanced -->
       <div id="seo-cont-advanced" class="seo-cont" style="display: none;">
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">ROBOTS:</label><select id="seo-robots" class="form-select" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem;"><option value="index,follow">index, follow</option><option value="noindex,nofollow">noindex, nofollow</option><option value="index,nofollow">index, nofollow</option><option value="noindex,follow">noindex, follow</option></select></div>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">CANONICAL:</label><input type="text" id="seo-canonical" class="form-input" placeholder="https://example.com/canonical" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">LANG:</label><input type="text" id="seo-lang" class="form-input" placeholder="en" value="en" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
-        <div class="form-group"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">THEME_COLOR:</label><input type="color" id="seo-theme" value="#6366f1" style="width: 100%; height: 40px; background: #1e1e1e; border: 1px solid #333; border-radius: 4px;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.r}:</label><select id="seo-robots" class="form-select" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem;"><option value="index,follow">index, follow</option><option value="noindex,nofollow">noindex, nofollow</option><option value="index,nofollow">index, nofollow</option><option value="noindex,follow">noindex, follow</option></select></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.c}:</label><input type="text" id="seo-canonical" class="form-input" placeholder="${txt.pl.c}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.l}:</label><input type="text" id="seo-lang" class="form-input" placeholder="en" value="en" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.th}:</label><input type="color" id="seo-theme" value="#6366f1" style="width: 100%; height: 40px; background: #1e1e1e; border: 1px solid #333; border-radius: 4px;"></div>
       </div>
 
       <!-- Schema -->
       <div id="seo-cont-schema" class="seo-cont" style="display: none;">
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">SCHEMA_TYPE:</label><select id="seo-schema-type" class="form-select" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem;"><option value="WebSite">WebSite</option><option value="Organization">Organization</option><option value="Article">Article</option><option value="Product">Product</option><option value="LocalBusiness">LocalBusiness</option></select></div>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">ORG_NAME:</label><input type="text" id="seo-org-name" class="form-input" placeholder="Your Company" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
-        <div class="form-group"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">ORG_LOGO:</label><input type="text" id="seo-org-logo" class="form-input" placeholder="https://example.com/logo.png" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.st}:</label><select id="seo-schema-type" class="form-select" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem;"><option value="WebSite">WebSite</option><option value="Organization">Organization</option><option value="Article">Article</option><option value="Product">Product</option><option value="LocalBusiness">LocalBusiness</option></select></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.on}:</label><input type="text" id="seo-org-name" class="form-input" placeholder="${txt.pl.on}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.ol}:</label><input type="text" id="seo-org-logo" class="form-input" placeholder="${txt.pl.ol}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
       </div>
 
       <!-- Analytics -->
       <div id="seo-cont-analytics" class="seo-cont" style="display: none;">
         <p style="color: #858585; font-size: 0.7rem; line-height: 1.5; margin-bottom: 1rem;">Add tracking IDs for analytics platforms. Leave empty to skip.</p>
-        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #85e89d; font-size: 0.7rem; margin-bottom: 4px; display: block;">GOOGLE_ANALYTICS:</label><input type="text" id="seo-ga" class="form-input" placeholder="G-XXXXXXXXXX" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
-        <div class="form-group"><label style="color: #85e89d; font-size: 0.7rem; margin-bottom: 4px; display: block;">GTM_ID:</label><input type="text" id="seo-gtm" class="form-input" placeholder="GTM-XXXXXXX" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #85e89d; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.ga}:</label><input type="text" id="seo-ga" class="form-input" placeholder="${txt.pl.ga}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group"><label style="color: #85e89d; font-size: 0.7rem; margin-bottom: 4px; display: block;">${txt.lbl.gtm}:</label><input type="text" id="seo-gtm" class="form-input" placeholder="${txt.pl.gtm}" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
       </div>
     `;
   }
