@@ -174,7 +174,9 @@
                     });
                     console.log('📐 CLS:', clsScore);
                 });
-                clsObserver.observe({ entryTypes: ['layout-shift'] });
+                if (PerformanceObserver.supportedEntryTypes && PerformanceObserver.supportedEntryTypes.includes('layout-shift')) {
+                    clsObserver.observe({ entryTypes: ['layout-shift'] });
+                }
             } catch (e) {
                 // Silently fail
             }

@@ -183,7 +183,8 @@
   </script>
 
   <!-- Apple Touch Icons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%233b82f6'><rect width='100' height='100' rx='20'/><text y='0.85em' x='5' font-size='80'>🐎</text></svg>">
   <meta name="mobile-web-app-capable" content="yes">
   <!-- Legacy iOS support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -450,8 +451,8 @@
     }
 
     #tools-grid {
-      min-height: 600px;
-      /* Pre-allocate height only for the main tools grid to prevent CLS */
+      min-height: 200px;
+      /* Reduced to prevent excessive gap while still giving some CLS protection */
     }
 
     .features-grid {
