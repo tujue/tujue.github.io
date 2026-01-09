@@ -307,17 +307,22 @@ h4 {
 
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: var(--space-lg);
     animation: fadeInUp 0.8s ease 0.6s backwards;
 }
 
+/* Features Grid - Pyramid layout */
+.features-grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+
 /* Pyramid layout - center the last 2 items */
-.tools-grid>.tool-card:nth-child(5) {
+.features-grid>.tool-card:nth-child(5) {
     grid-column: 2 / 3;
 }
 
-.tools-grid>.tool-card:nth-child(6) {
+.features-grid>.tool-card:nth-child(6) {
     grid-column: 3 / 4;
 }
 
@@ -810,13 +815,13 @@ select option {
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 1024px) {
-    .tools-grid {
+    .features-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
     /* Reset pyramid on tablets - just 2 columns */
-    .tools-grid>.tool-card:nth-child(5),
-    .tools-grid>.tool-card:nth-child(6) {
+    .features-grid>.tool-card:nth-child(5),
+    .features-grid>.tool-card:nth-child(6) {
         grid-column: auto;
     }
 }
