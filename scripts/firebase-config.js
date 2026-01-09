@@ -80,3 +80,4 @@ function animateValue(obj, start, end, duration) {
 updateStatsUI();
 
 console.log('🔥 Tulpar Stats: Firebase initialized');
+window.tulparFirebaseLoaded = true;
