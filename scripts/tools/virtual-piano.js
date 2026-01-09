@@ -13,6 +13,7 @@ class VirtualPianoTool extends BaseTool {
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.recordedAudioBlob = null;
+        this.demoTimeouts = [];
     }
 
     renderUI() {
@@ -565,21 +566,35 @@ class VirtualPianoTool extends BaseTool {
             ]
         ];
 
+        // Stop existing demo if any
+        this._stopDemo();
+
         // Pick a random melody
         const melody = melodies[Math.floor(Math.random() * melodies.length)];
 
         melody.forEach(m => {
-            setTimeout(() => {
+            const timeoutId = setTimeout(() => {
                 if (!this.active) return;
                 const n = this.notes.find(x => x.note === m.note);
                 if (n) {
                     this._playNote(n);
-                    setTimeout(() => {
+                    const stopTimeoutId = setTimeout(() => {
                         if (this.active) this._stopNote(n.note);
                     }, m.duration);
+                    this.demoTimeouts.push(stopTimeoutId);
                 }
             }, m.delay);
+            this.demoTimeouts.push(timeoutId);
         });
+    }
+
+    _stopDemo() {
+        // Clear all scheduled melody timeouts
+        this.demoTimeouts.forEach(t => clearTimeout(t));
+        this.demoTimeouts = [];
+
+        // Stop all currently playing oscillators
+        [...this.oscMap.keys()].forEach(noteName => this._stopNote(noteName));
     }
 
     _drawViz() {
@@ -648,7 +663,11 @@ class VirtualPianoTool extends BaseTool {
 
     onClose() {
         this.active = false;
-        if (this.audioCtx) this.audioCtx.close();
+        this._stopDemo();
+        if (this.audioCtx) {
+            this.audioCtx.close();
+            this.audioCtx = null;
+        }
     }
 }
 
