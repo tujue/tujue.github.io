@@ -338,8 +338,15 @@ class JSONMasterTool extends BaseTool {
                 const sql = rows.map(row => {
                     const values = columns.map(col => {
                         const val = row[col];
+                        // NULL handling
                         if (val === undefined || val === null) return 'NULL';
+                        // Boolean handling
+                        if (typeof val === 'boolean') return val ? 'TRUE' : 'FALSE';
+                        // Number handling
+                        if (typeof val === 'number') return String(val);
+                        // String handling (escape single quotes)
                         if (typeof val === 'string') return `'${val.replace(/'/g, "''")}'`;
+                        // Fallback for other types (stringify)
                         return `'${String(val).replace(/'/g, "''")}'`;
                     }).join(', ');
                     return `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${values});`;
@@ -360,19 +367,54 @@ class JSONMasterTool extends BaseTool {
 
     jsonToCsv(jsonStr, opts) {
         try {
-            const arr = JSON.parse(jsonStr);
-            const data = Array.isArray(arr) ? arr : [arr];
-            if (data.length === 0) return { success: false, message: 'Empty JSON array' };
+            const data = JSON.parse(jsonStr);
+            const arr = Array.isArray(data) ? data : [data];
+            if (arr.length === 0) return { success: false, message: 'Empty JSON' };
+
             const delim = opts.delimiter || ',';
-            const keys = Object.keys(data[0]);
-            const header = opts.header ? keys.join(delim) + '\n' : '';
-            const rows = data.map(obj => keys.map(k => {
-                let val = obj[k] === undefined ? '' : obj[k];
-                if (typeof val === 'string' && (val.includes(delim) || val.includes('\n'))) {
-                    val = `"${val.replace(/"/g, '""')}"`;
+
+            // Flatten nested objects with dot notation
+            const flatten = (obj, prefix = '') => {
+                const flattened = {};
+                for (let key in obj) {
+                    if (!obj.hasOwnProperty(key)) continue;
+                    const fullKey = prefix ? `${prefix}.${key}` : key;
+                    const val = obj[key];
+
+                    if (val !== null && typeof val === 'object' && !Array.isArray(val)) {
+                        // Nested object - recurse
+                        Object.assign(flattened, flatten(val, fullKey));
+                    } else if (Array.isArray(val)) {
+                        // Array - join with commas and quote
+                        flattened[fullKey] = val.join(',');
+                    } else {
+                        flattened[fullKey] = val;
+                    }
                 }
-                return val;
-            }).join(delim));
+                return flattened;
+            };
+
+            // Flatten all objects
+            const flatData = arr.map(obj => flatten(obj));
+
+            // Get all unique keys
+            const allKeys = [...new Set(flatData.flatMap(obj => Object.keys(obj)))];
+
+            // Build CSV
+            const header = opts.header !== false ? allKeys.join(delim) + '\n' : '';
+            const rows = flatData.map(obj => {
+                return allKeys.map(k => {
+                    let val = obj[k] !== undefined ? obj[k] : '';
+                    // Convert to string
+                    val = String(val);
+                    // Quote if contains delimiter, newline, or quotes
+                    if (val.includes(delim) || val.includes('\n') || val.includes('"')) {
+                        val = `"${val.replace(/"/g, '""')}"`;
+                    }
+                    return val;
+                }).join(delim);
+            });
+
             return { success: true, result: header + rows.join('\n') };
         } catch (e) { return { success: false, message: e.message }; }
     }
@@ -402,25 +444,47 @@ class JSONMasterTool extends BaseTool {
     jsonToXml(jsonStr) {
         try {
             const obj = JSON.parse(jsonStr);
-            const toXml = (o) => {
+
+            const toXml = (o, indent = 0) => {
+                const spaces = '  '.repeat(indent);
                 let xml = '';
+
                 for (let key in o) {
-                    if (o.hasOwnProperty(key)) {
-                        let val = o[key];
-                        xml += `<${key}>`;
-                        if (typeof val === 'object' && val !== null) {
-                            xml += toXml(val);
-                        } else {
-                            xml += String(val);
-                        }
-                        xml += `</${key}>`;
+                    if (!o.hasOwnProperty(key)) continue;
+
+                    const val = o[key];
+
+                    if (Array.isArray(val)) {
+                        // Handle arrays: use singular form or 'item'
+                        const itemTag = key.endsWith('s') ? key.slice(0, -1) : 'item';
+                        val.forEach(item => {
+                            xml += `\n${spaces}<${itemTag}>`;
+                            if (typeof item === 'object' && item !== null) {
+                                xml += toXml(item, indent + 1);
+                                xml += `\n${spaces}`;
+                            } else {
+                                xml += String(item);
+                            }
+                            xml += `</${itemTag}>`;
+                        });
+                    } else if (typeof val === 'object' && val !== null) {
+                        // Nested object
+                        xml += `\n${spaces}<${key}>`;
+                        xml += toXml(val, indent + 1);
+                        xml += `\n${spaces}</${key}>`;
+                    } else {
+                        // Primitive value
+                        xml += `\n${spaces}<${key}>${String(val)}</${key}>`;
                     }
                 }
+
                 return xml;
             };
-            return { success: true, result: `<root>${toXml(obj)}</root>` };
+
+            return { success: true, result: `<root>${toXml(obj, 1)}\n</root>` };
         } catch (e) { return { success: false, message: e.message }; }
     }
+
 
     xmlToJson(xmlStr) {
         try {
