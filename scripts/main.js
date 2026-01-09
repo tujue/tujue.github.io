@@ -15,13 +15,8 @@ window.AppState = window.AppState || {
  * Update UI Stats
  */
 window.updateStats = function () {
-    // If Firebase handles stats, don't overwrite with local data
-    if (window.tulparFirebase) return;
-
-    const toolsUsedEl = document.getElementById('tools-used');
-    const totalCopiesEl = document.getElementById('total-copies');
-    if (toolsUsedEl) toolsUsedEl.textContent = window.AppState.totalToolsUsed || 0;
-    if (totalCopiesEl) totalCopiesEl.textContent = window.AppState.totalCopies || 0;
+    // Legacy stat updates disabled used local storage.
+    // Now handled exclusively by firebase-config.js
 };
 
 /**
