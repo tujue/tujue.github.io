@@ -861,7 +861,8 @@ class ResumeBuilderTool extends BaseTool {
             }
             
             /* Typography */
-            h1, h2, h3, h4, .res-name, .res-title { font-family: ${headFont}; }
+            h1, h2, h3, h4, .res-name, .res-title, .res-section-title, .res-item-head { font-family: ${headFont}; }
+            .res-item-desc, .res-contact-item, .res-item-sub { font-family: ${fontFam}; }
             
             /* Helper Classes */
             .res-section { margin-bottom: 20px; }
