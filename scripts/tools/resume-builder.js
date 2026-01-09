@@ -1003,12 +1003,12 @@ class ResumeBuilderTool extends BaseTool {
                 html: `
                 <div class="res-container">
                     <div class="res-main" style="width:100%; padding: 40px;">
-                        <div style="display:flex; gap:20px; align-items:center; border-bottom:2px solid ${cols.accent}; padding-bottom:20px; margin-bottom:20px;">
+                        <div class="res-header" style="display:flex; gap:20px; align-items:center; border-bottom:2px solid ${cols.accent}; padding-bottom:20px; margin-bottom:20px;">
                              ${photoBlock}
                              <div style="flex:1">
-                                <h1 class="res-name" style="font-size:28px; color:${cols.primary};">${data.name}</h1>
+                                <h1 class="res-name" style="font-size:28px;">${data.name}</h1>
                                 <div class="res-title" style="font-size:16px; margin-bottom:10px;">${data.title}</div>
-                                <div style="display:flex; gap:15px; flex-wrap:wrap; font-size:12px;">
+                                <div class="res-contact-list" style="display:flex; gap:15px; flex-wrap:wrap; font-size:12px;">
                                     ${data.email ? `<span>📧 ${data.email}</span>` : ''}
                                     ${data.phone ? `<span>📱 ${data.phone}</span>` : ''}
                                     ${data.address ? `<span>📍 ${data.address}</span>` : ''}
@@ -1057,9 +1057,16 @@ class ResumeBuilderTool extends BaseTool {
         const fonts = {
             'sans': "'Inter', sans-serif",
             'modern': "'Poppins', sans-serif",
+            'display': "'Playfair Display', serif",
+            'strong': "'Oswald', sans-serif",
             'serif': "'Lora', serif",
+            'condensed': "'Roboto Condensed', sans-serif",
             'mono': "'JetBrains Mono', monospace",
-            'strong': "'Oswald', sans-serif"
+            'sweet': "'Nunito', sans-serif",
+            'clean': "'Open Sans', sans-serif",
+            'elegant2': "'Raleway', sans-serif",
+            'charismatic': "'Merriweather', serif",
+            'modern2': "'Lato', sans-serif"
         };
         return fonts[fontKey] || fonts['sans'];
     }
@@ -1069,19 +1076,35 @@ class ResumeBuilderTool extends BaseTool {
             .res-photo { width: 100px; height: 100px; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
             .res-photo img { width: 100%; height: 100%; object-fit: cover; }
             .res-skill-tag { display: inline-block; background: #edf2f7; color: #4a5568; padding: 4px 10px; border-radius: 4px; margin: 0 4px 4px 0; font-size: 11px; font-weight:600; }
+            .res-section-title { color: ${cols.primary}; border-bottom-color: ${cols.accent}; }
+            .res-name { color: ${cols.primary}; }
         `;
 
-        if (theme === 'modern' || theme === 'skyline' || theme === 'tech') {
+        if (theme === 'modern') {
             css += `
-                .res-name { font-size: 32px; font-weight: 800; text-transform:uppercase; color: ${cols.primary}; line-height: 1; margin-bottom: 5px; }
+                .res-name { font-size: 36px; font-weight: 800; text-transform:uppercase; line-height: 1; margin-bottom: 5px; }
                 .res-title { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; opacity: 0.8; }
+                .res-right { border-left: 1px solid #edf2f7; }
+            `;
+        } else if (theme === 'skyline') {
+            css += `
+                .res-name { font-size: 32px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; }
+                .res-title { border-top: 1px solid ${cols.accent}; padding-top: 5px; font-size: 12px; letter-spacing: 5px; }
+                .res-section-title { border-bottom: 4px solid ${cols.accent}; width: fit-content; }
+            `;
+        } else if (theme === 'tech') {
+            css += `
+                .res-container { background: #0f172a; color: #94a3b8; }
+                .res-name { color: ${cols.primary}; font-family: 'JetBrains Mono', monospace; font-size: 28px; }
+                .res-section-title { font-family: 'JetBrains Mono', monospace; border-left: 4px solid ${cols.primary}; border-bottom: none; padding-left: 10px; }
+                .res-skill-tag { background: #1e293b; color: ${cols.primary}; border: 1px solid ${cols.primary}33; }
             `;
         } else if (theme === 'leftside' || theme === 'nova') {
             css += `
                 .res-left { background: ${cols.bgSide} !important; color: ${cols.textSide} !important; }
                 .res-left .res-section-title { color: ${cols.textSide}; border-color: rgba(255,255,255,0.3); }
                 .res-photo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2); margin: 0 auto 20px; }
-                .res-name { font-size: 28px; font-weight: 800; color: ${cols.primary}; }
+                .res-name { font-size: 28px; font-weight: 800; }
                 .res-skill-tag { background: rgba(255,255,255,0.15); color: ${cols.textSide}; }
             `;
         } else if (theme === 'orbit' || theme === 'cyber') {
@@ -1097,19 +1120,43 @@ class ResumeBuilderTool extends BaseTool {
                 .res-section-title { border-radius: 20px; background: ${cols.accent}; border: none; padding: 5px 15px; color: ${cols.primary}; }
                 .res-photo { border-radius: 20px; }
             `;
+        } else if (theme === 'bold') {
+            css += `
+                .res-name { font-size: 48px; font-weight: 900; line-height: 0.9; margin-bottom: 10px; }
+                .res-title { background: ${cols.primary}; color: white; padding: 4px 10px; display: inline-block; }
+                .res-section-title { border-bottom: 8px solid ${cols.primary}; font-size: 18px; }
+            `;
+        } else if (theme === 'prime') {
+            css += `
+                .res-header { border-left: 10px solid ${cols.primary}; padding-left: 20px; }
+                .res-section-title { background: #f8fafc; border-left: 5px solid ${cols.primary}; border-bottom: none; padding: 8px 12px; }
+            `;
+        } else if (theme === 'elegant') {
+            css += `
+                .res-container { padding: 50px; }
+                .res-name { font-style: italic; font-size: 34px; border-bottom: 1px solid ${cols.accent}; padding-bottom: 10px; display: block; width: 100%; }
+                .res-section-title { text-align: center; border-bottom: none; }
+                .res-section-title::after { content: ''; display: block; width: 40px; height: 2px; background: ${cols.accent}; margin: 5px auto; }
+            `;
         } else if (theme === 'brutal') {
             css += `
                 .res-container { background: #fff; border: 4px solid #000; }
-                .res-section-title { background: #ffff00; border: 3px solid #000; color: #000; padding: 5px 10px; transform: rotate(-1deg); }
+                .res-section-title { background: #ffff00; border: 3px solid #000; color: #000; padding: 5px 10px; transform: rotate(-1deg); width: fit-content; }
                 .res-item { border-left: 5px solid #000; padding-left: 10px; }
-                .res-name { font-size: 40px; font-weight: 900; text-transform: uppercase; -webkit-text-stroke: 1px #000; }
+                .res-name { font-size: 40px; font-weight: 900; text-transform: uppercase; -webkit-text-stroke: 1px #000; color: #000; }
             `;
         } else if (theme === 'executive') {
             css += `
-                .res-container { padding: 40px; }
                 .res-header { text-align: center; border-bottom: 4px double ${cols.primary}; padding-bottom: 20px; margin-bottom: 30px; }
                 .res-name { font-size: 32px; font-weight: 700; color: ${cols.primary}; }
                 .res-section-title { border-bottom: 1px solid ${cols.primary}; text-align: center; width: 60%; margin: 0 auto 20px; }
+            `;
+        } else if (theme === 'minimal') {
+            css += `
+                .res-container { padding: 40px; color: #333; }
+                .res-section-title { border-bottom: 1px solid #eee; font-weight: 400; color: #999; }
+                .res-name { font-weight: 400; font-size: 24px; color: #000; }
+                .res-skill-tag { background: none; border: 1px solid #eee; color: #666; }
             `;
         }
 
