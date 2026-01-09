@@ -847,7 +847,8 @@ class ResumeBuilderTool extends BaseTool {
             /* Core Reset */
             .res-container * { box-sizing: border-box; margin: 0; padding: 0; }
             .res-container { 
-                width: 100%; height: 100%; 
+                width: 794px; height: 1123px; 
+                margin: 0; padding: 0;
                 font-family: ${fontFam}; 
                 color: ${isDark ? '#e2e8f0' : '#2d3748'}; 
                 background: ${isDark ? '#1a202c' : '#ffffff'};
@@ -855,6 +856,7 @@ class ResumeBuilderTool extends BaseTool {
                 overflow: hidden; 
                 display: flex; 
                 flex-direction: ${isSplit ? 'row' : 'column'};
+                position: relative;
             }
             
             /* Typography */
@@ -880,15 +882,23 @@ class ResumeBuilderTool extends BaseTool {
             
             /* Split Layout Specifics */
             .res-left { 
-                width: 32%; 
+                width: 33%; 
+                height: 100%;
                 background: ${isSplit ? cols.bgSide : 'transparent'}; 
                 color: ${isSplit ? cols.textSide : 'inherit'}; 
-                padding: 30px 20px; 
+                padding: 40px 30px; 
                 flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
             }
             .res-right { 
                 flex: 1; 
-                padding: 30px; 
+                height: 100%;
+                padding: 40px; 
+                background: ${isDark ? '#1a202c' : '#ffffff'};
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
             }
 
             /* Theme Specific Overrides */
@@ -1002,7 +1012,7 @@ class ResumeBuilderTool extends BaseTool {
                 css,
                 html: `
                 <div class="res-container">
-                    <div class="res-main" style="width:100%; padding: 40px;">
+                    <div class="res-main" style="width:100%;">
                         <div class="res-header" style="display:flex; gap:20px; align-items:center; border-bottom:2px solid ${cols.accent}; padding-bottom:20px; margin-bottom:20px;">
                              ${photoBlock}
                              <div style="flex:1">
@@ -1133,7 +1143,7 @@ class ResumeBuilderTool extends BaseTool {
             `;
         } else if (theme === 'elegant') {
             css += `
-                .res-container { padding: 50px; }
+                .res-main { padding: 60px; }
                 .res-name { font-style: italic; font-size: 34px; border-bottom: 1px solid ${cols.accent}; padding-bottom: 10px; display: block; width: 100%; }
                 .res-section-title { text-align: center; border-bottom: none; }
                 .res-section-title::after { content: ''; display: block; width: 40px; height: 2px; background: ${cols.accent}; margin: 5px auto; }
@@ -1147,13 +1157,14 @@ class ResumeBuilderTool extends BaseTool {
             `;
         } else if (theme === 'executive') {
             css += `
+                .res-main { padding: 40px; }
                 .res-header { text-align: center; border-bottom: 4px double ${cols.primary}; padding-bottom: 20px; margin-bottom: 30px; }
                 .res-name { font-size: 32px; font-weight: 700; color: ${cols.primary}; }
-                .res-section-title { border-bottom: 1px solid ${cols.primary}; text-align: center; width: 60%; margin: 0 auto 20px; }
+                .res-section-title { border-bottom: 1px solid ${cols.primary}; text-align: center; width: 60%; margin: 6px auto 20px; }
             `;
         } else if (theme === 'minimal') {
             css += `
-                .res-container { padding: 40px; color: #333; }
+                .res-main { padding: 50px; }
                 .res-section-title { border-bottom: 1px solid #eee; font-weight: 400; color: #999; }
                 .res-name { font-weight: 400; font-size: 24px; color: #000; }
                 .res-skill-tag { background: none; border: 1px solid #eee; color: #666; }
