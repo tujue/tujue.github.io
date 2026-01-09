@@ -1,313 +1,274 @@
-/* TULPAR - Meta Tags Generator Tool OOP Implementation */
-class MetaTagsTool extends BaseTool {
+/* TULPAR - Advanced SEO Meta Manager */
+class MetaTagsSEOTool extends BaseTool {
   constructor(config) {
     super(config);
-    this.uploadedImageBase64 = null; // Store base64 for preview only
+    this.currentTab = 'basic';
+    this.data = {
+      title: '', desc: '', keywords: '', url: '', image: '', site: '', author: '',
+      robots: 'index,follow', canonical: '', lang: 'en', themeColor: '#6366f1',
+      schemaType: 'WebSite', orgName: '', orgLogo: ''
+    };
   }
 
   renderUI() {
     const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
     const txt = isTr ? {
-      config: 'İçerik Ayarları',
-      template: 'Hızlı Şablon',
-      labels: { title: 'Başlık', desc: 'Açıklama', keywords: 'Etiketler', url: 'URL', image: 'Görsel URL / Yükle', site: 'Site Adı', author: 'Yazar', twitter: 'Twitter' },
-      tabs: { google: 'Google', fb: 'Facebook', tw: 'Twitter', insta: 'Instagram 📸', code: 'Kaynak Kod' },
-      preview: 'Önizleme',
-      upload: 'Görsel Seç'
+      title: 'Gelişmiş SEO Meta Yöneticisi',
+      tabs: { basic: 'Temel', advanced: 'Gelişmiş', schema: 'Schema.org', analytics: 'Analytics' },
+      generate: 'Kod Üret',
+      copy: 'Kopyala',
+      download: 'HTML İndir'
     } : {
-      config: 'Content Configuration',
-      template: 'Quick Template',
-      labels: { title: 'Title', desc: 'Description', keywords: 'Keywords', url: 'URL', image: 'Image URL / Upload', site: 'Site Name', author: 'Author', twitter: 'Twitter Handle' },
-      tabs: { google: 'Google', fb: 'Facebook', tw: 'Twitter', insta: 'Instagram 📸', code: 'Source Code' },
-      preview: 'Preview',
-      upload: 'Upload Image'
+      title: 'Advanced SEO Meta Manager',
+      tabs: { basic: 'Basic SEO', advanced: 'Advanced', schema: 'Schema.org', analytics: 'Analytics' },
+      generate: 'Generate Code',
+      copy: 'Copy',
+      download: 'Download HTML'
     };
 
-    const templates = [{ id: 'blog', name: 'Blog Post' }, { id: 'product', name: 'Product' }, { id: 'portfolio', name: 'Portfolio' }];
-
     return `
-        <div class="tool-content" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
-            <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                <!-- Inputs -->
-                <div class="input-section">
-                     <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
-                            <h4 style="margin:0; color:var(--primary);">${txt.config}</h4>
-                            <div style="display:flex; gap:5px;">
-                                ${templates.map(t => `<button class="btn btn-sm btn-outline meta-tpl" data-id="${t.id}">${t.name}</button>`).join('')}
-                            </div>
-                        </div>
-
-                        <div class="form-group"><label class="form-label">${txt.labels.title}</label><input type="text" id="m-in-title" class="form-input m-in" placeholder="Page Title (Max 60 chars)"></div>
-                        <div class="form-group"><label class="form-label">${txt.labels.desc}</label><textarea id="m-in-desc" class="form-input m-in" rows="3" placeholder="Page Description (Max 160 chars)"></textarea></div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">${txt.labels.image}</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="m-in-img" class="form-input m-in" placeholder="https://example.com/image.jpg" style="flex:1;">
-                                <input type="file" id="m-in-file" accept="image/*" hidden>
-                                <button id="m-btn-upload" class="btn btn-outline" style="white-space: nowrap;">📁 ${txt.upload}</button>
-                            </div>
-                            <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 5px;">* Uploaded image is for preview only. In code, the filename will be used.</div>
-                        </div>
-                        
-                        <div class="grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px;">
-                             <div class="form-group"><label class="form-label">${txt.labels.url}</label><input type="text" id="m-in-url" class="form-input m-in" placeholder="https://..."></div>
-                             <div class="form-group"><label class="form-label">${txt.labels.site}</label><input type="text" id="m-in-site" class="form-input m-in" placeholder="MySite"></div>
-                        </div>
-                        <div class="grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px;">
-                             <div class="form-group"><label class="form-label">${txt.labels.author}</label><input type="text" id="m-in-author" class="form-input m-in" placeholder="John Doe"></div>
-                             <div class="form-group"><label class="form-label">${txt.labels.twitter}</label><input type="text" id="m-in-tw" class="form-input m-in" placeholder="@username"></div>
-                        </div>
-                     </div>
-                </div>
-
-                <!-- Previews -->
-                <div class="preview-section">
-                    <div style="display:flex; gap:10px; margin-bottom:1rem; overflow-x:auto; padding-bottom:5px;">
-                        <button class="btn btn-sm btn-primary m-tab" data-tab="google">Google</button>
-                        <button class="btn btn-sm btn-outline m-tab" data-tab="fb">Facebook</button>
-                        <button class="btn btn-sm btn-outline m-tab" data-tab="tw">Twitter</button>
-                        <button class="btn btn-sm btn-outline m-tab" data-tab="insta">${txt.tabs.insta}</button>
-                        <button class="btn btn-sm btn-outline m-tab" data-tab="code">${txt.tabs.code}</button>
-                    </div>
-
-                    <!-- Google -->
-                    <div id="m-view-google" class="m-view" style="background:#fff; padding:20px; border-radius:8px; color:#333; font-family:arial,sans-serif;">
-                        <div style="font-size:14px; color:#202124; margin-bottom:5px; display:flex; align-items:center;">
-                            <div style="width:26px; height:26px; background:#f1f3f4; border-radius:50%; margin-right:10px; display:flex; align-items:center; justify-content:center;">G</div>
-                            <span id="p-g-site">example.com</span>
-                            <span style="color:#5f6368; margin-left:5px;">› ...</span>
-                        </div>
-                        <div id="p-g-title" style="font-size:20px; color:#1a0dab; cursor:pointer;">Page Title</div>
-                        <div id="p-g-desc" style="font-size:14px; color:#4d5156; margin-top:3px; line-height:1.58;">Page description goes here...</div>
-                    </div>
-
-                    <!-- Facebook -->
-                    <div id="m-view-fb" class="m-view" style="display:none; background:#f0f2f5; padding:20px; border-radius:8px; font-family: Helvetica, Arial, sans-serif;">
-                         <div style="background:#fff; border:1px solid #ddd; border-radius:8px; overflow:hidden; max-width:500px; margin:0 auto;">
-                            <div id="p-fb-img" style="height:260px; background:#eee; background-size:cover; background-position:center;"></div>
-                            <div style="padding:10px 12px; background:#f2f3f5;">
-                                <div id="p-fb-site" style="text-transform:uppercase; color:#606770; font-size:12px; margin-bottom:5px;">EXAMPLE.COM</div>
-                                <div id="p-fb-title" style="color:#1d2129; font-weight:600; font-size:16px; margin-bottom:5px; line-height:20px; max-height:40px; overflow:hidden;">Page Title</div>
-                                <div id="p-fb-desc" style="color:#606770; font-size:14px; line-height:20px; max-height:20px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">Description goes here...</div>
-                            </div>
-                         </div>
-                    </div>
-
-                    <!-- Twitter -->
-                    <div id="m-view-tw" class="m-view" style="display:none; background:#15202b; padding:20px; border-radius:8px; color:white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                        <div style="background:#000; border:1px solid #38444d; border-radius:14px; overflow:hidden; max-width:500px; margin:0 auto;">
-                            <div id="p-tw-img" style="height:260px; background:#222; background-size:cover; background-position:center;"></div>
-                            <div style="padding:12px; border-top:1px solid #38444d;">
-                                <div id="p-tw-title" style="font-weight:bold; font-size:15px; margin-bottom:3px;">Page Title</div>
-                                <div id="p-tw-desc" style="color:#8899a6; font-size:14px; margin-bottom:5px;">Description goes here...</div>
-                                <div id="p-tw-site" style="color:#8899a6; font-size:14px;">example.com</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Instagram -->
-                    <div id="m-view-insta" class="m-view" style="display:none; background:#fff; padding:20px; border-radius:8px; color:#262626; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border: 1px solid #dbdbdb; min-height: 400px;">
-                        <div style="max-width:400px; margin:0 auto; border:1px solid #dbdbdb; background:white; border-radius:3px;">
-                            <!-- Header -->
-                            <div style="padding:14px; display:flex; align-items:center;">
-                                <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); padding:2px; flex-shrink: 0;">
-                                    <div style="background:white; width:100%; height:100%; border-radius:50%;"></div>
-                                </div>
-                                <div style="margin-left:10px; font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis;" id="p-in-user">username</div>
-                                <div style="margin-left:auto;">•••</div>
-                            </div>
-                            <!-- Image -->
-                            <div id="p-in-img" style="width:100%; padding-bottom:100%; background:#fafafa; background-size:cover; background-position:center; position:relative;"></div>
-                            <!-- Actions -->
-                            <div style="padding:10px; font-size:24px;">
-                                ♡ 💬 ➤ <span style="float:right">⚑</span>
-                            </div>
-                            <!-- Caption -->
-                            <div style="padding:0 12px 12px; font-size:14px; line-height:1.4;">
-                                <span style="font-weight:600; margin-right:5px;" id="p-in-user2">username</span>
-                                <span id="p-in-desc">Caption...</span>
-                                <div style="color:#8e8e8e; font-size:10px; margin-top:5px; text-transform:uppercase;">10 HOURS AGO</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Code -->
-                    <div id="m-view-code" class="m-view" style="display:none;">
-                        <div style="margin-bottom:10px; display:flex; justify-content:flex-end;">
-                            <button id="m-btn-copy" class="btn btn-sm btn-primary">📋 Copy</button>
-                        </div>
-                        <pre id="m-out-code" style="background:#1e1e1e; color:#d4d4d4; padding:15px; border-radius:8px; overflow-x:auto; font-family:monospace; font-size:13px;"></pre>
-                    </div>
-                </div>
+    <div class="tool-content seo-meta-mgr" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+      <div style="display: grid; grid-template-columns: 400px 1fr; gap: 2rem; align-items: start;">
+        
+        <!-- Left: Config Panel (Dev-style) -->
+        <div style="position: sticky; top: 20px;">
+          <div class="card" style="padding: 0; background: #1e1e1e; border: 1px solid #333; border-radius: 12px; overflow: hidden; font-family: 'Consolas', 'Monaco', monospace;">
+            <!-- Header -->
+            <div style="background: #252526; padding: 1rem; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 8px;">
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+              <span style="margin-left: auto; color: #858585; font-size: 0.75rem;">${txt.title}</span>
             </div>
+
+            <!-- Tabs -->
+            <div style="display: flex; background: #2d2d30; border-bottom: 1px solid #333;">
+              ${Object.entries(txt.tabs).map(([k, v]) => `
+                <button id="seo-tab-${k}" class="seo-tab" data-tab="${k}" style="flex: 1; padding: 10px 8px; background: ${k === 'basic' ? '#1e1e1e' : 'transparent'}; border: none; color: ${k === 'basic' ? '#fff' : '#858585'}; font-size: 0.7rem; cursor: pointer; border-bottom: 2px solid ${k === 'basic' ? '#007acc' : 'transparent'}; transition: all 0.2s;">${v}</button>
+              `).join('')}
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 1.5rem; max-height: 70vh; overflow-y: auto;">
+              ${this._renderTabs()}
+            </div>
+
+            <!-- Footer Actions -->
+            <div style="padding: 1rem; background: #252526; border-top: 1px solid #333; display: flex; gap: 8px;">
+              <button id="seo-btn-gen" class="btn btn-primary" style="flex: 1; height: 2.5rem; font-size: 0.8rem;">⚡ ${txt.generate}</button>
+              <button id="seo-btn-copy" class="btn btn-outline" style="height: 2.5rem; font-size: 0.8rem; border-color: #555; color: #ddd;">📋</button>
+            </div>
+          </div>
         </div>
-        `;
+
+        <!-- Right: Code Output (Terminal-like) -->
+        <div>
+          <div class="card" style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 0; overflow: hidden;">
+            <div style="background: #161b22; padding: 0.75rem 1rem; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #c9d1d9; font-family: monospace; font-size: 0.8rem; display: flex; align-items: center; gap: 8px;">
+                <span style="color: #58a6ff;">➜</span> ~/${this.currentTab}.html
+              </span>
+              <div style="display: flex; gap: 8px;">
+                <button id="seo-copy-quick" class="btn btn-sm" style="background: #21262d; border: 1px solid #30363d; color: #c9d1d9; font-size: 0.7rem; padding: 4px 10px;">Copy</button>
+                <button id="seo-dl-html" class="btn btn-sm" style="background: #238636; border: none; color: white; font-size: 0.7rem; padding: 4px 10px;">Download</button>
+              </div>
+            </div>
+            <pre id="seo-output" style="margin: 0; padding: 1.5rem; background: #0d1117; color: #c9d1d9; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.75rem; line-height: 1.6; overflow-x: auto; min-height: 500px; max-height: 75vh; overflow-y: auto;"><!-- Generated meta tags will appear here --></pre>
+          </div>
+
+          <!-- Quick Templates -->
+          <div style="margin-top: 1.5rem; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="seo-template btn btn-sm btn-outline" data-tpl="blog" style="font-size: 0.75rem;">📝 Blog Post</button>
+            <button class="seo-template btn btn-sm btn-outline" data-tpl="ecom" style="font-size: 0.75rem;">🛒 E-commerce</button>
+            <button class="seo-template btn btn-sm btn-outline" data-tpl="local" style="font-size: 0.75rem;">📍 Local Business</button>
+            <button class="seo-template btn btn-sm btn-outline" data-tpl="article" style="font-size: 0.75rem;">📰 Article</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    `;
+  }
+
+  _renderTabs() {
+    return `
+      <!-- Basic SEO -->
+      <div id="seo-cont-basic" class="seo-cont">
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">TITLE:</label><input type="text" id="seo-title" class="form-input" placeholder="Your Page Title" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">DESCRIPTION:</label><textarea id="seo-desc" class="form-input" rows="3" placeholder="Page description..." style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace; resize: none;"></textarea></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">KEYWORDS:</label><input type="text" id="seo-keywords" class="form-input" placeholder="keyword1, keyword2" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">URL:</label><input type="text" id="seo-url" class="form-input" placeholder="https://example.com/page" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #58a6ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">IMAGE_URL:</label><input type="text" id="seo-image" class="form-input" placeholder="https://example.com/image.jpg" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+      </div>
+
+      <!-- Advanced -->
+      <div id="seo-cont-advanced" class="seo-cont" style="display: none;">
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">ROBOTS:</label><select id="seo-robots" class="form-select" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem;"><option value="index,follow">index, follow</option><option value="noindex,nofollow">noindex, nofollow</option><option value="index,nofollow">index, nofollow</option><option value="noindex,follow">noindex, follow</option></select></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">CANONICAL:</label><input type="text" id="seo-canonical" class="form-input" placeholder="https://example.com/canonical" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">LANG:</label><input type="text" id="seo-lang" class="form-input" placeholder="en" value="en" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group"><label style="color: #f97583; font-size: 0.7rem; margin-bottom: 4px; display: block;">THEME_COLOR:</label><input type="color" id="seo-theme" value="#6366f1" style="width: 100%; height: 40px; background: #1e1e1e; border: 1px solid #333; border-radius: 4px;"></div>
+      </div>
+
+      <!-- Schema -->
+      <div id="seo-cont-schema" class="seo-cont" style="display: none;">
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">SCHEMA_TYPE:</label><select id="seo-schema-type" class="form-select" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem;"><option value="WebSite">WebSite</option><option value="Organization">Organization</option><option value="Article">Article</option><option value="Product">Product</option><option value="LocalBusiness">LocalBusiness</option></select></div>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">ORG_NAME:</label><input type="text" id="seo-org-name" class="form-input" placeholder="Your Company" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group"><label style="color: #79c0ff; font-size: 0.7rem; margin-bottom: 4px; display: block;">ORG_LOGO:</label><input type="text" id="seo-org-logo" class="form-input" placeholder="https://example.com/logo.png" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+      </div>
+
+      <!-- Analytics -->
+      <div id="seo-cont-analytics" class="seo-cont" style="display: none;">
+        <p style="color: #858585; font-size: 0.7rem; line-height: 1.5; margin-bottom: 1rem;">Add tracking IDs for analytics platforms. Leave empty to skip.</p>
+        <div class="form-group" style="margin-bottom: 1rem;"><label style="color: #85e89d; font-size: 0.7rem; margin-bottom: 4px; display: block;">GOOGLE_ANALYTICS:</label><input type="text" id="seo-ga" class="form-input" placeholder="G-XXXXXXXXXX" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+        <div class="form-group"><label style="color: #85e89d; font-size: 0.7rem; margin-bottom: 4px; display: block;">GTM_ID:</label><input type="text" id="seo-gtm" class="form-input" placeholder="GTM-XXXXXXX" style="background: #1e1e1e; border: 1px solid #333; color: #ddd; font-size: 0.8rem; font-family: monospace;"></div>
+      </div>
+    `;
   }
 
   setupListeners() {
-    const els = {
-      title: document.getElementById('m-in-title'),
-      desc: document.getElementById('m-in-desc'),
-      img: document.getElementById('m-in-img'),
-      url: document.getElementById('m-in-url'),
-      site: document.getElementById('m-in-site'),
-      author: document.getElementById('m-in-author'),
-      tw: document.getElementById('m-in-tw')
-    };
-
-    const fileIn = document.getElementById('m-in-file');
-    const uploadBtn = document.getElementById('m-btn-upload');
-
-    // File Upload Logic
-    uploadBtn.onclick = () => fileIn.click();
-    fileIn.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          this.uploadedImageBase64 = evt.target.result;
-          // Update input with filename as placeholder
-          els.img.value = `https://example.com/assets/${file.name}`;
-          updatePreviews();
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
-    const updatePreviews = () => {
-      const val = (k) => els[k].value;
-      const fallbackImg = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNlZWVlZWUiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJhcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+SU1BR0U8L3RleHQ+PC9zdmc+';
-
-      // Prefer uploaded image for preview if user hasn't manually changed the input from the filename we set
-      let previewImg = val('img');
-      if (this.uploadedImageBase64 && (previewImg.includes(fileIn.files[0]?.name) || !previewImg)) {
-        previewImg = this.uploadedImageBase64;
-      } else if (!previewImg) {
-        previewImg = fallbackImg;
-      }
-
-      // Google
-      document.getElementById('p-g-title').textContent = val('title') || 'Page Title';
-      document.getElementById('p-g-desc').textContent = val('desc') || 'Page description...';
-      document.getElementById('p-g-site').textContent = val('site') || 'example.com';
-
-      // Facebook
-      document.getElementById('p-fb-title').textContent = val('title') || 'Page Title';
-      document.getElementById('p-fb-desc').textContent = val('desc') || 'Description...';
-      document.getElementById('p-fb-site').textContent = (val('site') || 'EXAMPLE.COM').toUpperCase();
-      document.getElementById('p-fb-img').style.backgroundImage = `url('${previewImg}')`;
-
-      // Twitter
-      document.getElementById('p-tw-title').textContent = val('title') || 'Page Title';
-      document.getElementById('p-tw-desc').textContent = val('desc') || 'Description...';
-      document.getElementById('p-tw-site').textContent = (val('site') || 'example.com').toLowerCase();
-      document.getElementById('p-tw-img').style.backgroundImage = `url('${previewImg}')`;
-
-      // Instagram
-      const user = val('tw') || val('author') || 'username';
-      document.getElementById('p-in-user').textContent = user;
-      document.getElementById('p-in-user2').textContent = user;
-      document.getElementById('p-in-desc').textContent = val('desc') || 'Caption text goes here...';
-      document.getElementById('p-in-img').style.backgroundImage = `url('${previewImg}')`;
-
-      // Code Generation
-      const data = {};
-      Object.keys(els).forEach(k => data[k] = els[k].value);
-      // Map keys correctly for generator
-      const map = { title: 'title', desc: 'description', img: 'image', url: 'url', site: 'siteName', author: 'author', tw: 'twitterHandle' };
-      const genData = {};
-      Object.keys(data).forEach(k => genData[map[k]] = data[k] || '');
-
-      document.getElementById('m-out-code').textContent = this.generateMetaTags(genData);
-    };
-
-    Object.values(els).forEach(e => e.addEventListener('input', updatePreviews));
-
-    // Tabs
-    const tabBtns = document.querySelectorAll('.m-tab');
-    const views = document.querySelectorAll('.m-view');
-    tabBtns.forEach(btn => {
+    // Tab switching
+    document.querySelectorAll('.seo-tab').forEach(btn => {
       btn.onclick = () => {
-        tabBtns.forEach(b => b.classList.replace('btn-primary', 'btn-outline'));
-        btn.classList.replace('btn-outline', 'btn-primary');
-        views.forEach(v => v.style.display = 'none');
-        document.getElementById(`m-view-${btn.dataset.tab}`).style.display = 'block';
+        this.currentTab = btn.dataset.tab;
+        document.querySelectorAll('.seo-tab').forEach(b => {
+          b.style.background = 'transparent';
+          b.style.color = '#858585';
+          b.style.borderBottom = '2px solid transparent';
+        });
+        btn.style.background = '#1e1e1e';
+        btn.style.color = '#fff';
+        btn.style.borderBottom = '2px solid #007acc';
+
+        document.querySelectorAll('.seo-cont').forEach(c => c.style.display = 'none');
+        document.getElementById(`seo-cont-${this.currentTab}`).style.display = 'block';
       };
     });
+
+    // Generate
+    document.getElementById('seo-btn-gen').onclick = () => this.generate();
+
+    // Copy
+    [document.getElementById('seo-btn-copy'), document.getElementById('seo-copy-quick')].forEach(btn => {
+      if (btn) btn.onclick = () => this.copyToClipboard(document.getElementById('seo-output').textContent);
+    });
+
+    // Download
+    document.getElementById('seo-dl-html').onclick = () => {
+      const code = document.getElementById('seo-output').textContent;
+      const blob = new Blob([code], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'meta-tags.html';
+      a.click();
+    };
 
     // Templates
-    document.querySelectorAll('.meta-tpl').forEach(btn => {
+    document.querySelectorAll('.seo-template').forEach(btn => {
       btn.onclick = () => {
-        const id = btn.dataset.id;
-        if (id === 'blog') {
-          els.title.value = 'My Awesome Blog Post';
-          els.desc.value = 'Read about the latest trends in technology and development.';
-          els.img.value = 'https://source.unsplash.com/random/800x600?tech';
-          els.site.value = 'MyBlog';
-        } else if (id === 'product') {
-          els.title.value = 'Amazing Product - Shop Now';
-          els.desc.value = 'Best quality product you can find online. Buy now with 50% discount.';
-          els.img.value = 'https://source.unsplash.com/random/800x600?product';
-          els.site.value = 'MyShop';
-        } else if (id === 'portfolio') {
-          els.title.value = 'John Doe - Portfolio';
-          els.desc.value = 'Showcasing my latest work in web design and development.';
-          els.img.value = 'https://source.unsplash.com/random/800x600?design';
-          els.site.value = 'JohnDoe';
-          els.author.value = 'John Doe';
+        const tpl = btn.dataset.tpl;
+        if (tpl === 'blog') {
+          document.getElementById('seo-title').value = 'My Awesome Blog Post Title';
+          document.getElementById('seo-desc').value = 'Discover amazing insights and tips in this comprehensive blog post.';
+          document.getElementById('seo-keywords').value = 'blog, tutorial, guide';
+          document.getElementById('seo-schema-type').value = 'Article';
+        } else if (tpl === 'ecom') {
+          document.getElementById('seo-title').value = 'Premium Product Name - Best Price';
+          document.getElementById('seo-desc').value = 'Buy Premium Product with free shipping. Limited stock available.';
+          document.getElementById('seo-keywords').value = 'product, shop, buy';
+          document.getElementById('seo-schema-type').value = 'Product';
+        } else if (tpl === 'local') {
+          document.getElementById('seo-title').value = 'Local Business Name - City, State';
+          document.getElementById('seo-desc').value = 'Best local services in your area. Contact us today!';
+          document.getElementById('seo-schema-type').value = 'LocalBusiness';
+        } else if (tpl === 'article') {
+          document.getElementById('seo-title').value = 'Breaking: Important News Article Title';
+          document.getElementById('seo-desc').value = 'Latest updates on this important topic with expert analysis.';
+          document.getElementById('seo-schema-type').value = 'Article';
         }
-        updatePreviews();
+        this.generate();
       };
     });
-
-    document.getElementById('m-btn-copy').onclick = () => {
-      navigator.clipboard.writeText(document.getElementById('m-out-code').textContent);
-      const btn = document.getElementById('m-btn-copy');
-      const original = btn.textContent;
-      btn.textContent = '✅ Copied';
-      setTimeout(() => btn.textContent = original, 1500);
-    };
-
-    updatePreviews();
   }
 
-  // INTERNAL LOGIC (Formerly in DevTools.metaTagsTools)
+  generate() {
+    const data = {
+      title: document.getElementById('seo-title').value || 'Page Title',
+      desc: document.getElementById('seo-desc').value || 'Page description',
+      keywords: document.getElementById('seo-keywords').value,
+      url: document.getElementById('seo-url').value || 'https://example.com',
+      image: document.getElementById('seo-image').value,
+      robots: document.getElementById('seo-robots').value,
+      canonical: document.getElementById('seo-canonical').value,
+      lang: document.getElementById('seo-lang').value || 'en',
+      theme: document.getElementById('seo-theme').value,
+      schemaType: document.getElementById('seo-schema-type').value,
+      orgName: document.getElementById('seo-org-name').value,
+      orgLogo: document.getElementById('seo-org-logo').value,
+      ga: document.getElementById('seo-ga').value,
+      gtm: document.getElementById('seo-gtm').value
+    };
 
-  generateMetaTags(data) {
-    const { title, description, image, url, siteName, author, twitterHandle } = data;
+    let code = `<!DOCTYPE html>
+<html lang="${data.lang}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Basic SEO -->
+  <title>${data.title}</title>
+  <meta name="description" content="${data.desc}">
+  ${data.keywords ? `<meta name="keywords" content="${data.keywords}">` : ''}
+  <meta name="robots" content="${data.robots}">
+  ${data.canonical ? `<link rel="canonical" href="${data.canonical}">` : ''}
+  <meta name="theme-color" content="${data.theme}">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${data.url}">
+  <meta property="og:title" content="${data.title}">
+  <meta property="og:description" content="${data.desc}">
+  ${data.image ? `<meta property="og:image" content="${data.image}">` : ''}
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="${data.url}">
+  <meta property="twitter:title" content="${data.title}">
+  <meta property="twitter:description" content="${data.desc}">
+  ${data.image ? `<meta property="twitter:image" content="${data.image}">` : ''}
+  
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "${data.schemaType}",
+    "name": "${data.orgName || data.title}",
+    "url": "${data.url}"${data.orgLogo ? `,\n    "logo": "${data.orgLogo}"` : ''}
+  }
+  </script>
+  ${data.ga ? `
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${data.ga}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${data.ga}');
+  </script>` : ''}
+  ${data.gtm ? `
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','${data.gtm}');</script>` : ''}
+</head>
+<body>
+  <!-- Your content here -->
+</body>
+</html>`;
 
-    let html = `<!-- Primary Meta Tags -->
-<title>${title}</title>
-<meta name="title" content="${title}">
-<meta name="description" content="${description}">
-
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="${url}">
-<meta property="og:title" content="${title}">
-<meta property="og:description" content="${description}">
-<meta property="og:image" content="${image}">
-`;
-
-    if (siteName) html += `<meta property="og:site_name" content="${siteName}">\n`;
-
-    html += `
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="${url}">
-<meta property="twitter:title" content="${title}">
-<meta property="twitter:description" content="${description}">
-<meta property="twitter:image" content="${image}">
-`;
-
-    if (twitterHandle) html += `<meta name="twitter:creator" content="${twitterHandle}">\n`;
-    if (author) html += `<meta name="author" content="${author}">\n`;
-
-    return html;
+    document.getElementById('seo-output').textContent = code;
   }
 }
 
 // Register tool
-window.initMetaTagsGeneratorLogic = MetaTagsTool;
+window.initMetaTagsGeneratorLogic = MetaTagsSEOTool;
