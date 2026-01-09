@@ -345,73 +345,73 @@ class MetadataViewerTool extends BaseTool {
     html += `</table>`;
     output.innerHTML = html;
   }
-}
 
 
 
-_updateExif() {
-  // Create new exif obj
-  const exifObj = this.piexif.load(this.currentDataUrl);
-  const zeroth = exifObj['0th'] || {};
-  const exif = exifObj['Exif'] || {};
-  const gps = exifObj['GPS'] || {};
 
-  // Get values
-  const artist = document.getElementById('ed-artist').value;
-  const make = document.getElementById('ed-make').value;
-  const model = document.getElementById('ed-model').value;
-  const date = document.getElementById('ed-date').value;
+  _updateExif() {
+    // Create new exif obj
+    const exifObj = this.piexif.load(this.currentDataUrl);
+    const zeroth = exifObj['0th'] || {};
+    const exif = exifObj['Exif'] || {};
+    const gps = exifObj['GPS'] || {};
 
-  if (artist) zeroth[this.piexif.ImageIFD.Artist] = artist;
-  if (make) zeroth[this.piexif.ImageIFD.Make] = make;
-  if (model) zeroth[this.piexif.ImageIFD.Model] = model;
-  if (date) zeroth[this.piexif.ImageIFD.DateTime] = date;
-  if (date) exif[this.piexif.ExifIFD.DateTimeOriginal] = date;
+    // Get values
+    const artist = document.getElementById('ed-artist').value;
+    const make = document.getElementById('ed-make').value;
+    const model = document.getElementById('ed-model').value;
+    const date = document.getElementById('ed-date').value;
 
-  // Update GPS (Simplified)
-  // Converting Decimal to DMS is required for Exif
-  const toDMS = (deg) => {
-    const d = Math.floor(Math.abs(deg));
-    const m = Math.floor((Math.abs(deg) - d) * 60);
-    const s = Math.round(((Math.abs(deg) - d) * 60 - m) * 60 * 100);
-    return [[d, 1], [m, 1], [s, 100]]; // rational
-  };
+    if (artist) zeroth[this.piexif.ImageIFD.Artist] = artist;
+    if (make) zeroth[this.piexif.ImageIFD.Make] = make;
+    if (model) zeroth[this.piexif.ImageIFD.Model] = model;
+    if (date) zeroth[this.piexif.ImageIFD.DateTime] = date;
+    if (date) exif[this.piexif.ExifIFD.DateTimeOriginal] = date;
 
-  const lat = parseFloat(document.getElementById('ed-lat').value);
-  const lng = parseFloat(document.getElementById('ed-lng').value);
+    // Update GPS (Simplified)
+    // Converting Decimal to DMS is required for Exif
+    const toDMS = (deg) => {
+      const d = Math.floor(Math.abs(deg));
+      const m = Math.floor((Math.abs(deg) - d) * 60);
+      const s = Math.round(((Math.abs(deg) - d) * 60 - m) * 60 * 100);
+      return [[d, 1], [m, 1], [s, 100]]; // rational
+    };
 
-  if (!isNaN(lat) && !isNaN(lng)) {
-    gps[this.piexif.GPSIFD.GPSLatitudeRef] = lat < 0 ? 'S' : 'N';
-    gps[this.piexif.GPSIFD.GPSLatitude] = toDMS(lat);
-    gps[this.piexif.GPSIFD.GPSLongitudeRef] = lng < 0 ? 'W' : 'E';
-    gps[this.piexif.GPSIFD.GPSLongitude] = toDMS(lng);
+    const lat = parseFloat(document.getElementById('ed-lat').value);
+    const lng = parseFloat(document.getElementById('ed-lng').value);
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      gps[this.piexif.GPSIFD.GPSLatitudeRef] = lat < 0 ? 'S' : 'N';
+      gps[this.piexif.GPSIFD.GPSLatitude] = toDMS(lat);
+      gps[this.piexif.GPSIFD.GPSLongitudeRef] = lng < 0 ? 'W' : 'E';
+      gps[this.piexif.GPSIFD.GPSLongitude] = toDMS(lng);
+    }
+
+    exifObj['0th'] = zeroth;
+    exifObj['Exif'] = exif;
+    exifObj['GPS'] = gps;
+
+    const exifStr = this.piexif.dump(exifObj);
+    const newUrl = this.piexif.insert(exifStr, this.currentDataUrl);
+    return newUrl;
   }
 
-  exifObj['0th'] = zeroth;
-  exifObj['Exif'] = exif;
-  exifObj['GPS'] = gps;
+  _download(url, filename) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+  }
 
-  const exifStr = this.piexif.dump(exifObj);
-  const newUrl = this.piexif.insert(exifStr, this.currentDataUrl);
-  return newUrl;
-}
-
-_download(url, filename) {
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-}
-
-_loadScript(src) {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = resolve;
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
+  _loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
 }
 
 // Register tool

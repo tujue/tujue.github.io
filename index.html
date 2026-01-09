@@ -450,8 +450,12 @@
     }
 
     #tools-grid {
-      min-height: 1200px;
+      min-height: 600px;
       /* Pre-allocate height only for the main tools grid to prevent CLS */
+    }
+
+    .features-grid {
+      grid-template-columns: repeat(4, 1fr) !important;
     }
 
     .header {
