@@ -766,6 +766,11 @@ class ResumeBuilderTool extends BaseTool {
                 d.headerFont = hFontSel.value;
                 d.bodyFont = bFontSel.value;
                 this._save();
+                // Trigger immediate CSS update
+                const res = this.generateResumeHTML(this.data);
+                let style = document.getElementById('res-style-inj');
+                if (style) style.textContent = res.css;
+                if (this.currentTab === 'preview') this.fitPreview();
             };
             hFontSel.onchange = updateFonts;
             bFontSel.onchange = updateFonts;
@@ -834,8 +839,8 @@ class ResumeBuilderTool extends BaseTool {
     generateResumeHTML(data) {
         const t = data.theme || 'modern';
         const cols = this._getThemeColors(t, data.color);
-        const fontFam = this._getFontFamily(data.font || data.bodyFont);
-        const headFont = this._getFontFamily(data.headerFont || data.font);
+        const fontFam = this._getFontFamily(data.bodyFont || data.font || 'sans');
+        const headFont = this._getFontFamily(data.headerFont || data.font || 'sans');
 
         // Core Layout Strategy
         const isSplit = ['modern', 'leftside', 'skyline', 'tech', 'orbit', 'cyber', 'nova', 'bloom', 'wave', 'titan'].includes(t);
@@ -862,7 +867,7 @@ class ResumeBuilderTool extends BaseTool {
             
             /* Typography */
             h1, h2, h3, h4, .res-name, .res-title, .res-section-title, .res-item-head { font-family: ${headFont}; }
-            .res-item-desc, .res-contact-item, .res-item-sub { font-family: ${fontFam}; }
+            .res-item-desc, .res-contact-item, .res-item-sub, .res-skill-tag, .res-container { font-family: ${fontFam}; }
             
             /* Helper Classes */
             .res-section { margin-bottom: 20px; }
