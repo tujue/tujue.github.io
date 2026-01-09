@@ -45,6 +45,12 @@
      * Increment tool usage
      */
     function incrementToolUsage() {
+        // Firebase Sync (Global)
+        if (window.tulparFirebase && window.tulparFirebase.incrementToolUsage) {
+            window.tulparFirebase.incrementToolUsage();
+        }
+
+        // Legacy Local Update
         AppState.totalToolsUsed++;
         localStorage.setItem('devToolsUsed', AppState.totalToolsUsed);
         if (window.updateStats) window.updateStats();
