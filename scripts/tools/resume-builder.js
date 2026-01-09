@@ -1077,12 +1077,13 @@ class ResumeBuilderTool extends BaseTool {
             .res-photo img { width: 100%; height: 100%; object-fit: cover; }
             .res-skill-tag { display: inline-block; background: #edf2f7; color: #4a5568; padding: 4px 10px; border-radius: 100px; margin: 0 5px 5px 0; font-size: 11px; font-weight:600; }
         `;
+    }
 
-        _renderList(container, type) {
-            const listDiv = container.querySelector(`#list - ${type} `);
-            const list = type === 'exp' ? this.data.experience : this.data.education;
+    _renderList(container, type) {
+        const listDiv = container.querySelector(`#list-${type}`);
+        const list = type === 'exp' ? this.data.experience : this.data.education;
 
-            listDiv.innerHTML = list.map((it, i) => `
+        listDiv.innerHTML = list.map((it, i) => `
                 < div class="res-card" style = "margin-bottom: 15px; position:relative; padding: 15px;" >
                 <button onclick="window._delItem('${type}', ${i})" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer;">🗑️</button>
                 <div class="res-form-grid">
@@ -1099,138 +1100,138 @@ class ResumeBuilderTool extends BaseTool {
             </div >
                 `).join('');
 
+    }
+
+    onClose() {
+        const ws = document.querySelector('.workspace-content');
+        if (ws) {
+            ws.classList.remove('full-width-workspace');
+            ws.style.padding = this._origWsPadding || ''; // Restore original padding
         }
 
-        onClose() {
-            const ws = document.querySelector('.workspace-content');
-            if (ws) {
-                ws.classList.remove('full-width-workspace');
-                ws.style.padding = this._origWsPadding || ''; // Restore original padding
-            }
-
-            // Restore header styles
-            const header = document.querySelector('.workspace-header');
-            if (header) {
-                header.style.display = this._origHeaderDisplay || '';
-                header.style.cssText = '';
-            }
-
-            const title = document.querySelector('.workspace-header .workspace-title');
-            if (title) title.style.cssText = '';
-
-            // CLEANUP: Remove injected styles to prevent conflicts
-            const style = document.getElementById('res-style-inj');
-            if (style) style.remove();
-
-            // CLEANUP: Remove global handlers to prevent memory leaks and double-firing
-            [
-                '_resTab', '_resNav', '_resReset', '_setTheme',
-                '_printPdf', '_setFont', '_setColor', '_addItem',
-                '_removeItem', '_upField', '_delItem', '_upItem'
-            ].forEach(fn => {
-                if (window[fn]) delete window[fn];
-            });
+        // Restore header styles
+        const header = document.querySelector('.workspace-header');
+        if (header) {
+            header.style.display = this._origHeaderDisplay || '';
+            header.style.cssText = '';
         }
 
-        fitPreview() {
-            const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
-            const container = document.getElementById('res-preview-container');
-            const page = document.getElementById('res-a4-page');
-            if (!container || !page) return;
+        const title = document.querySelector('.workspace-header .workspace-title');
+        if (title) title.style.cssText = '';
 
-            const contW = container.clientWidth - 40; // Subtract padding room
-            const pageW = 794;
-            const pageH = 1123;
+        // CLEANUP: Remove injected styles to prevent conflicts
+        const style = document.getElementById('res-style-inj');
+        if (style) style.remove();
 
-            if (this.zoom === 'fit') {
-                // Smart Fit Strategy:
-                // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
-                const availableH = window.innerHeight - 150;
-                const wScale = contW / pageW;
-                const hScale = availableH / pageH;
+        // CLEANUP: Remove global handlers to prevent memory leaks and double-firing
+        [
+            '_resTab', '_resNav', '_resReset', '_setTheme',
+            '_printPdf', '_setFont', '_setColor', '_addItem',
+            '_removeItem', '_upField', '_delItem', '_upItem'
+        ].forEach(fn => {
+            if (window[fn]) delete window[fn];
+        });
+    }
 
-                // Choose the smaller scale to ensure it fits entirely on screen
-                this.scaleValue = Math.min(wScale, hScale, 0.95);
-            }
+    fitPreview() {
+        const isTr = window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+        const container = document.getElementById('res-preview-container');
+        const page = document.getElementById('res-a4-page');
+        if (!container || !page) return;
 
-            // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
-            if ('zoom' in page.style) {
-                page.style.zoom = this.scaleValue;
-                page.style.transform = 'none';
-            } else {
-                page.style.transform = `scale(${this.scaleValue})`;
-            }
+        const contW = container.clientWidth - 40; // Subtract padding room
+        const pageW = 794;
+        const pageH = 1123;
 
-            // Ensure wrapper height accounts for the scaled content to allow proper scrolling
-            const wrapper = document.getElementById('res-page-wrapper');
-            if (wrapper) {
-                const scaledH = pageH * this.scaleValue;
-                wrapper.style.height = `${scaledH + 80} px`; // page height + padding
-            }
+        if (this.zoom === 'fit') {
+            // Smart Fit Strategy:
+            // Use Window Height minus Header/Footer allowance (~100px) to prevent recursive height growth
+            const availableH = window.innerHeight - 150;
+            const wScale = contW / pageW;
+            const hScale = availableH / pageH;
 
-            const lbl = document.getElementById('z-val');
-            if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
+            // Choose the smaller scale to ensure it fits entirely on screen
+            this.scaleValue = Math.min(wScale, hScale, 0.95);
         }
 
-        _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
-        _load() {
-            const s = localStorage.getItem('dt_resume_v2');
-            if (!s) return null;
-            try {
-                const data = JSON.parse(s);
-                // Auto-migrate legacy randomuser images to new local default
-                if (data.photo && data.photo.includes('randomuser.me')) {
-                    data.photo = 'assets/default-avatar.png';
-                }
-                return data;
-            } catch (e) {
-                return null;
-            }
+        // Use 'zoom' property for better sharpness in Chrome/Edge. Fallback to transform if needed.
+        if ('zoom' in page.style) {
+            page.style.zoom = this.scaleValue;
+            page.style.transform = 'none';
+        } else {
+            page.style.transform = `scale(${this.scaleValue})`;
         }
-        _getDefaults() {
-            // Check language for localized sample data
-            const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
 
-            return {
-                name: isTr ? 'Demir Yılmaz' : 'Alex Morgan',
-                title: isTr ? 'Kıdemli Yazılım Mimarı' : 'Senior Software Architect',
-                email: 'hello@example.com',
-                website: 'linkedin.com/in/demo',
-                phone: '+90 555 012 34 56',
-                address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
-                summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
-                photo: 'assets/default-avatar.png', // Default local avatar
-                skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
-                theme: 'modern',
-                font: 'sans',
-                color: '#2d3748',
-                experience: [
-                    {
-                        role: isTr ? 'Kıdemli Takım Lideri' : 'Senior Team Lead',
-                        comp: 'TechGlobal Systems',
-                        date: '2021 - Günümüz',
-                        desc: isTr ? '• Dağıtık sistemlerin mimari tasarımı ve ölçeklendirilmesi.\n• 15 kişilik yazılım ekibinin yönetimi ve mentorluğu.\n• CI/CD süreçlerinin optimizasyonu ile deploy süresinin %40 azaltılması.'
-                            : '• Architectural design and scaling of distributed systems.\n• Management and mentorship of a 15-person software team.\n• Optimization of CI/CD processes reducing deploy time by 40%.'
-                    },
-                    {
-                        role: isTr ? 'Full Stack Geliştirici' : 'Full Stack Developer',
-                        comp: 'Innova Startups',
-                        date: '2018 - 2021',
-                        desc: isTr ? '• Modern web teknolojileri ile SaaS ürün geliştirme.\n• RESTful API tasarımı ve mikroservis entegrasyonları.\n• Kullanıcı deneyimini (UX) artırmaya yönelik performans iyileştirmeleri.'
-                            : '• SaaS product development with modern web technologies.\n• RESTful API design and microservices integration.\n• Performance improvements focused on enhancing user experience (UX).'
-                    }
-                ],
-                education: [
-                    {
-                        sch: isTr ? 'Orta Doğu Teknik Üniversitesi' : 'Stanford University',
-                        deg: isTr ? 'Bilgisayar Mühendisliği, B.S.' : 'B.S. Computer Science',
-                        date: '2014 - 2018'
-                    }
-                ],
-                languages: isTr ? 'Türkçe (Anadil), İngilizce (C1), Almanca (B1)' : 'English (Native), Spanish (C1), German (B1)',
-                interests: isTr ? 'Fotoğrafçılık, Açık Kaynak, Seyahat, Gitar' : 'Photography, Open Source, Travel, Guitar'
-            };
+        // Ensure wrapper height accounts for the scaled content to allow proper scrolling
+        const wrapper = document.getElementById('res-page-wrapper');
+        if (wrapper) {
+            const scaledH = pageH * this.scaleValue;
+            wrapper.style.height = `${scaledH + 80} px`; // page height + padding
+        }
+
+        const lbl = document.getElementById('z-val');
+        if (lbl) lbl.textContent = this.zoom === 'fit' ? (isTr ? 'SIĞDI' : 'FIT') : Math.round(this.scaleValue * 100) + '%';
+    }
+
+    _save() { localStorage.setItem('dt_resume_v2', JSON.stringify(this.data)); }
+    _load() {
+        const s = localStorage.getItem('dt_resume_v2');
+        if (!s) return null;
+        try {
+            const data = JSON.parse(s);
+            // Auto-migrate legacy randomuser images to new local default
+            if (data.photo && data.photo.includes('randomuser.me')) {
+                data.photo = 'assets/default-avatar.png';
+            }
+            return data;
+        } catch (e) {
+            return null;
         }
     }
+    _getDefaults() {
+        // Check language for localized sample data
+        const isTr = typeof window !== 'undefined' && window.i18n && window.i18n.getCurrentLanguage() === 'tr';
+
+        return {
+            name: isTr ? 'Demir Yılmaz' : 'Alex Morgan',
+            title: isTr ? 'Kıdemli Yazılım Mimarı' : 'Senior Software Architect',
+            email: 'hello@example.com',
+            website: 'linkedin.com/in/demo',
+            phone: '+90 555 012 34 56',
+            address: isTr ? 'İstanbul, Türkiye' : 'San Francisco, CA',
+            summary: isTr ? 'Yenilikçi ve çözüm odaklı yaklaşımım ile projelerinize değer katmayı hedefleyen, takım çalışmasına yatkın ve sürekli öğrenmeye açık bir profesyonelim.' : 'Innovative and solution-oriented professional aiming to add value to your projects with a focus on continuous learning and teamwork.',
+            photo: 'assets/default-avatar.png', // Default local avatar
+            skills: 'JavaScript, React.js, Node.js, Python, Docker, AWS, UI/UX Design, TypeScript, Agile',
+            theme: 'modern',
+            font: 'sans',
+            color: '#2d3748',
+            experience: [
+                {
+                    role: isTr ? 'Kıdemli Takım Lideri' : 'Senior Team Lead',
+                    comp: 'TechGlobal Systems',
+                    date: '2021 - Günümüz',
+                    desc: isTr ? '• Dağıtık sistemlerin mimari tasarımı ve ölçeklendirilmesi.\n• 15 kişilik yazılım ekibinin yönetimi ve mentorluğu.\n• CI/CD süreçlerinin optimizasyonu ile deploy süresinin %40 azaltılması.'
+                        : '• Architectural design and scaling of distributed systems.\n• Management and mentorship of a 15-person software team.\n• Optimization of CI/CD processes reducing deploy time by 40%.'
+                },
+                {
+                    role: isTr ? 'Full Stack Geliştirici' : 'Full Stack Developer',
+                    comp: 'Innova Startups',
+                    date: '2018 - 2021',
+                    desc: isTr ? '• Modern web teknolojileri ile SaaS ürün geliştirme.\n• RESTful API tasarımı ve mikroservis entegrasyonları.\n• Kullanıcı deneyimini (UX) artırmaya yönelik performans iyileştirmeleri.'
+                        : '• SaaS product development with modern web technologies.\n• RESTful API design and microservices integration.\n• Performance improvements focused on enhancing user experience (UX).'
+                }
+            ],
+            education: [
+                {
+                    sch: isTr ? 'Orta Doğu Teknik Üniversitesi' : 'Stanford University',
+                    deg: isTr ? 'Bilgisayar Mühendisliği, B.S.' : 'B.S. Computer Science',
+                    date: '2014 - 2018'
+                }
+            ],
+            languages: isTr ? 'Türkçe (Anadil), İngilizce (C1), Almanca (B1)' : 'English (Native), Spanish (C1), German (B1)',
+            interests: isTr ? 'Fotoğrafçılık, Açık Kaynak, Seyahat, Gitar' : 'Photography, Open Source, Travel, Guitar'
+        };
+    }
+}
 
 window.initResumeBuilderLogic = ResumeBuilderTool;
