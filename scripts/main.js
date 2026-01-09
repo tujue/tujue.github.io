@@ -165,7 +165,12 @@ window.setupToolListeners = async function (toolId) {
 window.incrementToolUsage = function () {
     window.AppState.totalToolsUsed++;
     localStorage.setItem('devToolsUsed', window.AppState.totalToolsUsed);
-    window.updateStats();
+    window.updateStats(); // Local UI Update
+
+    // Firebase Sync
+    if (window.tulparFirebase && window.tulparFirebase.incrementToolUsage) {
+        window.tulparFirebase.incrementToolUsage();
+    }
 };
 
 /**
@@ -232,6 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ========== GLOBAL NOTIFICATION SYSTEM ==========
 window.showNotification = function (message, type = 'success') {
+    // Firebase Copy Tracking
+    if (type === 'success' && message &&
+        (message.toLowerCase().includes('copy') ||
+            message.toLowerCase().includes('kopyala') ||
+            message.toLowerCase().includes('copied'))) {
+        if (window.tulparFirebase && window.tulparFirebase.incrementCopyCount) {
+            window.tulparFirebase.incrementCopyCount();
+        }
+    }
     // Icons
     const icons = {
         success: '✅',
